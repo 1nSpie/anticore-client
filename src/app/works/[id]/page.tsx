@@ -1,0 +1,398 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ArrowLeft, Clock, Calendar, Car, CheckCircle } from "lucide-react";
+import { worksApi, Work, WorkImage } from "../worksApi";
+import Link from "next/link";
+import ServerImage from "@/app/ui/ui/ServerImage";
+
+const pageVariants = {
+  hidden: { opacity: 0, y: 20 },
+  enter: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1 },
+};
+
+export default function WorkDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [work, setWork] = useState<Work | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<WorkImage | null>(null);
+
+  useEffect(() => {
+    const fetchWork = async () => {
+      try {
+        setLoading(true);
+        const id = parseInt(params.id as string);
+        const workData = await worksApi.getWorkById(id);
+        setWork(workData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load work");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchWork();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background1 dark:bg-backgroundDark flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orangeDefault mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !work) {
+    return (
+      <div className="min-h-screen bg-background1 dark:bg-backgroundDark flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Ошибка</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            {error || "Работа не найдена"}
+          </p>
+          <button
+            onClick={() => router.push("/works")}
+            className="bg-orangeDefault hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Вернуться к работам
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="enter"
+      exit="exit"
+      variants={pageVariants}
+      transition={{ type: "spring", duration: 0.5 }}
+      className="bg-background1 dark:bg-backgroundDark min-h-screen"
+    >
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Back Button */}
+        <motion.button
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          onClick={() => router.push("/works")}
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-orangeDefault dark:hover:text-orangeDefault mb-8 transition-colors"
+        >
+          <ArrowLeft size={20} />
+          Назад к работам
+        </motion.button>
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <span className="bg-orangeDefault text-white px-3 py-1 rounded-full text-sm font-medium">
+              {work.category.name}
+            </span>
+            <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm">
+              {work.year}
+            </span>
+            {work.featured && (
+              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                Рекомендуемая
+              </span>
+            )}
+          </div>
+
+          <h1 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
+            {work.title}
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-300">
+            <div className="flex items-center gap-2">
+              <Car size={18} />
+              <span>
+                {work.carBrand} {work.carModel}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={18} />
+              <span>{work.duration}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar size={18} />
+              <span>
+                {new Date(work.createdAt).toLocaleDateString("ru-RU")}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Before/After Images */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-12"
+        >
+          <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
+            Результат работы
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {work.beforeImage && (
+              <div className="group">
+                <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 aspect-[4/3]">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <ServerImage
+                      filePath={work.beforeImage ?? ""}
+                      alt={`${work.id}`}
+                      fill
+                    />
+                  </div>
+                  <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    До
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            )}
+
+            {work.afterImage && (
+              <div className="group">
+                <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 aspect-[4/3]">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <ServerImage
+                      filePath={work.afterImage ?? ""}
+                      alt={`${work.id}`}
+                      fill
+                    />
+                  </div>
+                  <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    После
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            {/* Description */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mb-8"
+            >
+              <h2 className="text-2xl font-bold text-black dark:text-white mb-4">
+                Описание работы
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                {work.description}
+              </p>
+            </motion.div>
+
+            {/* Process Images */}
+            {work.images && work.images.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mb-8"
+              >
+                <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
+                  Процесс выполнения
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {work.images.map((image, index) => (
+                    <motion.div
+                      key={image.id}
+                      variants={imageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{ delay: 0.7 + index * 0.1 }}
+                      className="group cursor-pointer"
+                      onClick={() => setSelectedImage(image)}
+                    >
+                      <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 aspect-[4/3]">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <ServerImage
+                            filePath={image.url ?? ""}
+                            alt={`${image.id}`}
+                            fill
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            {/* Services */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6"
+            >
+              <h3 className="text-xl font-bold text-black dark:text-white mb-4">
+                Выполненные услуги
+              </h3>
+              <ul className="space-y-3">
+                {work.services.map((service) => (
+                  <li
+                    key={service.id}
+                    className="flex items-center gap-3 text-gray-600 dark:text-gray-300"
+                  >
+                    <CheckCircle
+                      size={18}
+                      className="text-green-500 flex-shrink-0"
+                    />
+                    <span>{service.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Work Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6"
+            >
+              <h3 className="text-xl font-bold text-black dark:text-white mb-4">
+                Детали работы
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Автомобиль
+                  </label>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {work.carBrand} {work.carModel}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Время выполнения
+                  </label>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {work.duration}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Год работы
+                  </label>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {work.year}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Категория
+                  </label>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {work.category.name}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* CTA */}
+            <section className="py-20 bg-gradient-to-r from-orange-500 to-orange-600 relative overflow-hidden">
+              <div className="absolute inset-0 bg-black/10" />
+              <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <h3 className="text-3xl lg:text-4xl font-bold text-white mb-6">
+                    Готовы защитить свой автомобиль?
+                  </h3>
+                  <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+                    Свяжитесь с нами для получения персональной консультации и
+                    расчета стоимости
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link
+                      href="tel:+79161456882"
+                      className="inline-flex items-center justify-center px-8 py-4 bg-white text-orange-600 font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    >
+                      <svg
+                        className="w-5 h-5 mr-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                      Позвонить сейчас
+                    </Link>
+                    <Link
+                      href="/glav#auto-price"
+                      className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-2xl border-2 border-white/30 hover:border-white/50 hover:bg-white/10 transition-all duration-200"
+                    >
+                      Рассчитать стоимость
+                    </Link>
+                  </div>
+                </motion.div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-full">
+            <button
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 text-xl"
+              onClick={() => setSelectedImage(null)}
+            >
+              ✕
+            </button>
+            <div className="bg-gray-200 dark:bg-gray-700 rounded-lg aspect-[4/3] flex items-center justify-center sm:h-150 sm:w-150 w-80 h-80">
+              <ServerImage
+                filePath={selectedImage.url ?? ""}
+                alt={`${selectedImage.id}`}
+                fill
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+}
