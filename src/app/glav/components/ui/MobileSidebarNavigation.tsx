@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { XMarkIcon, Bars3Icon } from "@heroicons/react/24/outline";
-import { navigationLinks } from "@/lib/contants";
+import { navigationLinks } from "src/lib/contants";
 import Link from "next/link";
 import Image from "next/image";
 import telegramIcon from "public/icons8-телеграм.svg";
 import whatsappIcon from "public/icons8-whatsapp.svg";
 import vkIcon from "public/icons8-vk.svg";
 import rutubeIcon from "public/Rutube_icon.svg";
-import ThemeSwitcher from "@/app/ui/ui/ThemeSwitcher";
+import ThemeSwitcher from "src/app/ui/ui/ThemeSwitcher";
 
 export default function MobileSidebarNavigation() {
   const [isOpen, setIsOpen] = useState(false);

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import heroImg from "../../../../public/heroImg.png";
-import { Button } from "@/shadcn/button";
+import { Button } from "src/shadcn/button";
 import {
   Phone,
   Shield,
@@ -15,7 +15,7 @@ import {
   Award,
   Users,
 } from "lucide-react";
-import { CallbackModal } from "@/app/ui/ui/CallbackModal";
+import { CallbackModal } from "src/app/ui/ui/CallbackModal";
 
 export default function Herosection({ id }: { id: string }) {
   const scrollToAutoPrice = () => {
@@ -67,7 +67,7 @@ export default function Herosection({ id }: { id: string }) {
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-lg leading-relaxed">
                 Профессиональная антикоррозийная обработка с гарантией до 5 лет.
-                Детальный фотоотчет и бесплатные осмотры каждые 6 месяцев.
+                Детальный фотоотчет и бесплатные осмотры каждые 12 месяцев.
               </p>
             </motion.div>
 

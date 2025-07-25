@@ -30,11 +30,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/dialog";
-import { Button } from "@/shadcn/button";
+} from "src/shadcn/dialog";
+import { Button } from "src/shadcn/button";
 import { MessageCircle, Phone, Send, Info } from "lucide-react";
 import Link from "next/link";
-import { telegramApiClient } from "@/components/telegram/api";
+import { telegramApiClient } from "src/components/telegram/api";
 
 export default function AutoPrice({ id }: AutoPriceProps) {
   const { register, handleSubmit, watch, control, setValue } =

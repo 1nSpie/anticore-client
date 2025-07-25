@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useMediaQuery } from "src/lib/hooks/useMediaQuery";
 interface Step {
   icon: string; // URL или путь к иконке
   title: string;

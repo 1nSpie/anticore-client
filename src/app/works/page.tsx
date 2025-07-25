@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { worksApi, Work, WorkCategory } from "./worksApi";
 import Link from "next/link";
 import ServerImage from "../ui/ui/ServerImage";
@@ -19,6 +19,7 @@ export default function WorksPage() {
   const [categories, setCategories] = useState<WorkCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filtering, setFiltering] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function WorksPage() {
 
   const handleCategoryFilter = async (categoryId: number | null) => {
     try {
+      setFiltering(true);
       setSelectedCategory(categoryId);
       const filteredWorks = await worksApi.getWorks({
         categoryId: categoryId || undefined,
@@ -51,6 +53,8 @@ export default function WorksPage() {
       setWorks(filteredWorks);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to filter works");
+    } finally {
+      setFiltering(false);
     }
   };
 
@@ -140,36 +144,64 @@ export default function WorksPage() {
         </div>
 
         {/* Works Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {works.map((work, index) => (
-            <motion.div
-              key={work.id}
-              className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              onClick={() => handleWorkClick(work)}
-            >
+        <div className="relative min-h-[400px]">
+          {filtering && (
+            <div className="absolute inset-0 bg-background1 dark:bg-backgroundDark bg-opacity-50 flex items-center justify-center z-10">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orangeDefault mx-auto mb-2"></div>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Фильтрация работ...</p>
+              </div>
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <AnimatePresence mode="wait">
+              {works.map((work, index) => (
+                <motion.div
+                  key={`${work.id}-${selectedCategory || 'all'}`}
+                  className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -30, scale: 0.9 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    delay: filtering ? 0 : index * 0.05,
+                    type: "spring",
+                    stiffness: 100
+                  }}
+                  whileHover={{ y: -4 }}
+                  onClick={() => handleWorkClick(work)}
+                >
               {/* Before/After Images */}
               <div className="relative">
-                <div className="grid grid-cols-2 gap-px">
-                  <div className="relative">
-                    <div className="bg-gray-200 dark:bg-gray-600 h-auto w-auto flex">
-                      <ServerImage
-                        filePath={work.beforeImage ?? ""}
-                        alt={`${work.id}-${index}`}
-                        fill
-                      />
+                <div className="grid grid-cols-2 gap-0.5">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-200 dark:bg-gray-600">
+                    <ServerImage
+                      filePath={work.beforeImage ?? ""}
+                      alt={`${work.title} - До обработки`}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                      quality={90}
+                      priority={index < 6}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
+                      До
                     </div>
                   </div>
-                  <div className="relative">
-                    <div className="bg-gray-200 dark:bg-gray-600 h-48 flex items-center justify-center">
-                      <ServerImage
-                        filePath={work.afterImage ?? ""}
-                        alt={`${work.id}-${index}`}
-                        fill
-                      />
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-200 dark:bg-gray-600">
+                    <ServerImage
+                      filePath={work.afterImage ?? ""}
+                      alt={`${work.title} - После обработки`}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                      quality={90}
+                      priority={index < 6}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
+                      После
                     </div>
                   </div>
                 </div>
@@ -245,8 +277,10 @@ export default function WorksPage() {
                   Подробнее →
                 </button>
               </div>
-            </motion.div>
-          ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Empty State */}

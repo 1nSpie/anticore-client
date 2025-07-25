@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import StepCard from "@/app/glav/components/ui/StepsTechProccesCard";
+import StepCard from "src/app/glav/components/ui/StepsTechProccesCard";
 import clear from "public/techprocces/clear.svg";
 import diag from "public/techprocces/diag.svg";
 import garanty from "public/techprocces/garanty.svg";

@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import blogApiClient, { BlogPost } from "../blogApi";
 import { ChevronLeft, Clock, Calendar, User } from "lucide-react";
-import FeedbackLine from "@/app/ui/ui/FeedbackLine";
-import ServerImage from "@/app/ui/ui/ServerImage";
+import FeedbackLine from "src/app/ui/ui/FeedbackLine";
+import ServerImage from "src/app/ui/ui/ServerImage";
 
 // Анимация для всей страницы
 const pageVariants = {
@@ -189,7 +189,6 @@ export default function BlogPostPage() {
         />
 
         {/* Call to Action */}
-        <FeedbackLine />
 
         {/* Related Articles */}
         {relatedPosts.length > 0 && (
@@ -238,6 +237,7 @@ export default function BlogPostPage() {
           </motion.section>
         )}
       </div>
+      <FeedbackLine />
     </motion.div>
   );
 }

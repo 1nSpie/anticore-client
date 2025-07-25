@@ -8,23 +8,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/table";
+} from "src/shadcn/table";
 import { ServicePackage } from "./types";
 import { carType } from "./servicesData";
-import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useMediaQuery } from "src/lib/hooks/useMediaQuery";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/shadcn/accordion";
+} from "src/shadcn/accordion";
 import { ArrowLeftIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/shadcn/button";
+import { Button } from "src/shadcn/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/shadcn/hover-card";
+} from "src/shadcn/hover-card";
 
 type Props = {
   service: ServicePackage;

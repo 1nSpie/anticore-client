@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Calendar, Car, CheckCircle } from "lucide-react";
 import { worksApi, Work, WorkImage } from "../worksApi";
-import Link from "next/link";
-import ServerImage from "@/app/ui/ui/ServerImage";
+import ServerImage from "src/app/ui/ui/ServerImage";
+import FeedbackLine from "src/app/ui/ui/FeedbackLine";
 
 const pageVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -158,17 +158,19 @@ export default function WorkDetailPage() {
             {work.beforeImage && (
               <div className="group">
                 <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 aspect-[4/3]">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ServerImage
-                      filePath={work.beforeImage ?? ""}
-                      alt={`${work.id}`}
-                      fill
-                    />
-                  </div>
-                  <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <ServerImage
+                    filePath={work.beforeImage ?? ""}
+                    alt={`${work.title} - До обработки`}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    quality={95}
+                    priority
+                  />
+                  <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
                     До
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               </div>
             )}
@@ -176,17 +178,19 @@ export default function WorkDetailPage() {
             {work.afterImage && (
               <div className="group">
                 <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 aspect-[4/3]">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ServerImage
-                      filePath={work.afterImage ?? ""}
-                      alt={`${work.id}`}
-                      fill
-                    />
-                  </div>
-                  <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <ServerImage
+                    filePath={work.afterImage ?? ""}
+                    alt={`${work.title} - После обработки`}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    quality={95}
+                    priority
+                  />
+                  <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
                     После
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               </div>
             )}
@@ -235,14 +239,18 @@ export default function WorkDetailPage() {
                       onClick={() => setSelectedImage(image)}
                     >
                       <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 aspect-[4/3]">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <ServerImage
-                            filePath={image.url ?? ""}
-                            alt={`${image.id}`}
-                            fill
-                          />
+                        <ServerImage
+                          filePath={image.url ?? ""}
+                          alt={`${work.title} - Процесс выполнения ${index + 1}`}
+                          fill
+                          className="object-cover object-center"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          quality={90}
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                          {index + 1} / {work.images.length}
                         </div>
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </motion.div>
                   ))}
@@ -324,48 +332,6 @@ export default function WorkDetailPage() {
                 </div>
               </div>
             </motion.div>
-
-            {/* CTA */}
-            <section className="py-20 bg-gradient-to-r from-orange-500 to-orange-600 relative overflow-hidden">
-              <div className="absolute inset-0 bg-black/10" />
-              <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                >
-                  <h3 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-                    Готовы защитить свой автомобиль?
-                  </h3>
-                  <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
-                    Свяжитесь с нами для получения персональной консультации и
-                    расчета стоимости
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link
-                      href="tel:+79161456882"
-                      className="inline-flex items-center justify-center px-8 py-4 bg-white text-orange-600 font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                    >
-                      <svg
-                        className="w-5 h-5 mr-2"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                      </svg>
-                      Позвонить сейчас
-                    </Link>
-                    <Link
-                      href="/glav#auto-price"
-                      className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-2xl border-2 border-white/30 hover:border-white/50 hover:bg-white/10 transition-all duration-200"
-                    >
-                      Рассчитать стоимость
-                    </Link>
-                  </div>
-                </motion.div>
-              </div>
-            </section>
           </div>
         </div>
       </div>
@@ -383,16 +349,22 @@ export default function WorkDetailPage() {
             >
               ✕
             </button>
-            <div className="bg-gray-200 dark:bg-gray-700 rounded-lg aspect-[4/3] flex items-center justify-center sm:h-150 sm:w-150 w-80 h-80">
-              <ServerImage
-                filePath={selectedImage.url ?? ""}
-                alt={`${selectedImage.id}`}
-                fill
-              />
+            <div className="bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden max-w-4xl max-h-[90vh] w-full h-auto">
+              <div className="relative aspect-[4/3] w-full">
+                <ServerImage
+                  filePath={selectedImage.url ?? ""}
+                  alt={`${work.title} - Увеличенное изображение`}
+                  fill
+                  className="object-contain object-center"
+                  sizes="90vw"
+                  quality={95}
+                />
+              </div>
             </div>
           </div>
         </div>
       )}
+         <FeedbackLine />
     </motion.div>
   );
 }

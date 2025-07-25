@@ -6,7 +6,7 @@ import { FeedbackModalProvider } from "../lib/FeedbackModalProvider";
 import Footer from "../components/Footer";
 import ClientOnly from "./ui/ui/ClientOnly";
 import Navigation from "../components/Navigation";
-import { Toaster } from "@/shadcn/sonner";
+import { Toaster } from "src/shadcn/sonner";
 
 export const metadata: Metadata = {
   title: "AvanCore",

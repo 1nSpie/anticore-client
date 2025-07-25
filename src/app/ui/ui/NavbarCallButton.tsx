@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PhoneIcon } from "@heroicons/react/24/solid";
-import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useMediaQuery } from "src/lib/hooks/useMediaQuery";
 
 interface NavbarCallButtonProps {
   phoneNumber?: string;

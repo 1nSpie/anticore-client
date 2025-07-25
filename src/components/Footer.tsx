@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "public/trans_bg.svg";
-import { navigationLinks } from "@/lib/contants";
+import { navigationLinks } from "src/lib/contants";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 
 export default function Footer() {
@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="md:col-span-1">
             <Link href="/glav" className="inline-block mb-4">
               <Image
-                width={"50"}
+                width={"250"}
                 height={"50"}
                 alt="AvanCore Logo"
                 src={Logo}
@@ -83,6 +83,28 @@ export default function Footer() {
                   />
                 </svg>
                 <span>г. Жуковский, ул. Речной проспект, д. 14</span>
+              </li>
+              <li className="flex items-start ">
+                <svg
+                  className="w-5 h-5 mr-3 mt-0.5 text-orangeDefault flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span>село Чанки, ул. Центральная 152</span>
               </li>
             </ul>
           </div>

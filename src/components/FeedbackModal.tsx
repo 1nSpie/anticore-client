@@ -16,18 +16,18 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shadcn/dialog";
-import { Button } from "@/shadcn/button";
-import { Input } from "@/shadcn/input";
-import { Label } from "@/shadcn/label";
-import { Textarea } from "@/shadcn/textarea";
+} from "src/shadcn/dialog";
+import { Button } from "src/shadcn/button";
+import { Input } from "src/shadcn/input";
+import { Label } from "src/shadcn/label";
+import { Textarea } from "src/shadcn/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shadcn/select";
+} from "src/shadcn/select";
 
 interface FeedbackModalProps {
   showModal: boolean;

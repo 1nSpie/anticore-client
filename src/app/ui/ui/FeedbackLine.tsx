@@ -1,4 +1,4 @@
-import { Button } from "@/shadcn/button";
+import { Button } from "src/shadcn/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import React from "react";

@@ -3,16 +3,16 @@
 import React from "react";
 import { PhoneIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
-import { Button } from "@/shadcn/button";
+import { Button } from "src/shadcn/button";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { navigationLinks } from "@/lib/contants";
+import { navigationLinks } from "src/lib/contants";
 import { usePathname } from "next/navigation";
 import shapka1 from "public/shapka1.svg";
 import telegramIcon from "public/icons8-телеграм.svg";
 import whatsappIcon from "public/icons8-whatsapp.svg";
 import vkIcon from "public/icons8-vk.svg";
 import rutubeIcon from "public/Rutube_icon.svg";
-import { CallbackModal } from "@/app/ui/ui/CallbackModal";
+import { CallbackModal } from "src/app/ui/ui/CallbackModal";
 import Link from "next/link";
 
 const API_BASE_URL =

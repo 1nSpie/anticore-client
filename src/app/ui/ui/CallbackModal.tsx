@@ -9,13 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/dialog";
-import { Button } from "@/shadcn/button";
-import { Input } from "@/shadcn/input";
-import { Label } from "@/shadcn/label";
-import { Textarea } from "@/shadcn/textarea";
+} from "src/shadcn/dialog";
+import { Button } from "src/shadcn/button";
+import { Input } from "src/shadcn/input";
+import { Label } from "src/shadcn/label";
+import { Textarea } from "src/shadcn/textarea";
 import { useState } from "react";
-import { telegramApiClient } from "@/components/telegram/api";
+import { telegramApiClient } from "src/components/telegram/api";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 

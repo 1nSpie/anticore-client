@@ -148,9 +148,7 @@ export default function BlogPage() {
                   <ServerImage
                     filePath={featuredPost.image ?? ""}
                     alt={featuredPost.title}
-                    width={400}
-                    height={300}
-                    className="rounded-lg shadow-md"
+                    className="max-w-full h-auto rounded-lg shadow-md"
                   />
                 </div>
                 <div className="p-8">

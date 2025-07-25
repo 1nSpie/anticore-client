@@ -12,7 +12,7 @@ import {
 import { services } from "../components/servicesData";
 import { ServiceStep, CarType } from "../components/types";
 import Link from "next/link";
-import FeedbackLine from "@/app/ui/ui/FeedbackLine";
+import FeedbackLine from "src/app/ui/ui/FeedbackLine";
 
 interface PriceCalculatorProps {
   service: ServiceStep;

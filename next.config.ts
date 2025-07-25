@@ -1,15 +1,41 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
- images: {
+  images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '3001',
-        pathname: '**',
+        protocol: "http",
+        hostname: "localhost",
+        port: "3001",
+        pathname: "**",
       },
     ],
+  },
+  env: {
+    API_URL: "/api",
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "/api/:path*", // Внутренние API-роуты
+      },
+    ];
+  },
+  // Если используются внешние API
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "https://xn--80aaag6amsblus.xn--p1ai",
+          },
+          { key: "Access-Control-Allow-Methods", value: "GET,POST,OPTIONS" },
+        ],
+      },
+    ];
   },
   async redirects() {
     return [
