@@ -35,7 +35,6 @@ export const ServerImage: React.FC<ServerImageProps> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const folderFile = filePath.split("/");
-
   const imageUrl = apiClient.getImageUrl(folderFile[0], folderFile[1]);
 
   const handleLoad = () => {
