@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" sizes="any" />
-        <meta name="yandex-verification" content="4b4e2a9d98dba841" />
+        <meta name="yandex-verification" content="f4f1e7aae28f23bb" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
