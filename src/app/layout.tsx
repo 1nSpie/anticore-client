@@ -10,7 +10,7 @@ import { DelayedModal } from "@/components/DelayedModal";
 
 export const metadata: Metadata = {
   title: "AvanCore",
-  description: "Защити свой автомобиль от коррозииyes",
+  description: "Защити свой автомобиль от коррозии",
 };
 
 const geistSans = Geist({
@@ -32,8 +32,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" sizes="any" />
+        <meta name="yandex-verification" content="4b4e2a9d98dba841" />
       </head>
-      <meta name="yandex-verification" content="4b4e2a9d98dba841" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
