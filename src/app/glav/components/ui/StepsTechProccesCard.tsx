@@ -16,7 +16,7 @@ interface StepCardProps {
 
 export default function StepCard({ step, index = 0 }: StepCardProps) {
   return (
-    <motion.div 
+    <motion.div
       className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 h-full flex flex-col relative overflow-hidden"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -30,15 +30,13 @@ export default function StepCard({ step, index = 0 }: StepCardProps) {
 
       {/* Image section */}
       <div className="p-8 pb-4 flex justify-center">
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-6 w-36 h-36 flex items-center justify-center">
-          <Image
-            src={step.icon}
-            alt={step.title}
-            width={100}
-            height={100}
-            className="object-contain"
-          />
-        </div>
+        <Image
+          src={step.icon}
+          alt={step.title}
+          width={150}
+          height={150}
+          className="object-contain"
+        />
       </div>
 
       {/* Content section */}
