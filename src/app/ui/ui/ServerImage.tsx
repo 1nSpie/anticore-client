@@ -86,11 +86,11 @@ export const ServerImage: React.FC<ServerImageProps> = ({
 
   if (fill) {
     // eslint-disable-next-line jsx-a11y/alt-text
-    return <Image {...imageProps} fill />;
+    return <Image {...imageProps} fill unoptimized/>;
   }
 
   // eslint-disable-next-line jsx-a11y/alt-text
-  return <Image {...imageProps} width={width} height={height} />;
+  return <Image {...imageProps} width={width} height={height} unoptimized/>;
 };
 
 export default ServerImage;

@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         port: "3001",
         pathname: "**",
       },
+      {
+        protocol: 'https',
+        hostname: 'xn--80aaag6amsblus.xn--p1ai', // 👈 Punycode
+        port: '',
+        pathname: '/api/static/images/**',
+      },
     ],
   },
   env: {
