@@ -4,7 +4,6 @@ import FeedbackLine from "../ui/ui/FeedbackLine";
 
 export default function PrivacyPolicyPage() {
   const SITE_LINK = process.env.SITE_LINK || "http://localhost:3000";
-  console.log("✌️SITE_LINK --->", SITE_LINK);
   return (
     <>
       <div className="min-h-screen bg-background dark:bg-backgroundDark py-12 px-6">
@@ -36,7 +35,7 @@ export default function PrivacyPolicyPage() {
               данных (далее — Политика) применяется ко всей информации, которую
               Оператор может получить о посетителях веб-сайта{" "}
               <a href={SITE_LINK} className="text-orange hover:underline">
-                {SITE_LINK}{" "}
+                 Аванантикор.рф
               </a>
               .
             </p>
@@ -67,7 +66,7 @@ export default function PrivacyPolicyPage() {
                 данных, обеспечивающих их доступность в сети интернет по
                 сетевому адресу{" "}
                 <a href={SITE_LINK} className="text-orange hover:underline">
-                  {SITE_LINK}{" "}
+                Аванантикор.рф
                 </a>
                 .
               </li>
@@ -107,14 +106,14 @@ export default function PrivacyPolicyPage() {
                 относящаяся прямо или косвенно к определенному или определяемому
                 Пользователю веб-сайта{" "}
                 <a href={SITE_LINK} className="text-orange hover:underline">
-                  {SITE_LINK}{" "}
+                  Аванантикор.рф
                 </a>
                 .
               </li>
               <li>
                 <strong>Пользователь</strong> — любой посетитель веб-сайта{" "}
                 <a href={SITE_LINK} className="text-orange hover:underline">
-                  {SITE_LINK}{" "}
+                   Аванантикор.рф
                 </a>
                 .
               </li>
@@ -479,7 +478,7 @@ export default function PrivacyPolicyPage() {
               </a>
               . Актуальная версия Политики доступна по адресу{" "}
               <a href="/pk" className="text-orange hover:underline">
-                {SITE_LINK}/pk
+                Аванантикор.рф/pk
               </a>
               .
             </p>

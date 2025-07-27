@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { useMediaQuery } from "src/lib/hooks/useMediaQuery";
+import { motion } from "framer-motion";
+
 interface Step {
   icon: string; // URL или путь к иконке
   title: string;
@@ -10,32 +11,51 @@ interface Step {
 
 interface StepCardProps {
   step: Step;
+  index?: number;
 }
 
-export default function StepCard({ step }: StepCardProps) {
-  const isMobile = useMediaQuery("(max-width: 768px)");
+export default function StepCard({ step, index = 0 }: StepCardProps) {
   return (
-    <div className="flex items-center space-x-4 p-4 rounded-lg shadow-lg bg-gradient-to-r from-gray-100 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-      <Image
-        src={step.icon}
-        alt={step.title}
-        width={isMobile ? 100 : 150}
-        height={150}
-        className="rounded-xl transform transition-transform duration-300 hover:scale-110"
-      />
+    <motion.div 
+      className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 h-full flex flex-col relative overflow-hidden"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+    >
+      {/* Step number */}
+      <div className="absolute top-3 right-3 w-8 h-8 bg-gradient-to-r from-orangeDefault to-orange-600 rounded-full flex items-center justify-center shadow-lg z-10">
+        <span className="text-white text-sm font-bold">{index + 1}</span>
+      </div>
 
-      {/* Содержимое карточки */}
-      <div className="pl-5 h-full w-full border-r-2 border-orangeDefault pr-4">
-        {/* Название */}
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white text-center text-wrap">
+      {/* Image section */}
+      <div className="p-8 pb-4 flex justify-center">
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-6 w-36 h-36 flex items-center justify-center">
+          <Image
+            src={step.icon}
+            alt={step.title}
+            width={100}
+            height={100}
+            className="object-contain"
+          />
+        </div>
+      </div>
+
+      {/* Content section */}
+      <div className="p-6 pt-2 flex-1 flex flex-col text-center">
+        {/* Title */}
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-3">
           {step.title}
         </h3>
 
-        {/* Описание */}
-        <p className="text-gray-600 dark:text-gray-300 mt-1 align-middle text-sm break-words">
+        {/* Description */}
+        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed flex-1">
           {step.description}
         </p>
+
+        {/* Bottom accent line */}
+        <div className="mt-4 h-1 bg-gradient-to-r from-orangeDefault to-green-500 rounded-full w-16 mx-auto" />
       </div>
-    </div>
+    </motion.div>
   );
 }

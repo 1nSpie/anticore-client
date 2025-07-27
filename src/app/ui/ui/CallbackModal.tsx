@@ -20,10 +20,16 @@ import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 
 interface CallbackModalProps {
-  trigger: React.ReactNode; // любая кнопка или элемент
+  trigger?: React.ReactNode; // любая кнопка или элемент
+  hasOpen?: boolean;
+  setView?: (status: boolean) => void;
 }
 
-export function CallbackModal({ trigger }: CallbackModalProps) {
+export function CallbackModal({
+  trigger,
+  hasOpen,
+  setView,
+}: CallbackModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathName = usePathname();
   const [formData, setFormData] = useState({
@@ -42,7 +48,6 @@ export function CallbackModal({ trigger }: CallbackModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Отправка формы:", formData);
     telegramApiClient
       .sendCallbackForm(formData)
       .then(() =>
@@ -65,7 +70,10 @@ export function CallbackModal({ trigger }: CallbackModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={hasOpen ? hasOpen : isOpen}
+      onOpenChange={setView ? setView : setIsOpen}
+    >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <DialogHeader>

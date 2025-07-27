@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import heroImg from "../../../../public/heroImg.png";
+import heroImg from "../../../../public/heroImg.jpg";
 import { Button } from "src/shadcn/button";
 import {
   Phone,

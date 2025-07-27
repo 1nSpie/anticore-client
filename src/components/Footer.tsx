@@ -126,8 +126,11 @@ export default function Footer() {
           <p className="text-sm text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} AvanCore™. Все права защищены.
           </p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-4 sm:mt-0">
-            Разработано с ❤️ @InSpie
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-4 sm:mt-0 ">
+            Разработано с ❤️
+            <Link className="underline" href={"https://t.me/InSpie"}>
+              @InSpie
+            </Link>
           </p>
         </div>
       </div>

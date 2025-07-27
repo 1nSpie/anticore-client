@@ -22,7 +22,7 @@ export async function getAllCarWithBrand(
     throw new Error("id is not a number");
   }
   const res = await axiosAgent.get(`/brands/${id}`);
-  console.log(res);
+
   if (!res.data) {
     throw new Error("Failed to fetch services");
   }
@@ -37,7 +37,7 @@ export async function getAutoSegmentPrice(
     throw new Error("id is not a number");
   }
   const res = await axiosAgent.get(`/segment/${id}`);
-  console.log(res);
+ 
   if (!res.data) {
     throw new Error("Failed to fetch services");
   }

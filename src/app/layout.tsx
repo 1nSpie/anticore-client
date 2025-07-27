@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../lib/ThemeProvider";
-import { FeedbackModalProvider } from "../lib/FeedbackModalProvider";
 import Footer from "../components/Footer";
 import ClientOnly from "./ui/ui/ClientOnly";
 import Navigation from "../components/Navigation";
 import { Toaster } from "src/shadcn/sonner";
+import { DelayedModal } from "@/components/DelayedModal";
 
 export const metadata: Metadata = {
   title: "AvanCore",
@@ -28,7 +28,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -43,12 +42,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-           <FeedbackModalProvider delay={30000} cooldownHours={24}>
-            <Navigation />
-            {children}
-            <ClientOnly />
-            <Footer />
-          </FeedbackModalProvider>
+          <DelayedModal />
+          <Navigation />
+          {children}
+          <ClientOnly />
+          <Footer />
           <Toaster />
         </ThemeProvider>
       </body>

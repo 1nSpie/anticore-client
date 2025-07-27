@@ -67,14 +67,13 @@ export default function NavbarHeroSection({ id }: { id: string }) {
               >
                 <div
                   className="flex cursor-pointer mb-1"
-                  onClick={() => console.log("Zhuk")}
+
                 >
                   <FaMapMarkerAlt className="mr-1 text-orangeDefault" />
                   <span className="text-white">Жуковский</span>
                 </div>
                 <div
                   className="flex cursor-pointer"
-                  onClick={() => console.log("Kolomna")}
                 >
                   <FaMapMarkerAlt className="mr-1 text-orangeDefault" />
                   <span className="text-white">Коломна</span>

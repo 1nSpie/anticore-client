@@ -354,7 +354,6 @@ export default function WorkDetailPage() {
                 <ServerImage
                   filePath={selectedImage.url ?? ""}
                   alt={`${work.title} - Увеличенное изображение`}
-                  fill
                   className="object-contain object-center"
                   sizes="90vw"
                   quality={95}
