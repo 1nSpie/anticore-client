@@ -33,6 +33,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" sizes="any" />
       </head>
+      <meta name="yandex-verification" content="4b4e2a9d98dba841" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
