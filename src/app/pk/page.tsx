@@ -486,7 +486,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="text-center mt-8">
             <Link
-              href="/glav"
+              href="/"
               className="inline-flex items-center justify-center px-8 py-4 bg-orangeDefault text-white font-semibold rounded-2xl border-2 hover:bg-orangeDefaultHover transition-all duration-200"
             >
               Вернуться на главную

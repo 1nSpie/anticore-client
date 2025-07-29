@@ -38,7 +38,7 @@ export default function FeedbackLine() {
               }
             />
             <Link
-              href="/glav#auto-price"
+              href="/#auto-price"
               className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-2xl border-2 border-white/30 hover:border-white/50 hover:bg-white/10 transition-all duration-200"
             >
               Рассчитать стоимость

@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "public/trans_bg.svg";
+import LightLogo from "public/shapka1.svg";
+import DarkLogo from "public/shapka_dark.svg";
 import { navigationLinks } from "src/lib/contants";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 
@@ -13,13 +14,23 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Logo and About */}
           <div className="md:col-span-1">
-            <Link href="/glav" className="inline-block mb-4">
+            <Link href="/" className="inline-block mb-4">
+              <div className="block dark:hidden">
               <Image
-                width={"250"}
-                height={"50"}
-                alt="AvanCore Logo"
-                src={Logo}
+                src={DarkLogo}
+                alt="Тёмный логотип"
+                width={200}
+                height={50}
               />
+            </div>
+            <div className="hidden dark:block">
+              <Image
+                src={LightLogo}
+                alt="Светлый логотип"
+                width={200}
+                height={50}
+              />
+            </div>
             </Link>
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               Профессиональная антикоррозийная обработка автомобилей в Москве.
@@ -55,7 +66,7 @@ export default function Footer() {
               <li className="flex items-start">
                 <PhoneIcon className="w-5 h-5 mr-3 mt-0.5 text-orangeDefault flex-shrink-0" />
                 <a
-                  href="tel:+79161456882"
+                  href="tel:+79932456882"
                   className="hover:text-orangeDefault dark:hover:text-orange-400 transition-colors"
                 >
                   +7 993 245 68 82

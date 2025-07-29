@@ -1,4 +1,4 @@
-import { AutoPriceFormData } from "src/app/glav/type";
+import { AutoPriceFormData } from "src/app//type";
 import axios, { AxiosResponse } from "axios";
 
 const API_BASE_URL =

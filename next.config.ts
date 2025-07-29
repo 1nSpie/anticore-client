@@ -46,8 +46,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/", // Исходный путь
-        destination: "/glav", // Путь, куда нужно перенаправить
+        source: "/glav", // Исходный путь
+        destination: "/", // Путь, куда нужно перенаправить
         permanent: true, // `true` для постоянного редиректа (HTTP 308), `false` для временного (HTTP 307)
       },
     ];

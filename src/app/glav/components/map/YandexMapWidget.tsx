@@ -56,7 +56,7 @@ export const YandexMapWidget = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link
-                href="tel:+79161456882"
+                href="tel:+79932456882"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

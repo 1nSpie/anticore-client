@@ -30,7 +30,7 @@ export default function NavbarHeroSection({ id }: { id: string }) {
   };
 
   // Скрываем navbar на главной
-  if (pathname === "/glav")
+  if (pathname === "/")
     return (
       <div className="relative min-h-screen overflow-hidden hidden xl:block" id={id}>
         {/* Видео на заднем фоне */}

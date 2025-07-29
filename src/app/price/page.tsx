@@ -101,7 +101,7 @@ export default function ServicesPage() {
                 Посмотреть услуги
               </a>
               <a
-                href="tel:+79161456882"
+                href="tel:+79932456882"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 Получить консультацию

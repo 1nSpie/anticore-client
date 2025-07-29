@@ -23,7 +23,7 @@ export default function NotFound() {
             Вернуться к блогу
           </Link>
           <Link 
-            href="/glav" 
+            href="/" 
             className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg transition-colors font-semibold"
           >
             На главную

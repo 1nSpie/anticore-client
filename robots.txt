@@ -16,7 +16,7 @@ Disallow: /temp/
 Disallow: /uploads/temp/
 
 # Allow important pages for SEO
-Allow: /glav
+Allow: /
 Allow: /works
 Allow: /works/*
 Allow: /blog

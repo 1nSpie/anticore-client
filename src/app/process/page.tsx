@@ -166,7 +166,7 @@ export default function ProcessPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="tel:+79161456882"
+                href="tel:+79932456882"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white text-orange-600 font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <svg
@@ -179,7 +179,7 @@ export default function ProcessPage() {
                 Позвонить сейчас
               </Link>
               <a
-                href="/glav#auto-price"
+                href="/#auto-price"
                 className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-2xl border-2 border-white/30 hover:border-white/50 hover:bg-white/10 transition-all duration-200"
               >
                 Рассчитать стоимость

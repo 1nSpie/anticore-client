@@ -1,7 +1,7 @@
 # Anticore Project - Color Scheme Implementation
 
 ## Overview
-This document outlines the comprehensive color scheme implementation across the entire Anticore project, based on the main page (`/glav`) color palette.
+This document outlines the comprehensive color scheme implementation across the entire Anticore project, based on the main page (`/`) color palette.
 
 ## Brand Color Palette
 
@@ -138,6 +138,6 @@ To maintain consistency:
 - Global CSS: `src/app/globals.css`
 - Color Configuration: `src/lib/colors.ts`
 - Updated Pages: `answers/`, `blog/`, `process/`, `reviews/`, `works/`
-- Main Page Reference: `src/app/glav/page.tsx` and components
+- Main Page Reference: `src/app//page.tsx` and components
 
 This implementation ensures that the entire Anticore project maintains a professional, consistent brand identity that matches the established design language of the main page.

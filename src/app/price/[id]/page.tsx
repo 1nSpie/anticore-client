@@ -87,13 +87,13 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
             </div>
             <div className="flex space-x-3">
               <Link
-                href="tel:+79161456882"
+                href="tel:+79932456882"
                 className="flex-1 bg-orangeDefault hover:bg-orangeDefaultHover text-white py-3 rounded-xl font-medium transition-colors text-center"
               >
                 Записаться
               </Link>
               <Link
-                href="/glav#auto-price"
+                href="/#auto-price"
                 className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-center"
               >
                 Консультация
