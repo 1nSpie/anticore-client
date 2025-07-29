@@ -5,6 +5,7 @@ import { services } from "./components/servicesData";
 import { motion } from "framer-motion";
 import { ShieldCheckIcon, CogIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import FeedbackLine from "../ui/ui/FeedbackLine";
+import Link from "next/link";
 
 const pageVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -94,18 +95,18 @@ export default function ServicesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <a
+              <Link
                 href="#services"
                 className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 Посмотреть услуги
-              </a>
-              <a
+              </Link>
+              <Link
                 href="tel:+79932456882"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 Получить консультацию
-              </a>
+              </Link>
             </motion.div>
           </div>
 

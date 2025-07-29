@@ -89,14 +89,14 @@ export default function FloatingContactButton() {
           </div>
         </Link>
 
-        <a href="tel:+7 993 245 68 82" className="flex">
+        <Link href="tel:+7 993 245 68 82" className="flex">
           <div
             className="w-12 h-12 bg-orangeDefault hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
             title="Call us"
           >
             <PhoneIcon className="h-8 w-8 text-white" />
           </div>
-        </a>
+        </Link>
       </div>
     </div>
   );

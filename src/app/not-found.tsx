@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 export default function Custom404() {
@@ -37,12 +38,12 @@ export default function Custom404() {
         {/* Кнопки */}
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
           {/* Основная кнопка */}
-          <a
+          <Link
             href="/"
             className="rounded-md bg-orange px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 dark:hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 transition-colors bg-orangeDefault"
           >
             Вернуться на главную
-          </a>
+          </Link>
 
         </div>
       </div>

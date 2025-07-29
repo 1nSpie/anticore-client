@@ -34,9 +34,9 @@ export default function PrivacyPolicyPage() {
               Настоящая политика Оператора в отношении обработки персональных
               данных (далее — Политика) применяется ко всей информации, которую
               Оператор может получить о посетителях веб-сайта{" "}
-              <a href={SITE_LINK} className="text-orange hover:underline">
+              <Link href={SITE_LINK} className="text-orange hover:underline">
                  Аванантикор.рф
-              </a>
+              </Link>
               .
             </p>
           </section>
@@ -65,9 +65,9 @@ export default function PrivacyPolicyPage() {
                 информационных материалов, а также программ для ЭВМ и баз
                 данных, обеспечивающих их доступность в сети интернет по
                 сетевому адресу{" "}
-                <a href={SITE_LINK} className="text-orange hover:underline">
+                <Link href={SITE_LINK} className="text-orange hover:underline">
                 Аванантикор.рф
-                </a>
+                </Link>
                 .
               </li>
               <li>
@@ -105,16 +105,16 @@ export default function PrivacyPolicyPage() {
                 <strong>Персональные данные</strong> — любая информация,
                 относящаяся прямо или косвенно к определенному или определяемому
                 Пользователю веб-сайта{" "}
-                <a href={SITE_LINK} className="text-orange hover:underline">
+                <Link href={SITE_LINK} className="text-orange hover:underline">
                   Аванантикор.рф
-                </a>
+                </Link>
                 .
               </li>
               <li>
                 <strong>Пользователь</strong> — любой посетитель веб-сайта{" "}
-                <a href={SITE_LINK} className="text-orange hover:underline">
+                <Link href={SITE_LINK} className="text-orange hover:underline">
                    Аванантикор.рф
-                </a>
+                </Link>
                 .
               </li>
             </ul>
@@ -470,16 +470,16 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p className="text-black dark:text-white leading-relaxed">
               Пользователь может получить разъяснения, обратившись по адресу{" "}
-              <a
+              <Link
                 href="mailto:aleksandrzagornyj367@gmail.com"
                 className="text-orange hover:underline"
               >
                 aleksandrzagornyj367@gmail.com
-              </a>
+              </Link>
               . Актуальная версия Политики доступна по адресу{" "}
-              <a href="/pk" className="text-orange hover:underline">
+              <Link href="/pk" className="text-orange hover:underline">
                 Аванантикор.рф/pk
-              </a>
+              </Link>
               .
             </p>
           </section>

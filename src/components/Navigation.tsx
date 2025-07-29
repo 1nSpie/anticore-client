@@ -9,6 +9,7 @@ import { useMediaQuery } from "src/lib/hooks/useMediaQuery";
 import LightLogo from "public/trans_bg.svg";
 import DarkLogo from "public/shapka_dark.svg";
 import ThemeSwitcher from "src/app/ui/ui/ThemeSwitcher";
+import Link from "next/link";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -20,7 +21,7 @@ export default function Navigation() {
     <>
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 left-0 w-full z-50 block lg:hidden">
         <nav className="max-w-[85rem] mx-auto px-4 py-2 lg:px-6 flex items-center justify-between">
-          <a href="/" className="flex items-center space-x-2 ">
+          <Link href="/" className="flex items-center space-x-2 ">
             <div className="block dark:hidden">
               <Image
                 src={DarkLogo}
@@ -37,7 +38,7 @@ export default function Navigation() {
                 height={50}
               />
             </div>
-          </a>
+          </Link>
           <div className="flex items-center space-x-3 mr-2">
             <NavbarCallButton className="md:hidden block" />
             <MobileSidebarNavigation />
@@ -48,7 +49,7 @@ export default function Navigation() {
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 left-0 w-full z-50 hidden lg:block">
         <nav className="max-w-[85rem] mx-auto  py-2 px-6 flex items-center justify-between">
           {/* Логотип */}
-          <a href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <div className="block dark:hidden">
               <Image
                 src={DarkLogo}
@@ -65,18 +66,18 @@ export default function Navigation() {
                 height={50}
               />
             </div>
-          </a>
+          </Link>
 
           {/* Десктопное меню */}
           <div className="flex w-full justify-around">
             {navigationLinks.map((el, i) => (
-              <a
+              <Link
                 key={i}
                 href={el.link}
                 className="text-lg text-gray-900 dark:text-gray-300 hover:underline hover:decoration-2 hover:underline-offset-2 pl-4"
               >
                 {el.label}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="hidden lg:flex">

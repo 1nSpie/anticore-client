@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   FaWrench,
@@ -75,7 +76,7 @@ export default function Sidebar() {
 
           return (
             <li key={id}>
-              <a
+              <Link
                 href={item.href}
                 onClick={(e) => handleScroll(e, id)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
@@ -94,7 +95,7 @@ export default function Sidebar() {
                 <span className={isActive ? "font-semibold" : ""}>
                   {item.label}
                 </span>
-              </a>
+              </Link>
             </li>
           );
         })}

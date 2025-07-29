@@ -9,6 +9,7 @@ import {
 } from "../../../../shadcn/tabs";
 import { PhoneIcon, ClockIcon, HomeIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { YandexMapWidget } from "./YandexMapWidget";
+import Link from "next/link";
 
 type Props = {
   id: string;
@@ -91,9 +92,9 @@ export default function YandexMap({ id }: Props) {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Телефон</p>
-                        <a href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                        <Link href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
                           +7 993 245 68 82
-                        </a>
+                        </Link>
                       </div>
                     </div>
                     
@@ -177,9 +178,9 @@ export default function YandexMap({ id }: Props) {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Телефон</p>
-                        <a href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                        <Link href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
                           +7 993 245 68 82
-                        </a>
+                        </Link>
                       </div>
                     </div>
                     

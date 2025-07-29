@@ -52,14 +52,14 @@ export default function MobileSidebarNavigation() {
             </div>
             <nav className="p-4 space-y-4">
               {navigationLinks.map((item, index) => (
-                <a
+                <Link
                   key={index}
                   href={item.link}
                   className="block text-lg font-medium text-gray-800 dark:text-gray-200 hover:text-orangeDefault transition-transform transform hover:translate-x-1"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
             </nav>
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">

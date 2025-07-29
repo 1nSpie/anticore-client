@@ -87,13 +87,13 @@ export default function NavbarHeroSection({ id }: { id: string }) {
             {/* Меню навигации */}
             <div className="flex w-2/3 gap-12 justify-center">
               {navigationLinks.map((el, i) => (
-                <a
+                <Link
                   key={i}
                   href={el.link}
                   className="text-xl font-bold text-white hover:text-orangeDefault hover:underline hover:decoration-2 hover:underline-offset-8"
                 >
                   {el.label}
-                </a>
+                </Link>
               ))}
             </div>
           </nav>
