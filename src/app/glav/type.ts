@@ -64,10 +64,10 @@ export type ServiceDescriptions = {
 export type ContactMethod = 'telegram' | 'whatsapp' | 'phone';
 
 export type AutoPriceFormData = {
-  brand: string;
-  model: string;
-  customBrand: string;
-  isNotAuto: boolean;
+  brand?: string;
+  model?: string;
+  customBrand?: string;
+  isNotAuto?: boolean;
   name: string;
   phone: string;
   contactMethod: ContactMethod;

@@ -30,22 +30,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isWorkYandexMetrics = process.env.USE_YANDEX_METRICS === 'true';
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" sizes="any" />
         <meta name="yandex-verification" content="f4f1e7aae28f23bb" />
         <meta name="yandex-verification" content="4b4e2a9d98dba841" />
+        <meta name="google-site-verification" content="UQ7pCkrtwsBXJAya8CbV4kDqlryAa_Lq2rc-pGQDE9Y" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         {/* Yandex.Metrika counter */}
-        <Script
-          id="yandex-metrika"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
+        {isWorkYandexMetrics ? (
+          <>
+            <Script
+              id="yandex-metrika"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
               (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
               m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
               (window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=103518836", "ym");
@@ -59,13 +63,15 @@ export default function RootLayout({
                 ecommerce: "dataLayer"
               });
             `,
-          }}
-        />
-        <noscript>
-          <div style={{ position: "absolute", left: "-9999px" }}>
-            <img src="https://mc.yandex.ru/watch/103518836" alt="" />
-          </div>
-        </noscript>
+              }}
+            />
+            <noscript>
+              <div style={{ position: "absolute", left: "-9999px" }}>
+                <img src="https://mc.yandex.ru/watch/103518836" alt="" />
+              </div>
+            </noscript>
+          </>
+        ): <></>}
         {/* /Yandex.Metrika counter */}
         <ThemeProvider
           attribute="class"

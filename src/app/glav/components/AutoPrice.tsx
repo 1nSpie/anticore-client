@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
   SelectContent,
@@ -18,7 +19,6 @@ import {
   Car,
   ServiceItem,
   ServiceDescriptions,
-  AutoPriceFormData,
   AutoPriceProps,
 } from "../type";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,10 +35,13 @@ import { Button } from "src/shadcn/button";
 import { MessageCircle, Phone, Send, Info } from "lucide-react";
 import Link from "next/link";
 import { telegramApiClient } from "src/components/telegram/api";
+import { autoPriceFormSchema, type AutoPriceFormData } from "src/lib/validations";
+import { toast } from "sonner";
 
 export default function AutoPrice({ id }: AutoPriceProps) {
-  const { register, handleSubmit, watch, control, setValue } =
+  const { register, handleSubmit, watch, control, setValue, formState: { errors } } =
     useForm<AutoPriceFormData>({
+      resolver: zodResolver(autoPriceFormSchema),
       defaultValues: {
         brand: "",
         model: "",
@@ -111,8 +114,18 @@ export default function AutoPrice({ id }: AutoPriceProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("isNotAuto")]);
 
-  const onSubmit = (data: AutoPriceFormData) => {
-    telegramApiClient.sendFullForm(data);
+  const onSubmit = async (data: AutoPriceFormData) => {
+    try {
+      await telegramApiClient.sendFullForm(data);
+      toast.success("Ваша заявка отправлена!", {
+        description: "Менеджер перезвонит вам в ближайшее время",
+      });
+      setIsContactModalOpen(false);
+    } catch (error) {
+      toast.error("Ошибка отправки!", {
+        description: error instanceof Error ? error.message : "Повторите попытку позже",
+      });
+    }
   };
 
   const serviceDescriptions: ServiceDescriptions = {
@@ -288,7 +301,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       />
                     </div>
 
-                    {watch("brand") && (
+{watch("brand") && (
                       <div>
                         <label
                           htmlFor="model-select"
@@ -321,6 +334,11 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                             </Select>
                           )}
                         />
+                        {errors.model && (
+                          <p className="text-red-500 text-sm">
+                            {errors.model.message}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

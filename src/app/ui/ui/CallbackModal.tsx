@@ -15,9 +15,12 @@ import { Input } from "src/shadcn/input";
 import { Label } from "src/shadcn/label";
 import { Textarea } from "src/shadcn/textarea";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { telegramApiClient } from "src/components/telegram/api";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { callbackFormSchema, type CallbackFormData } from "src/lib/validations";
 
 interface CallbackModalProps {
   trigger?: React.ReactNode; // любая кнопка или элемент
@@ -32,41 +35,45 @@ export function CallbackModal({
 }: CallbackModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathName = usePathname();
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    message: "",
-    href: pathName,
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CallbackFormData>({
+    resolver: zodResolver(callbackFormSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      message: "",
+      href: pathName,
+    },
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    telegramApiClient
-      .sendCallbackForm(formData)
-      .then(() =>
-        toast.success("Ваша заявка отправлена!", {
-          description: "Менеджер перезвонит вам в ближайшее время",
-        })
-      )
-      .catch(() =>
-        toast.error("Упс, что-то пошло не так!", {
-          description: "Повторите позже или свяжитесь с нами напрямую",
-          action: {
-            label: "Позвонить",
-            onClick: () => {
-              window.location.href = `tel:${89932456882}`;
-            },
+  const onSubmit = async (data: CallbackFormData) => {
+    try {
+      await telegramApiClient.sendCallbackForm(data);
+      toast.success("Ваша заявка отправлена!", {
+        description: "Менеджер перезвонит вам в ближайшее время",
+      });
+      reset();
+      if (setView) {
+        setView(false);
+      } else {
+        setIsOpen(false);
+      }
+    } catch (error) {
+      toast.error("Упс, что-то пошло не так!", {
+        description: error instanceof Error ? error.message : "Повторите позже или свяжитесь с нами напрямую",
+        action: {
+          label: "Позвонить",
+          onClick: () => {
+            window.location.href = `tel:${89932456882}`;
           },
-        })
-      );
-    setIsOpen(false);
+        },
+      });
+    }
   };
 
   return (
@@ -85,20 +92,22 @@ export function CallbackModal({
             минут
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">
               Ваше имя
             </Label>
             <Input
               id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
+              {...register("name")}
               placeholder="Введите ваше имя"
-              className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-              required
+              className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
+                errors.name ? "border-red-500" : ""
+              }`}
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name.message}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone" className="text-gray-700 dark:text-gray-200">
@@ -106,14 +115,16 @@ export function CallbackModal({
             </Label>
             <Input
               id="phone"
-              name="phone"
               type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
+              {...register("phone")}
               placeholder="+7 (___) ___-__-__"
-              className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-              required
+              className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
+                errors.phone ? "border-red-500" : ""
+              }`}
             />
+            {errors.phone && (
+              <p className="text-red-500 text-sm">{errors.phone.message}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label
@@ -124,13 +135,16 @@ export function CallbackModal({
             </Label>
             <Textarea
               id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
+              {...register("message")}
               placeholder="Расскажите о вашем автомобиле или задайте вопрос"
-              className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 resize-none"
+              className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 resize-none ${
+                errors.message ? "border-red-500" : ""
+              }`}
               rows={3}
             />
+            {errors.message && (
+              <p className="text-red-500 text-sm">{errors.message.message}</p>
+            )}
           </div>
           <DialogFooter className="pt-4">
             <Button
