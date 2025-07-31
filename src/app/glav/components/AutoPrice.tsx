@@ -259,7 +259,13 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         id="custom-brand"
                         placeholder="BMW"
                         {...register("customBrand")}
+                        className={errors.customBrand ? "border-red-500" : ""}
                       />
+                      {errors.customBrand && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.customBrand.message}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -405,8 +411,14 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         <Input
                           id="modal-name"
                           placeholder="Введите ваше имя"
-                          {...register("name", { required: true })}
+                          {...register("name")}
+                          className={errors.name ? "border-red-500" : ""}
                         />
+                        {errors.name && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.name.message}
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col space-y-1.5">
                         <label
@@ -418,8 +430,14 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         <Input
                           id="modal-phone"
                           placeholder="+7 (999) 999-99-99"
-                          {...register("phone", { required: true })}
+                          {...register("phone")}
+                          className={errors.phone ? "border-red-500" : ""}
                         />
+                        {errors.phone && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.phone.message}
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col space-y-3">
                         <label className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -479,6 +497,11 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                             </RadioGroup>
                           )}
                         />
+                        {errors.contactMethod && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.contactMethod.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <DialogFooter>
@@ -510,8 +533,6 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                 </Dialog>
               </div>
             </form>
-
-            {/* Показываем цену, если выбрана модель */}
           </div>
         </div>
 

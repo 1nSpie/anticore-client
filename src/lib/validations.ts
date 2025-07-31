@@ -45,11 +45,9 @@ export const autoPriceFormSchema = z.object({
   phone: phoneSchema,
   contactMethod: contactMethodSchema,
 }).refine((data) => {
-  // If not auto, custom brand is required
   if (data.isNotAuto) {
     return data.customBrand && data.customBrand.trim().length > 0;
   }
-  // If auto, brand and model are required
   return data.brand && data.model && data.brand.trim().length > 0 && data.model.trim().length > 0;
 }, {
   message: 'Заполните все обязательные поля',
