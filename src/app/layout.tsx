@@ -11,7 +11,7 @@ import { DelayedModal } from "@/components/DelayedModal";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "AvanCore",
+  title: "АванКор",
   description: "Защити свой автомобиль от коррозии",
 };
 
@@ -30,14 +30,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isWorkYandexMetrics = process.env.USE_YANDEX_METRICS === 'true';
+  const isWorkYandexMetrics = process.env.USE_YANDEX_METRICS === "true";
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.svg" sizes="any" />
+        <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/favicon-180x180.png" />
         <meta name="yandex-verification" content="f4f1e7aae28f23bb" />
         <meta name="yandex-verification" content="4b4e2a9d98dba841" />
-        <meta name="google-site-verification" content="UQ7pCkrtwsBXJAya8CbV4kDqlryAa_Lq2rc-pGQDE9Y" />
+        <meta
+          name="google-site-verification"
+          content="UQ7pCkrtwsBXJAya8CbV4kDqlryAa_Lq2rc-pGQDE9Y"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
@@ -71,7 +76,9 @@ export default function RootLayout({
               </div>
             </noscript>
           </>
-        ): <></>}
+        ) : (
+          <></>
+        )}
         {/* /Yandex.Metrika counter */}
         <ThemeProvider
           attribute="class"
