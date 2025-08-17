@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useModal } from "@/lib/ModalContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -56,11 +57,17 @@ export default function AutoPrice({ id }: AutoPriceProps) {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
   const [viewPrice, setViewPrice] = useState<Car | null>(null);
+  const { openModal, closeModal, isModalOpen, canOpenModal } = useModal();
+  
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(
     null
   );
-  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  
+  const SERVICE_MODAL_ID = "service-modal";
+  const CONTACT_MODAL_ID = "contact-modal";
+  
+  const isServiceModalOpen = isModalOpen(SERVICE_MODAL_ID);
+  const isContactModalOpen = isModalOpen(CONTACT_MODAL_ID);
 
   const isNotAuto = watch("isNotAuto");
 
@@ -120,7 +127,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
       toast.success("Ваша заявка отправлена!", {
         description: "Менеджер перезвонит вам в ближайшее время",
       });
-      setIsContactModalOpen(false);
+      closeModal(CONTACT_MODAL_ID);
     } catch (error) {
       toast.error("Ошибка отправки!", {
         description: error instanceof Error ? error.message : "Повторите попытку позже",
@@ -187,18 +194,22 @@ export default function AutoPrice({ id }: AutoPriceProps) {
         "Финальная сборка и проверка",
       ],
       duration: "8 часов",
-      warranty: "3 лет",
+      warranty: "3 года",
     },
   };
 
   const handleServiceClick = (service: ServiceItem) => {
-    setSelectedService(service);
-    setIsServiceModalOpen(true);
+    if (canOpenModal(SERVICE_MODAL_ID)) {
+      setSelectedService(service);
+      openModal(SERVICE_MODAL_ID);
+    }
   };
 
   const handleOrderService = () => {
-    setIsServiceModalOpen(false);
-    setIsContactModalOpen(true);
+    closeModal(SERVICE_MODAL_ID);
+    if (canOpenModal(CONTACT_MODAL_ID)) {
+      openModal(CONTACT_MODAL_ID);
+    }
   };
 
   const canOpenContactModal = () => {
@@ -370,7 +381,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                 </div>
                 <Dialog
                   open={isContactModalOpen}
-                  onOpenChange={setIsContactModalOpen}
+                  onOpenChange={(open) => open ? openModal(CONTACT_MODAL_ID) : closeModal(CONTACT_MODAL_ID)}
                 >
                   <div className="mt-6 grid">
                     <DialogTrigger asChild>
@@ -379,8 +390,8 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         disabled={!canOpenContactModal()}
                         className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg bg-orangeDefault hover:bg-orangeDefaultHover focus:outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-md"
                         onClick={() => {
-                          if (canOpenContactModal()) {
-                            setIsContactModalOpen(true);
+                          if (canOpenContactModal() && canOpenModal(CONTACT_MODAL_ID)) {
+                            openModal(CONTACT_MODAL_ID);
                           }
                         }}
                       >
@@ -506,7 +517,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                     </div>
                     <DialogFooter>
                       <Button
-                        onClick={() => setIsContactModalOpen(false)}
+                        onClick={() => closeModal(CONTACT_MODAL_ID)}
                         variant="outline"
                         className="mr-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
@@ -517,7 +528,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         className="bg-orangeDefault hover:bg-orangeDefaultHover dark:bg-orangeDefault dark:hover:bg-orange-600 text-white"
                         onClick={handleSubmit((data) => {
                           onSubmit(data);
-                          setIsContactModalOpen(false);
+                          closeModal(CONTACT_MODAL_ID);
                         })}
                       >
                         Отправить заявку
@@ -625,7 +636,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
         </AnimatePresence>
 
         {/* Service Description Modal */}
-        <Dialog open={isServiceModalOpen} onOpenChange={setIsServiceModalOpen}>
+        <Dialog open={isServiceModalOpen} onOpenChange={(open) => open ? openModal(SERVICE_MODAL_ID) : closeModal(SERVICE_MODAL_ID)}>
           <DialogContent className="sm:max-w-[600px] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2 text-gray-900 dark:text-white">
@@ -694,9 +705,9 @@ export default function AutoPrice({ id }: AutoPriceProps) {
             </div>
             <DialogFooter>
               <Button
-                onClick={() => setIsServiceModalOpen(false)}
+                onClick={() => closeModal(SERVICE_MODAL_ID)}
                 variant="outline"
-                className="mr-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Закрыть
               </Button>
