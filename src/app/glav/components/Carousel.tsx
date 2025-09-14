@@ -144,7 +144,7 @@ export default function CarouselSection({ id }: Props) {
   );
 
   return (
-    <section id={id} className="bg-background1 dark:bg-backgroundDark">
+    <section id={id}>
       <div className="max-w-[85rem] mx-auto h-auto px-8 py-16 sm:px-6 lg:px-20 lg:py-20">
         {/* Заголовок */}
         <div className="rounded-xl text-black dark:text-white block max-w-[85rem] mx-auto text-center pb-10">
@@ -175,7 +175,7 @@ export default function CarouselSection({ id }: Props) {
                   key={key}
                   className="md:basis-1/2 lg:basis-1/3 w-full shrink-0"
                 >
-                  <div className="h-full border-orangeDefault border-2 p-2 dark:bg-backgroundDark1 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                  <div className="h-full border-[var(--color-teal)] border-2 p-2 dark:bg-backgroundDark1 rounded-2xl hover:shadow-lg transition-shadow duration-300">
                     <div className="flex flex-col items-center h-full text-center">
                       <Image
                         src={slide.img}
@@ -212,9 +212,9 @@ export default function CarouselSection({ id }: Props) {
                     itemType="svg"
                     src={el.icon}
                     alt={el.description}
-                    width={250}
-                    height={250}
-                    className="object-cover mb-2"
+                    width={10000}
+                    height={10000}
+                    className="w-[500%] object-cover mb-2"
                   />
                   {/* Текст */}
                 </div>

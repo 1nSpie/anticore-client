@@ -27,10 +27,10 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
   )?.price;
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10 rounded-3xl p-8 shadow-xl border border-orange-200/50 dark:border-orange-700/30">
+    <div className="bg-gradient-to-br from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10 rounded-3xl p-8 shadow-xl border border-[#007478]/30 dark:border-[#007478]/20">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-2xl mb-4">
-          <CalculatorIcon className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-[#007478]/10 dark:bg-[#007478]/20 rounded-2xl mb-4">
+          <CalculatorIcon className="w-8 h-8 text-[#007478] dark:text-[#00a2a6]" />
         </div>
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           Калькулятор стоимости
@@ -47,8 +47,8 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
             onClick={() => setSelectedCarType(priceItem.carType)}
             className={`p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
               selectedCarType === priceItem.carType
-                ? "border-orange-500 bg-orange-500 text-white shadow-lg"
-                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-orange-300 hover:shadow-md"
+                ? "border-[#007478] bg-[#007478] text-white shadow-lg"
+                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-[#007478] hover:shadow-md"
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -57,7 +57,7 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
             <div
               className={`text-xs mt-1 ${
                 selectedCarType === priceItem.carType
-                  ? "text-orange-100"
+                  ? "text-[#007478]/80"
                   : "text-gray-500 dark:text-gray-400"
               }`}
             >
@@ -74,10 +74,10 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="mt-6 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-orange-400 "
+          className="mt-6 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-[#007478] "
         >
           <div className="text-center">
-            <div className="text-3xl font-bold text-orangeDefault mb-2">
+            <div className="text-3xl font-bold text-[#007478] dark:text-[#00a2a6] mb-2">
               {typeof selectedPrice === "number"
                 ? `${selectedPrice.toLocaleString()} ₽`
                 : selectedPrice}
@@ -88,7 +88,7 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
             <div className="flex space-x-3">
               <Link
                 href="tel:+79932456882"
-                className="flex-1 bg-orangeDefault hover:bg-orangeDefaultHover text-white py-3 rounded-xl font-medium transition-colors text-center"
+                className="flex-1 bg-[#007478] hover:bg-[#005a5e] dark:hover:bg-[#009a9f] text-white py-3 rounded-xl font-medium transition-colors text-center"
               >
                 Записаться
               </Link>
@@ -122,14 +122,14 @@ const ProcessStep = ({
       transition={{ delay: index * 0.1 }}
       className={`flex items-start space-x-4 p-4 rounded-2xl transition-all duration-500 ${
         isActive
-          ? "bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-700/30 shadow-md"
+          ? "bg-[#007478]/10 dark:bg-[#007478]/20 border-2 border-[#007478]/30 dark:border-[#007478]/20 shadow-md"
           : "bg-gray-50 dark:bg-gray-800/50"
       }`}
     >
       <div
         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 ${
           isActive
-            ? "bg-orange-500 text-white"
+            ? "bg-[#007478] text-white"
             : "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
         }`}
       >
@@ -170,7 +170,7 @@ const ProcessVisualizer = ({ steps }: { steps: string[] }) => {
         <p className="text-gray-600 dark:text-gray-300">
           Пошаговая демонстрация работы
         </p>
-        <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-600 mx-auto rounded-full mt-4" />
+        <div className="w-24 h-1 bg-gradient-to-r from-[#007478] to-[#005a5e] mx-auto rounded-full mt-4" />
       </div>
 
       <div className="space-y-4">
@@ -192,7 +192,7 @@ const ProcessVisualizer = ({ steps }: { steps: string[] }) => {
               onClick={() => setActiveStep(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 index <= activeStep
-                  ? "bg-orange-500"
+                  ? "bg-[#007478]"
                   : "bg-gray-300 dark:bg-gray-600"
               }`}
             />
@@ -221,9 +221,9 @@ export default function ServiceDetailPage() {
   const getServiceColorScheme = (index: number) => {
     const schemes = [
       {
-        bg: "from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10",
-        border: "border-orange-200/50 dark:border-orange-700/30",
-        text: "text-orange-600 dark:text-orange-400",
+        bg: "from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10",
+        border: "border-[#007478]/30 dark:border-[#007478]/20",
+        text: "text-[#007478] dark:text-[#00a2a6]",
       },
       {
         bg: "from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10",
@@ -245,21 +245,25 @@ export default function ServiceDetailPage() {
   };
 
   return (
-    <div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="bg-gradient-to-br from-gray-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-900/20 min-h-screen"
-      >
-        {/* Hero Section */}
-        <section className="relative overflow-hidden py-20 lg:py-32">
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-100/30 to-transparent dark:from-orange-900/20 dark:to-transparent" />
-          <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-            <div className="w-64 h-64 bg-gradient-to-br from-orange-200/20 to-orange-300/20 dark:from-orange-700/20 dark:to-orange-600/20 rounded-full blur-3xl" />
-          </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen"
+    >
+      {/* Обернул декоративные элементы в контейнер с hidden overflow */}
+      <div className="relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
+          <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
+        </div>
+        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
+          <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
+        </div>
 
-          <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Hero Section */}
+        <section className="relative py-20 lg:py-32">
+          <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -268,7 +272,7 @@ export default function ServiceDetailPage() {
             >
               <button
                 onClick={() => router.back()}
-                className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors mb-8 px-4 py-2 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"
+                className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-[#007478] dark:hover:text-[#00a2a6] transition-colors mb-8 px-4 py-2 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"
               >
                 <ArrowLeftIcon className="w-5 h-5" />
                 <span>Назад к услугам</span>
@@ -279,15 +283,15 @@ export default function ServiceDetailPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-orange-100/80 dark:bg-orange-900/30 backdrop-blur-sm rounded-full mb-8"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#007478]/10 dark:bg-[#007478]/20 backdrop-blur-sm rounded-full mb-8"
               >
-                <CheckIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                <span className="text-sm font-semibold text-orange-800 dark:text-orange-300">
+                <CheckIcon className="w-5 h-5 text-[#007478] dark:text-[#00a2a6]" />
+                <span className="text-sm font-semibold text-[#007478] dark:text-[#00a2a6]">
                   Профессиональная защита
                 </span>
               </motion.div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-orange-700 dark:from-white dark:via-gray-100 dark:to-orange-300 bg-clip-text text-transparent leading-tight mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-[#007478] dark:from-white dark:via-gray-100 dark:to-[#00a2a6] bg-clip-text text-transparent leading-tight mb-6">
                 {service.title}
               </h1>
               <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
@@ -311,7 +315,7 @@ export default function ServiceDetailPage() {
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                 Выберите пакет услуг
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-600 mx-auto rounded-full mb-6" />
+              <div className="w-24 h-1 bg-gradient-to-r from-[#007478] to-[#005a5e] mx-auto rounded-full mb-6" />
               <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Каждый пакет разработан для определенных потребностей и бюджета
               </p>
@@ -326,7 +330,7 @@ export default function ServiceDetailPage() {
                     onClick={() => setSelectedServiceIndex(index)}
                     className={`relative p-6 rounded-3xl border-2 transition-all duration-300 text-left group overflow-hidden ${
                       selectedServiceIndex === index
-                        ? "border-orange-500 bg-orange-500 text-white shadow-xl transform scale-105"
+                        ? "border-[#007478] bg-[#007478] text-white shadow-xl transform scale-105"
                         : `bg-gradient-to-br ${colorScheme.bg} ${colorScheme.border} border text-gray-700 dark:text-gray-200 hover:shadow-lg hover:transform hover:scale-102`
                     }`}
                     whileHover={{
@@ -394,10 +398,10 @@ export default function ServiceDetailPage() {
             </div>
           </div>
         </section>
+      </div>
 
-        {/* Bottom CTA Section */}
-        <FeedbackLine />
-      </motion.div>
-    </div>
+      {/* Bottom CTA Section */}
+      <FeedbackLine />
+    </motion.div>
   );
 }

@@ -19,17 +19,17 @@ export default function YandexMap({ id }: Props) {
   return (
     <section
       id={id}
-      className="bg-[url(/fon.svg)] dark:bg-[url(/fondark2.svg)] py-16 lg:py-24"
+      className="py-16 lg:py-24"
     >
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent dark:from-orange-900/20 dark:to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#007478]/10 to-transparent dark:from-[#007478]/20 dark:to-transparent pointer-events-none" />
       
       <div className="max-w-[85rem] mx-auto relative">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 dark:bg-orange-900/30 rounded-full mb-4">
-            <MapPinIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-            <span className="text-sm font-medium text-orange-500 dark:text-orange-300">Наши офисы</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#007478]/10 dark:bg-[#007478]/20 rounded-full mb-4">
+            <MapPinIcon className="w-5 h-5 text-[#007478] dark:text-[#00a2a6]" />
+            <span className="text-sm font-medium text-[#007478] dark:text-[#00a2a6]">Наши офисы</span>
           </div>
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Найти нас легко!
@@ -43,16 +43,16 @@ export default function YandexMap({ id }: Props) {
           {/* Tabs Container */}
           <Tabs defaultValue="Жуковский" className="space-y-8">
             {/* Enhanced Tabs List */}
-            <TabsList className=" h-auto bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 grid grid-cols-2 w-full max-w-md mx-auto rounded-2xl shadow-lg p-1 border-0">
+            <TabsList className=" h-auto bg-gradient-to-r from-[#007478] to-[#005a5e] dark:from-[#009a9f] dark:to-[#007478] grid grid-cols-2 w-full max-w-md mx-auto rounded-2xl shadow-lg p-1 border-0">
               <TabsTrigger
                 value="Жуковский"
-                className="rounded-xl font-semibold text-white/90 hover:text-white hover:bg-white/20 data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-md transition-all duration-300 py-3"
+                className="rounded-xl font-semibold text-white/90 hover:text-white hover:bg-white/20 data-[state=active]:bg-white data-[state=active]:text-[#007478] data-[state=active]:shadow-md transition-all duration-300 py-3"
               >
                 Жуковский
               </TabsTrigger>
               <TabsTrigger
                 value="Коломна"
-                className="rounded-xl font-semibold text-white/90 hover:text-white hover:bg-white/20 data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-md transition-all duration-300 py-3"
+                className="rounded-xl font-semibold text-white/90 hover:text-white hover:bg-white/20 data-[state=active]:bg-white data-[state=active]:text-[#007478] data-[state=active]:shadow-md transition-all duration-300 py-3"
               >
                 Коломна
               </TabsTrigger>
@@ -65,9 +65,9 @@ export default function YandexMap({ id }: Props) {
             >
               {/* Enhanced Contact Info */}
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10 rounded-2xl p-6 border border-orange-200/50 dark:border-orange-700/30">
+                <div className="bg-gradient-to-r from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10 rounded-2xl p-6 border border-[#007478]/30 dark:border-[#007478]/20">
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#007478] rounded-xl flex items-center justify-center">
                       <MapPinIcon className="w-5 h-5 text-white" />
                     </div>
                     Офис Жуковский
@@ -75,8 +75,8 @@ export default function YandexMap({ id }: Props) {
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 p-4 bg-white/70 dark:bg-gray-700/50 rounded-xl hover:bg-white/90 dark:hover:bg-gray-700/70 transition-colors group">
-                      <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <HomeIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                      <div className="w-12 h-12 bg-[#007478]/10 dark:bg-[#007478]/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <HomeIcon className="w-6 h-6 text-[#007478] dark:text-[#00a2a6]" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Адрес</p>
@@ -92,7 +92,7 @@ export default function YandexMap({ id }: Props) {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Телефон</p>
-                        <Link href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                        <Link href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-[#007478] dark:hover:text-[#00a2a6] transition-colors">
                           +7 993 245 68 82
                         </Link>
                       </div>
@@ -151,9 +151,9 @@ export default function YandexMap({ id }: Props) {
             >
               {/* Enhanced Contact Info */}
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10 rounded-2xl p-6 border border-orange-200/50 dark:border-orange-700/30">
+                <div className="bg-gradient-to-r from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10 rounded-2xl p-6 border border-[#007478]/30 dark:border-[#007478]/20">
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#007478] rounded-xl flex items-center justify-center">
                       <MapPinIcon className="w-5 h-5 text-white" />
                     </div>
                     Офис Коломна
@@ -161,8 +161,8 @@ export default function YandexMap({ id }: Props) {
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 p-4 bg-white/70 dark:bg-gray-700/50 rounded-xl hover:bg-white/90 dark:hover:bg-gray-700/70 transition-colors group">
-                      <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <HomeIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                      <div className="w-12 h-12 bg-[#007478]/10 dark:bg-[#007478]/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <HomeIcon className="w-6 h-6 text-[#007478] dark:text-[#00a2a6]" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Адрес</p>
@@ -178,7 +178,7 @@ export default function YandexMap({ id }: Props) {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Телефон</p>
-                        <Link href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                        <Link href="tel:+79932456882" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-[#007478] dark:hover:text-[#00a2a6] transition-colors">
                           +7 993 245 68 82
                         </Link>
                       </div>

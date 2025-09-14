@@ -19,7 +19,7 @@ export default function MobileSidebarNavigation() {
       {/* Кнопка для открытия меню */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden text-orangeDefault p-2 rounded-md"
+        className="lg:hidden text-[var(--color-teal)] p-2 rounded-md"
       >
         <Bars3Icon className="h-8 w-8" />
       </button>
@@ -44,7 +44,7 @@ export default function MobileSidebarNavigation() {
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-orangeDefault hover:text-orangeDefaultHover transition-colors"
+                className="text-[var(--color-teal)] hover:text-[var(--color-teal-hover)] transition-colors"
                 aria-label="Закрыть меню"
               >
                 <XMarkIcon className="h-6 w-6" />
@@ -55,7 +55,7 @@ export default function MobileSidebarNavigation() {
                 <Link
                   key={index}
                   href={item.link}
-                  className="block text-lg font-medium text-gray-800 dark:text-gray-200 hover:text-orangeDefault transition-transform transform hover:translate-x-1"
+                  className="block text-lg font-medium text-gray-800 dark:text-gray-200 hover:text-[var(--color-teal)] transition-transform transform hover:translate-x-1"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}
@@ -73,7 +73,7 @@ export default function MobileSidebarNavigation() {
                     className="flex"
                   >
                     <div
-                      className="w-10 h-10 bg-orangeDefault hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                      className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                       title="WhatsApp"
                     >
                       <Image
@@ -92,7 +92,7 @@ export default function MobileSidebarNavigation() {
                     className="flex"
                   >
                     <div
-                      className="w-10 h-10 bg-orangeDefault hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                      className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                       title="Telegram"
                     >
                       <Image
@@ -110,7 +110,7 @@ export default function MobileSidebarNavigation() {
                     className="flex"
                   >
                     <div
-                      className="w-10 h-10 bg-orangeDefault hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                      className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                       title="VK"
                     >
                       <Image
@@ -128,7 +128,7 @@ export default function MobileSidebarNavigation() {
                     className="flex"
                   >
                     <div
-                      className="w-10 h-10 bg-orangeDefault hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                      className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                       title="RUTUBE"
                     >
                       <Image

@@ -31,10 +31,10 @@ export default function Garanty({ id }: Props) {
   ];
 
   return (
-    <section id={id} className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16 lg:py-20 overflow-hidden">
+    <section id={id} className="relative bg-transparent to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16 lg:py-20 overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 opacity-5 dark:opacity-10">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orangeDefault rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[var(--color-teal)] rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-blue-500 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
       </div>
       
@@ -48,14 +48,14 @@ export default function Garanty({ id }: Props) {
           transition={{ duration: 0.6 }}
         >
           <div className="flex justify-center items-center mb-4">
-            <ShieldCheckIcon className="w-8 h-8 text-orangeDefault mr-3" />
+            <ShieldCheckIcon className="w-8 h-8 text-[var(--color-teal)] mr-3" />
             <h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-gray-900 dark:text-white">
               Гарантия
             </h1>
-            <ShieldCheckIcon className="w-8 h-8 text-orangeDefault ml-3" />
+            <ShieldCheckIcon className="w-8 h-8 text-[var(--color-teal)] ml-3" />
           </div>
           <motion.div 
-            className="w-24 h-1 bg-gradient-to-r from-orangeDefault to-orange-600 mx-auto mt-4 rounded-full"
+            className="w-24 h-1 bg-gradient-to-r from-[var(--color-teal)] to-[var(--color-teal-hover)] mx-auto mt-4 rounded-full"
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
@@ -77,7 +77,7 @@ export default function Garanty({ id }: Props) {
             whileHover={{ scale: 1.02 }}
           >
             <div className="flex items-center mb-4">
-              <ClockIcon className="w-8 h-8 text-orangeDefault mr-3" />
+              <ClockIcon className="w-8 h-8 text-[var(--color-teal)] mr-3" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">До 5 лет</h3>
             </div>
             <p className="text-gray-600 dark:text-gray-400">
@@ -107,20 +107,20 @@ export default function Garanty({ id }: Props) {
         <div className="xl:hidden">
           <motion.button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex justify-between items-center w-full px-6 py-5 text-left text-lg sm:text-xl font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 focus:outline-none focus:ring-4 focus:ring-orangeDefault/30 transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700"
+            className="flex justify-between items-center w-full px-6 py-5 text-left text-lg sm:text-xl font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-900/20 focus:outline-none focus:ring-4 focus:ring-[var(--color-teal)]/30 transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700"
             aria-expanded={isOpen}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
           >
             <div className="flex items-center">
-              <ShieldCheckIcon className="w-6 h-6 text-orangeDefault mr-3" />
+              <ShieldCheckIcon className="w-6 h-6 text-[var(--color-teal)] mr-3" />
               <span>Подробнее о гарантии</span>
             </div>
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ChevronDownIcon className="w-6 h-6 text-orangeDefault" />
+              <ChevronDownIcon className="w-6 h-6 text-[var(--color-teal)]" />
             </motion.div>
           </motion.button>
           
@@ -138,7 +138,7 @@ export default function Garanty({ id }: Props) {
                   <div className="prose dark:prose-invert prose-sm sm:prose-base max-w-none">
                     <p className="text-center mb-6">
                       Что такое{" "}
-                      <strong className="text-orangeDefault">ГАРАНТИЯ</strong> и для чего это нужно?
+                      <strong className="text-[var(--color-teal)]">ГАРАНТИЯ</strong> и для чего это нужно?
                     </p>
                     <p className="mb-4">
                       Ни для кого не секрет, что в нашем мире нет ничего вечного.
@@ -146,7 +146,7 @@ export default function Garanty({ id }: Props) {
                       и качественными материалами, не исключение. Однако, существует способ
                       значительно продлить срок службы антикоррозийного покрытия и, как
                       следствие, кузова автомобиля. Способ этот –{" "}
-                      <strong className="text-orangeDefault">ГАРАНТИЯ.</strong>
+                      <strong className="text-[var(--color-teal)]">ГАРАНТИЯ.</strong>
                     </p>
                     <p className="mb-6">
                       ГАРАНТИЯ – комплекс мероприятий, направленных на поддержание целостности
@@ -154,7 +154,7 @@ export default function Garanty({ id }: Props) {
                       кузова, а также на своевременное устранение недостатков.
                     </p>
                     
-                    <h4 className="font-semibold text-orangeDefault mb-4">В гарантийное обслуживание входят:</h4>
+                    <h4 className="font-semibold text-[var(--color-teal)] mb-4">В гарантийное обслуживание входят:</h4>
                     <div className="space-y-3 mb-6">
                       {services.map((service, index) => (
                         <motion.div
@@ -164,7 +164,7 @@ export default function Garanty({ id }: Props) {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
-                          <span className="w-2 h-2 bg-orangeDefault rounded-full mt-2 flex-shrink-0"></span>
+                          <span className="w-2 h-2 bg-[var(--color-teal)] rounded-full mt-2 flex-shrink-0"></span>
                           <div>
                             <h5 className="font-medium text-gray-900 dark:text-white">{service.title}</h5>
                             <p className="text-sm text-gray-600 dark:text-gray-400">{service.description}</p>
@@ -180,9 +180,9 @@ export default function Garanty({ id }: Props) {
                       вашего авто на долгие годы.
                     </p>
                     
-                    <div className="bg-gradient-to-r from-orange-50 to-green-50 dark:from-orange-900/20 dark:to-green-900/20 p-4 rounded-lg mb-6">
+                    <div className="bg-gradient-to-r from-teal-50 to-green-50 dark:from-teal-900/20 dark:to-green-900/20 p-4 rounded-lg mb-6">
                       <p className="text-center font-medium">
-                        Мы предоставляем гарантию до <strong className="text-orangeDefault">5 лет</strong>, и абсолютно неважно,
+                        Мы предоставляем гарантию до <strong className="text-[var(--color-teal)]">5 лет</strong>, и абсолютно неважно,
                         что произошло с покрытием и по какой причине. Будь то ДТП, тяжёлое
                         бездорожье, механические повреждения или воздействие времени — мы обновим
                         покрытие{" "}
@@ -215,7 +215,7 @@ export default function Garanty({ id }: Props) {
             <div className="prose prose-lg dark:prose-invert max-w-none mx-auto text-gray-700 dark:text-gray-300 space-y-6 leading-relaxed">
               <p className="text-center text-xl mb-8">
                 Что такое{" "}
-                <strong className="text-orangeDefault">ГАРАНТИЯ</strong> и для чего это нужно?
+                <strong className="text-[var(--color-teal)]">ГАРАНТИЯ</strong> и для чего это нужно?
               </p>
               <p className="text-lg">
                 Ни для кого не секрет, что в нашем мире нет ничего вечного.
@@ -223,7 +223,7 @@ export default function Garanty({ id }: Props) {
                 и качественными материалами, не исключение. Однако, существует способ
                 значительно продлить срок службы антикоррозийного покрытия и, как
                 следствие, кузова автомобиля. Этот способ —{" "}
-                <strong className="text-orangeDefault">ГАРАНТИЯ.</strong>
+                <strong className="text-[var(--color-teal)]">ГАРАНТИЯ.</strong>
               </p>
               <p className="text-lg">
                 ГАРАНТИЯ – комплекс мероприятий, направленных на поддержание целостности
@@ -231,7 +231,7 @@ export default function Garanty({ id }: Props) {
                 кузова, а также на своевременное устранение недостатков.
               </p>
               
-              <h3 className="text-xl font-bold text-orangeDefault text-center mb-8">В гарантийное обслуживание входят:</h3>
+              <h3 className="text-xl font-bold text-[var(--color-teal)] text-center mb-8">В гарантийное обслуживание входят:</h3>
               
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 {services.map((service, index) => (
@@ -245,7 +245,7 @@ export default function Garanty({ id }: Props) {
                     whileHover={{ scale: 1.02 }}
                   >
                     <div className="flex items-start space-x-4">
-                      <span className="w-3 h-3 bg-orangeDefault rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="w-3 h-3 bg-[var(--color-teal)] rounded-full mt-2 flex-shrink-0"></span>
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{service.title}</h4>
                         <p className="text-gray-600 dark:text-gray-400">{service.description}</p>
@@ -263,7 +263,7 @@ export default function Garanty({ id }: Props) {
               </p>
               
               <motion.div 
-                className="bg-gradient-to-r from-orange-50 to-green-50 dark:from-orange-900/20 dark:to-green-900/20 rounded-2xl p-8 text-center"
+                className="bg-gradient-to-r from-teal-50 to-green-50 dark:from-teal-900/20 dark:to-green-900/20 rounded-2xl p-8 text-center"
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -271,7 +271,7 @@ export default function Garanty({ id }: Props) {
               >
                 <p className="text-xl font-medium mb-4">
                   Мы предоставляем гарантию до{" "}
-                  <strong className="text-orangeDefault text-2xl">5 лет</strong>, и абсолютно неважно,
+                  <strong className="text-[var(--color-teal)] text-2xl">5 лет</strong>, и абсолютно неважно,
                   что произошло с покрытием и по какой причине.
                 </p>
                 <p className="text-lg">

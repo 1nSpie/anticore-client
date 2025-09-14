@@ -42,7 +42,7 @@ export default function ServiceDetailTable({ service }: Props) {
               <AccordionItem value={carCategory}>
                 <AccordionTrigger className="text-lg font-semibold flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
                   {carCategory}
-                  <InformationCircleIcon className="w-5 h-5 text-orange-500" />
+                  <InformationCircleIcon className="w-5 h-5 text-[#007478]" />
                 </AccordionTrigger>
                 <AccordionContent className="bg-white dark:bg-gray-900 rounded-lg p-4 shadow-inner">
                   <div className="space-y-2">
@@ -84,9 +84,9 @@ export default function ServiceDetailTable({ service }: Props) {
           className="absolute left-0 top-1/2 -translate-y-1/2"
           onClick={() => history.back()}
         >
-          <ArrowLeftIcon color="orange" />
+          <ArrowLeftIcon color="#007478" />
         </Button>
-        <div className="text-center w-full border-b-2 border-orange-500">
+        <div className="text-center w-full border-b-2 border-[#007478]">
           {service.title}
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function ServiceDetailTable({ service }: Props) {
                     <div className="flex items-center justify-center gap-2">
                       <span>{complex.name}</span>
                       <Button variant="link" size="icon">
-                        <InformationCircleIcon className="w-5 h-5 text-orange-500" />
+                        <InformationCircleIcon className="w-5 h-5 text-[#007478]" />
                       </Button>
                     </div>
                   </HoverCardTrigger>
@@ -162,4 +162,3 @@ export default function ServiceDetailTable({ service }: Props) {
     </div>
   );
 }
-

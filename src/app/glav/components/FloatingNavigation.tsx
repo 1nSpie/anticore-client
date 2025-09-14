@@ -71,7 +71,7 @@ export default function FloatingNavigation() {
                 onClick={() => setIsExpanded(true)}
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-orangeDefault rounded-full flex items-center justify-center text-white text-sm">
+                  <div className="w-8 h-8 bg-[var(--color-teal)] rounded-full flex items-center justify-center text-white text-sm">
                     {currentItem?.icon || "📍"}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -103,7 +103,7 @@ export default function FloatingNavigation() {
                 <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Bars3Icon className="w-4 h-4 text-orangeDefault" />
+                      <Bars3Icon className="w-4 h-4 text-[var(--color-teal)]" />
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">
                         Навигация по странице
                       </span>
@@ -126,16 +126,16 @@ export default function FloatingNavigation() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.2, delay: index * 0.05 }}
                       onClick={(e) => scrollToSection(e, item.id)}
-                      className={`w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200 ${
+                      className={`w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all duration-200 ${
                         activeSection === item.id
-                          ? "bg-orange-50 dark:bg-orange-900/20 border-r-2 border-orangeDefault"
+                          ? "bg-teal-50 dark:bg-teal-900/20 border-r-2 border-[var(--color-teal)]"
                           : "border-r-2 border-transparent"
                       }`}
                     >
                       <div
                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                           activeSection === item.id
-                            ? "bg-orangeDefault text-white"
+                            ? "bg-[var(--color-teal)] text-white"
                             : "bg-gray-200 dark:bg-gray-600"
                         }`}
                       >
@@ -144,7 +144,7 @@ export default function FloatingNavigation() {
                       <span
                         className={`text-sm ${
                           activeSection === item.id
-                            ? "text-orangeDefault font-medium"
+                            ? "text-[var(--color-teal)] font-medium"
                             : "text-gray-700 dark:text-gray-300"
                         }`}
                       >
@@ -153,7 +153,7 @@ export default function FloatingNavigation() {
                       {activeSection === item.id && (
                         <motion.div
                           layoutId="activeIndicator"
-                          className="ml-auto w-2 h-2 bg-orangeDefault rounded-full"
+                          className="ml-auto w-2 h-2 bg-[var(--color-teal)] rounded-full"
                           transition={{
                             type: "spring",
                             stiffness: 300,
@@ -192,7 +192,7 @@ export default function FloatingNavigation() {
                 onClick={(e) => scrollToSection(e, item.id)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-xs transition-all duration-200 ${
                   activeSection === item.id
-                    ? "bg-orangeDefault text-white scale-110"
+                    ? "bg-[var(--color-teal)] text-white scale-110"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
                 title={item.label}

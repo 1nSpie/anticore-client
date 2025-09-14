@@ -25,10 +25,10 @@
   --color-backgroundDark1: #0c192b;
   --color-background: #fbfbfb;
   --color-background1: #f7f7f7;
-  --color-orangeDefault: #ff7f19;
-  --color-orangeDefaultHover: #e56a0f;
-  --color-orangeLight: #ff9142;
-  --color-orangeDark: #cc5200;
+  --color-orangeDefault: #007478;
+  --color-orangeDefaultHover: #005d61;
+  --color-orangeLight: #009ba0;
+  --color-orangeDark: #004346;
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -45,7 +45,7 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  --color-ring: #ff7f19;
+  --color-ring: #007478;
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);

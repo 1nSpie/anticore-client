@@ -24,7 +24,7 @@ export default function StepCard({ step, index = 0 }: StepCardProps) {
       transition={{ delay: index * 0.1, duration: 0.5 }}
     >
       {/* Step number */}
-      <div className="absolute top-3 right-3 w-8 h-8 bg-gradient-to-r from-orangeDefault to-orange-600 rounded-full flex items-center justify-center shadow-lg z-10">
+      <div className="absolute top-3 right-3 w-8 h-8 bg-gradient-to-r from-greenDefault to-greenDefaultHover rounded-full flex items-center justify-center shadow-lg z-10">
         <span className="text-white text-sm font-bold">{index + 1}</span>
       </div>
 
@@ -52,7 +52,7 @@ export default function StepCard({ step, index = 0 }: StepCardProps) {
         </p>
 
         {/* Bottom accent line */}
-        <div className="mt-4 h-1 bg-gradient-to-r from-orangeDefault to-green-500 rounded-full w-16 mx-auto" />
+        <div className="mt-4 h-1 bg-gradient-to-r from-greenDefault to-green-500 rounded-full w-16 mx-auto" />
       </div>
     </motion.div>
   );

@@ -117,7 +117,7 @@ export default function PriceCardList({ id }: Props) {
         <h3 className="mt-4 text-lg text-black dark:text-white h-15">
           {product.name}
         </h3>
-        <div className="p-0.5 border-orangeDefault border-s-2">
+        <div className="p-0.5 border-[var(--color-teal)] border-s-2">
           <span className="">Например: </span>
           <span className="dark:text-gray-200 text-gray-800">
             {product.carlist}
@@ -126,37 +126,37 @@ export default function PriceCardList({ id }: Props) {
 
         <div className="mt-4 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800 dark:text-orangeDefault">
+            <span className="font-bold text-gray-800 dark:text-[var(--color-teal)]">
               Стандарт ML:
             </span>
             <span className="dark:text-white text-black">{product.ML}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800 dark:text-orangeDefault">
+            <span className="font-bold text-gray-800 dark:text-[var(--color-teal)]">
               Стандарт ML/Body:
             </span>
             <span className="dark:text-white text-black">{product.MLBody}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800 dark:text-orangeDefault">
+            <span className="font-bold text-gray-800 dark:text-[var(--color-teal)]">
               Комплекс ML:
             </span>
             <span className="dark:text-white text-black">{product.CML}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800 dark:text-orangeDefault">
+            <span className="font-bold text-gray-800 dark:text-[var(--color-teal)]">
               Комплекс ML/Body:
             </span>
             <span className="dark:text-white text-black">{product.CMLBody}</span>
           </div>
         </div>
-        <div className="lg:hidden block w-full border-2 mt-4 border-orangeDefault"></div>
+        <div className="lg:hidden block w-full border-2 mt-4 border-[var(--color-teal)]"></div>
       </motion.section>
     ));
   }
 
   return (
-    <div className="bg-background dark:bg-backgroundDark">
+    <div className="bg-transparent">
       <motion.div
         className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24  lg:px-8"
         initial={{ opacity: 0 }}

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +11,7 @@ import { PhoneIcon } from "@heroicons/react/24/solid";
 export default function FloatingContactButton() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleExpanded = () => {
-    setIsOpen(true);
+    setIsOpen((prev)=> !prev);
   };
 
   return (
@@ -18,7 +20,7 @@ export default function FloatingContactButton() {
         onClick={toggleExpanded}
         whileTap={{ scale: 0.9 }}
         whileHover={{ scale: 1.05 }}
-        className="relative p-2 bg-gradient-to-r from-orangeDefault to-orangeDefaultHover hover:from-orangeDefaultHover hover:to-orangeDefault rounded-full shadow-lg flex items-center justify-center group"
+        className="relative p-2 bg-gradient-to-r from-orangeDefault to-orangeDefaultHover hover:rom-orangeDefaultHover hover:to-orangeDefault rounded-full shadow-lg flex items-center justify-center group"
       >
         {/* Pulse effect */}
         <motion.div
@@ -43,7 +45,7 @@ export default function FloatingContactButton() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0"
-          onClick={() => setIsOpen(false)}
+          onClick={toggleExpanded}
         />
       )}
       <div
@@ -91,7 +93,7 @@ export default function FloatingContactButton() {
 
         <Link href="tel:+7 993 245 68 82" className="flex">
           <div
-            className="w-12 h-12 bg-orangeDefault hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+            className="w-12 h-12 hover:bg-orangeDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110 bg-orangeDefault"
             title="Call us"
           >
             <PhoneIcon className="h-8 w-8 text-white" />

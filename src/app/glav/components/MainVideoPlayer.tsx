@@ -12,8 +12,7 @@ export default function MainVideoPlayer() {
 
   if (videoError) {
     return (
-      <div className="bg-[url(/fon.svg)]  dark:bg-[url(/fondark2.svg)]">
-        <div className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-8 bg-[url(/fon.svg)]  dark:bg-[url(/fondark2.svg)]">
+        <div className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-8 bg-transparent">
           <div className=" rounded-lg p-8 text-center">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
               Видео временно недоступно
@@ -23,18 +22,17 @@ export default function MainVideoPlayer() {
             </p>
             <button
               onClick={() => setVideoError(false)}
-              className="bg-orangeDefault hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors"
+              className=" bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg transition-colors"
             >
               Попробовать снова
             </button>
           </div>
         </div>
-      </div>
     );
   }
 
   return (
-    <div className="bg-[url(/fon.svg)]  dark:bg-[url(/fondark2.svg)]">
+    <div className="bg-transparent">
       <section className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-8 ">
         {/* Section Header */}
         <div className="text-center mb-12">

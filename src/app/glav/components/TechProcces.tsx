@@ -66,35 +66,35 @@ export const stepsData: Step[] = [
 
 export default function TechProcces({ id }: Props) {
   return (
-    <section id={id} className="bg-gradient-to-br from-background1 via-background to-background1 dark:from-backgroundDark dark:via-backgroundDark1 dark:to-backgroundDark relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-r from-orangeDefault/5 to-greenDefault/5 pointer-events-none"></div>
-      
-      <div className="max-w-[85rem] mx-auto py-16 px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id={id} className="relative py-16 lg:py-20 overflow-hidden bg-transparent">
+
+      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Enhanced title section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl lg:leading-tight text-black dark:text-white mb-6 tracking-tight">
             Этапы работ
           </h1>
-          <div className="w-24 h-1 bg-gradient-to-r from-orangeDefault to-greenDefault mx-auto rounded-full mb-4"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-greenDefaultHover to-greenDefault mx-auto rounded-full mb-4"></div>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Профессиональный подход к каждому этапу обработки автомобиля
           </p>
         </div>
-        
+
         {/* Enhanced grid layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
           {stepsData.map((step, idx) => (
             <StepCard key={idx} step={step} index={idx} />
           ))}
         </div>
-        
+
         {/* Bottom decoration */}
         <div className="mt-16 text-center">
-          <div className="inline-flex items-center space-x-2 text-orangeDefault font-medium">
-            <div className="w-8 h-0.5 bg-orangeDefault rounded-full"></div>
-            <span className="text-sm uppercase tracking-wide">Качество гарантировано</span>
-            <div className="w-8 h-0.5 bg-orangeDefault rounded-full"></div>
+          <div className="inline-flex items-center space-x-2 text-greenDefaultHover font-medium">
+            <div className="w-8 h-0.5 bg-greenDefaultHover rounded-full"></div>
+            <span className="text-sm uppercase tracking-wide">
+              Качество гарантировано
+            </span>
+            <div className="w-8 h-0.5 bg-greenDefaultHover rounded-full"></div>
           </div>
         </div>
       </div>

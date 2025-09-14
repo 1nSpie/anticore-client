@@ -6,7 +6,14 @@ export default function PrivacyPolicyPage() {
   const SITE_LINK = process.env.SITE_LINK || "http://localhost:3000";
   return (
     <>
-      <div className="min-h-screen bg-background dark:bg-backgroundDark py-12 px-6">
+      <div className="min-h-screen bg-background dark:bg-backgroundDark py-12 px-6 pt-30">
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
+      <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
+        <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
+      </div>
+      <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
+        <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
+      </div>
         <div className="max-w-4xl mx-auto bg-background1 dark:bg-backgroundDark1 shadow-lg rounded-lg p-8">
           <h1 className="text-3xl font-bold text-center text-black dark:text-white mb-6">
             Политика в отношении обработки персональных данных
@@ -34,7 +41,7 @@ export default function PrivacyPolicyPage() {
               Настоящая политика Оператора в отношении обработки персональных
               данных (далее — Политика) применяется ко всей информации, которую
               Оператор может получить о посетителях веб-сайта{" "}
-              <Link href={SITE_LINK} className="text-orange hover:underline">
+              <Link href={SITE_LINK} className="text-[#007478] hover:underline">
                  Аванантикор.рф
               </Link>
               .
@@ -65,7 +72,7 @@ export default function PrivacyPolicyPage() {
                 информационных материалов, а также программ для ЭВМ и баз
                 данных, обеспечивающих их доступность в сети интернет по
                 сетевому адресу{" "}
-                <Link href={SITE_LINK} className="text-orange hover:underline">
+                <Link href={SITE_LINK} className="text-[#007478] hover:underline">
                 Аванантикор.рф
                 </Link>
                 .
@@ -105,14 +112,14 @@ export default function PrivacyPolicyPage() {
                 <strong>Персональные данные</strong> — любая информация,
                 относящаяся прямо или косвенно к определенному или определяемому
                 Пользователю веб-сайта{" "}
-                <Link href={SITE_LINK} className="text-orange hover:underline">
+                <Link href={SITE_LINK} className="text-[#007478] hover:underline">
                   Аванантикор.рф
                 </Link>
                 .
               </li>
               <li>
                 <strong>Пользователь</strong> — любой посетитель веб-сайта{" "}
-                <Link href={SITE_LINK} className="text-orange hover:underline">
+                <Link href={SITE_LINK} className="text-[#007478] hover:underline">
                    Аванантикор.рф
                 </Link>
                 .
@@ -472,12 +479,12 @@ export default function PrivacyPolicyPage() {
               Пользователь может получить разъяснения, обратившись по адресу{" "}
               <Link
                 href="mailto:aleksandrzagornyj367@gmail.com"
-                className="text-orange hover:underline"
+                className="text-[#007478] hover:underline"
               >
                 aleksandrzagornyj367@gmail.com
               </Link>
               . Актуальная версия Политики доступна по адресу{" "}
-              <Link href="/pk" className="text-orange hover:underline">
+              <Link href="/pk" className="text-[#007478] hover:underline">
                 Аванантикор.рф/pk
               </Link>
               .
@@ -487,7 +494,7 @@ export default function PrivacyPolicyPage() {
           <div className="text-center mt-8">
             <Link
               href="/"
-              className="inline-flex items-center justify-center px-8 py-4 bg-orangeDefault text-white font-semibold rounded-2xl border-2 hover:bg-orangeDefaultHover transition-all duration-200"
+              className="inline-flex items-center justify-center px-8 py-4 bg-[#007478] text-white font-semibold rounded-2xl border-2 hover:bg-[#005a5e] dark:hover:bg-[#009a9f] transition-all duration-200"
             >
               Вернуться на главную
             </Link>

@@ -81,13 +81,13 @@ export default function Sidebar() {
                 onClick={(e) => handleScroll(e, id)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-orangeDefault text-white shadow-md"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700"
+                    ? "bg-[var(--color-teal)] text-white shadow-md"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <span
                   className={`text-lg ${
-                    isActive ? "text-white" : "text-orangeDefault"
+                    isActive ? "text-white" : "text-[var(--color-teal)]"
                   }`}
                 >
                   {item.icon}
@@ -102,7 +102,7 @@ export default function Sidebar() {
       </ul>
 
       {/* Декоративная линия */}
-      <div className="mt-6 h-px bg-gradient-to-r from-transparent via-orange-300 to-transparent dark:via-orange-600"></div>
+      <div className="mt-6 h-px bg-gradient-to-r from-transparent via-teal-300 to-transparent dark:via-teal-600"></div>
       <p className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
         Следуйте за нами на странице
       </p>

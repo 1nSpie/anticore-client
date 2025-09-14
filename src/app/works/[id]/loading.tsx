@@ -90,7 +90,7 @@ export default function Loading() {
             </div>
 
             {/* CTA Skeleton */}
-            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-6">
+            <div className="bg-[#007478]/10 dark:bg-[#007478]/20 rounded-lg p-6">
               <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse"></div>
               <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-4 animate-pulse"></div>
               <div className="space-y-3">

@@ -6,7 +6,7 @@ import { CallbackModal } from "./CallbackModal";
 
 export default function FeedbackLine() {
   return (
-    <section className="py-20 bg-gradient-to-r from-orange-500 to-orange-600 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-r from-[#007478] to-[#005a5e] relative overflow-hidden">
       <div className="absolute inset-0 bg-black/10" />
       <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
         <motion.div
@@ -18,14 +18,14 @@ export default function FeedbackLine() {
           <h3 className="text-3xl lg:text-4xl font-bold text-white mb-6">
             Готовы защитить свой автомобиль?
           </h3>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-[#00a2a6] mb-8 max-w-2xl mx-auto">
             Свяжитесь с нами для получения персональной консультации и расчета
             стоимости
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <CallbackModal
               trigger={
-                <Button className="h-[60px] inline-flex items-center justify-center px-8 py-4 bg-white text-orange-600 hover:bg-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                <Button className="h-[60px] inline-flex items-center justify-center px-8 py-4 bg-white text-[#007478] hover:bg-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                   <svg
                     className="w-5 h-5 mr-2"
                     fill="currentColor"

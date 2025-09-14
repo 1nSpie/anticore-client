@@ -149,7 +149,7 @@ export function CallbackModal({
           <DialogFooter className="pt-4">
             <Button
               type="submit"
-              className="w-full bg-orangeDefault hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+              className="w-full bg-[#007478] hover:bg-[#005a5e] dark:bg-[#009a9f] dark:hover:bg-[#007478] text-white shadow-md hover:shadow-lg transition-all duration-200"
             >
               Отправить заявку
             </Button>

@@ -28,11 +28,11 @@ const getServiceIcon = (id: number) => {
 const getColorScheme = (id: number) => {
   const schemes = [
     {
-      bg: "from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10",
-      border: "border-orange-200/50 dark:border-orange-700/30",
-      icon: "bg-orange-100 dark:bg-orange-900/30",
-      iconColor: "text-orange-600 dark:text-orange-400",
-      hover: "hover:from-orange-100 hover:to-orange-150 dark:hover:from-orange-900/30 dark:hover:to-orange-800/20"
+      bg: "from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10",
+      border: "border-[#007478]/30 dark:border-[#007478]/20",
+      icon: "bg-[#007478]/10 dark:bg-[#007478]/20",
+      iconColor: "text-[#007478] dark:text-[#00a2a6]",
+      hover: "hover:from-[#007478]/10 hover:to-[#007478]/20 dark:hover:from-[#007478]/20 dark:hover:to-[#007478]/10"
     },
     {
       bg: "from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10",
@@ -58,7 +58,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
 
   return (
     <Link href={`/price/${service.id}`} className="block group">
-      <div className={`relative overflow-hidden bg-gradient-to-br ${colorScheme.bg} ${colorScheme.hover} border ${colorScheme.border} rounded-3xl p-8 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 dark:hover:shadow-orange-400/5 transform hover:-translate-y-2 cursor-pointer h-full`}>
+      <div className={`relative overflow-hidden bg-gradient-to-br ${colorScheme.bg} ${colorScheme.hover} border ${colorScheme.border} rounded-3xl p-8 transition-all duration-300 hover:shadow-xl hover:shadow-[#007478]/10 dark:hover:shadow-[#007478]/5 transform hover:-translate-y-2 cursor-pointer h-full`}>
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent rounded-full -translate-y-12 translate-x-12" />
         
@@ -79,17 +79,17 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           
           {/* CTA */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+            <span className="text-sm font-semibold text-[#007478] dark:text-[#00a2a6]">
               Подробнее
             </span>
-            <div className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-700/80 rounded-full group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+            <div className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-700/80 rounded-full group-hover:bg-[#007478] group-hover:text-white transition-all duration-300">
               <ArrowRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300" />
             </div>
           </div>
         </div>
         
         {/* Hover effect overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/0 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#007478]/0 via-[#007478]/0 to-[#007478]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
       </div>
     </Link>
   )

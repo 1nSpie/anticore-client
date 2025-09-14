@@ -4,12 +4,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../lib/ThemeProvider";
 import Footer from "../components/Footer";
-import ClientOnly from "./ui/ui/ClientOnly";
 import Navigation from "../components/Navigation";
 import { Toaster } from "src/shadcn/sonner";
 import { DelayedModal } from "@/components/DelayedModal";
 import { ModalProvider } from "../lib/ModalContext";
 import Script from "next/script";
+import FloatingContactButton from "./ui/ui/FloatingContactButton";
 
 export const metadata: Metadata = {
   title: "АванКор",
@@ -135,7 +135,7 @@ export default function RootLayout({
             <DelayedModal />
             <Navigation />
             {children}
-            <ClientOnly />
+            <FloatingContactButton />
             <Footer />
             <Toaster />
           </ModalProvider>
