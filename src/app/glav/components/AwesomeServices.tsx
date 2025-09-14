@@ -49,7 +49,7 @@ export default function AwesomeServices({ id }: { id: string }) {
       ></div>
 
       {/* Main Content */}
-      <div className="relative z-20 mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-20 mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center pt-30">
         {/* Service Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

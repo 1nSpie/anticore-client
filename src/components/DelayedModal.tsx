@@ -21,7 +21,7 @@ export function DelayedModal() {
           openModal(MODAL_ID);
           localStorage.setItem(MODAL_SEEN_KEY, String(now));
         }
-      }, 5000);
+      }, 30000);
 
       return () => clearTimeout(timer);
     }

@@ -234,7 +234,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
       {/* Декоративные элементы для фона */}
 
       <div className="max-w-[85rem] px-4 sm:px-6 lg:px-8 mx-auto relative">
-        <div className="grid md:grid-cols-2 items-center gap-12">
+        <div className="grid md:grid-cols-2 items-center gap-12 ">
           {/* Left side */}
           <div>
             <h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl lg:leading-tight text-black dark:text-white">
