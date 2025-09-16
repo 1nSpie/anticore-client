@@ -55,7 +55,7 @@ export default function Navigation() {
   }
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-100 flex items-center justify-between p-6 lg:p-8 bg-transparent">
+    <header className="absolute top-0 left-0 right-0 z-100 flex items-center justify-between pt-6 pl-6 pr-6 bg-transparent">
       {renderLogo()}
       <div className="flex items-center gap-6">
         <Link

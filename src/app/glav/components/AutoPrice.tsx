@@ -231,7 +231,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
       id={id}
       className="relative py-16 lg:py-20 overflow-hidden bg-transparent via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20"
     >
-      {/* Декоративные элементы для фона */}
+
 
       <div className="max-w-[85rem] px-4 sm:px-6 lg:px-8 mx-auto relative">
         <div className="grid md:grid-cols-2 items-center gap-12 ">

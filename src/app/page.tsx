@@ -103,7 +103,7 @@ export default function GlavPage() {
             </div>
           </div>
 
-          <div className="py-16 lg:py-20">
+          <div className="py-4 lg:py-10">
             <PriceCardList id="prices" />
           </div>
 
@@ -118,7 +118,6 @@ export default function GlavPage() {
               </Marquee>
             </div>
           </div>
-
             <YandexMap id="map" />
         </main>
       </div>
