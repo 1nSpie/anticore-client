@@ -82,7 +82,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
 
   const svgIcon = (
     <svg
-      className="shrink-0 mt-0.5 size-5 text-[var(--color-teal)]"
+      className="shrink-0 mt-0.5 size-5 text-greenDefault"
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -264,7 +264,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
           {/* Right side - Form */}
           <div className="relative">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col border border-[var(--color-teal)] dark:border-[var(--color-teal)] rounded-xl p-4 sm:p-6 lg:p-10 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white dark:bg-gray-800">
+              <div className="flex flex-col border border-greenDefault dark:border-greenDefault rounded-xl p-4 sm:p-6 lg:p-10 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white dark:bg-gray-800">
                 <h2 className="text-xl font-semibold text-black dark:text-neutral-200">
                   Узнайте стоимость обработки
                 </h2>
@@ -390,7 +390,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       onCheckedChange={(checked) =>
                         setValue("isNotAuto", !!checked)
                       }
-                      className="data-[state=checked]:bg-[var(--color-teal)] border-[var(--color-teal)]"
+                      className="data-[state=checked]:bg-greenDefault border-greenDefault"
                     />
                     <label
                       htmlFor="triggerNotAuto"
@@ -413,7 +413,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       <button
                         type="button"
                         disabled={!canOpenContactModal()}
-                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 focus:outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-md shadow-[var(--color-teal)]/20"
+                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 focus:outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-md shadow-greenDefault/20"
                         onClick={() => {
                           if (
                             canOpenContactModal() &&
@@ -503,7 +503,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                                 <RadioGroupItem
                                   value="telegram"
                                   id="contact-telegram"
-                                  className="text-[var(--color-teal)] dark:text-[var(--color-teal)] border-gray-300 dark:border-gray-600"
+                                  className="text-greenDefault dark:text-greenDefault border-gray-300 dark:border-gray-600"
                                 />
                                 <label
                                   htmlFor="contact-telegram"
@@ -517,7 +517,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                                 <RadioGroupItem
                                   value="whatsapp"
                                   id="contact-whatsapp"
-                                  className="text-[var(--color-teal)] dark:text-[var(--color-teal)] border-gray-300 dark:border-gray-600"
+                                  className="text-greenDefault dark:text-greenDefault border-gray-300 dark:border-gray-600"
                                 />
                                 <label
                                   htmlFor="contact-whatsapp"
@@ -531,13 +531,13 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                                 <RadioGroupItem
                                   value="phone"
                                   id="contact-phone"
-                                  className="text-[var(--color-teal)] dark:text-[var(--color-teal)] border-gray-300 dark:border-gray-600"
+                                  className="text-greenDefault dark:text-greenDefault border-gray-300 dark:border-gray-600"
                                 />
                                 <label
                                   htmlFor="contact-phone"
-                                  className="flex items-center space-x-2 text-sm cursor-pointer text-gray-900 dark:text-gray-100 hover:text-[var(--color-teal)] dark:hover:text-[var(--color-teal)] transition-colors"
+                                  className="flex items-center space-x-2 text-sm cursor-pointer text-gray-900 dark:text-gray-100 hover:text-greenDefault dark:hover:text-greenDefault transition-colors"
                                 >
-                                  <Phone className="w-4 h-4 text-[var(--color-teal)] dark:text-[var(--color-teal)]" />
+                                  <Phone className="w-4 h-4 text-greenDefault dark:text-greenDefault" />
                                   <span>Мобильный телефон</span>
                                 </label>
                               </div>
@@ -561,7 +561,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       </Button>
                       <Button
                         type="submit"
-                        className="bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] dark:bg-[var(--color-teal)] dark:hover:bg-[var(--color-teal-hover)] text-white"
+                        className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white"
                         onClick={handleSubmit((data) => {
                           onSubmit(data);
                           closeModal(CONTACT_MODAL_ID);
@@ -574,7 +574,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       Нажимая кнопку “Отправить заявку” Соглашаюсь с{" "}
                       <Link
                         href={"/pk"}
-                        className="underline text-[var(--color-teal)] dark:text-[var(--color-teal)] hover:text-[var(--color-teal-hover)] dark:hover:text-[var(--color-teal-hover)]"
+                        className="underline "
                       >
                         политикой конфиденциальности
                       </Link>
@@ -611,7 +611,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     Стоимость обработки
                   </h3>
-                  <p className="text-[var(--color-teal)] dark:text-[var(--color-teal)] font-medium">
+                  <p className="text-greenDefault dark:text-greenDefault font-medium">
                     {watch("brand")} {watch("model")}
                   </p>
                 </motion.div>
@@ -657,7 +657,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                             delay: 0.1 * index + 0.4,
                             type: "spring",
                           }}
-                          className="text-xl font-bold text-[var(--color-teal)] dark:text-[var(--color-teal)] mb-2"
+                          className="text-xl font-bold text-greenDefault dark:text-greenDefault mb-2"
                         >
                           {item.price} ₽
                         </motion.p>
@@ -698,7 +698,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                   <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
                     Длительность
                   </h4>
-                  <p className="text-[var(--color-teal)] dark:text-[var(--color-teal)] font-semibold">
+                  <p className="text-greenDefault dark:text-greenDefault font-semibold">
                     {selectedService &&
                       serviceDescriptions[selectedService.label]?.duration}
                   </p>
@@ -707,7 +707,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                   <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
                     Гарантия
                   </h4>
-                  <p className="text-[var(--color-teal)] dark:text-[var(--color-teal)] font-semibold">
+                  <p className="text-greenDefault dark:text-greenDefault font-semibold">
                     {selectedService &&
                       serviceDescriptions[selectedService.label]?.warranty}
                   </p>
@@ -726,7 +726,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                           key={index}
                           className="flex items-start space-x-2 text-sm text-gray-700 dark:text-gray-300"
                         >
-                          <span className="text-[var(--color-teal)] dark:text-[var(--color-teal)] mt-1">
+                          <span className="text-greenDefault dark:text-greenDefault mt-1">
                             •
                           </span>
                           <span>{item}</span>
@@ -741,7 +741,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
                     Стоимость:
                   </span>
-                  <span className="text-2xl font-bold text-[var(--color-teal)] dark:text-[var(--color-teal)]">
+                  <span className="text-2xl font-bold text-greenDefault dark:text-greenDefault">
                     {selectedService?.price} ₽
                   </span>
                 </div>
@@ -756,7 +756,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                 Закрыть
               </Button>
               <Button
-                className="bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] dark:bg-[var(--color-teal)] dark:hover:bg-[var(--color-teal-hover)] text-white"
+                className="bg-greenDefault hover:bg-greenDefaultHover dark:bg-greenDefault dark:hover:bg-greenDefaultHover text-white"
                 onClick={handleOrderService}
               >
                 Заказать услугу

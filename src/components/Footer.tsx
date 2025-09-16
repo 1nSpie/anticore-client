@@ -57,7 +57,7 @@ export default function Footer() {
             <li key={item.label}>
               <Link
                 href={item.link}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-[var(--color-teal)] dark:hover:text-teal-400 transition-colors"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-greenDefault dark:hover:text-teal-400 transition-colors"
               >
                 {item.label}
               </Link>
@@ -73,10 +73,10 @@ export default function Footer() {
         </h3>
         <ul className="space-y-4 text-sm text-gray-600 dark:text-gray-400">
           <li className="flex items-start">
-            <PhoneIcon className="w-5 h-5 mr-3 mt-0.5 text-[var(--color-teal)] flex-shrink-0" />
+            <PhoneIcon className="w-5 h-5 mr-3 mt-0.5 text-greenDefault flex-shrink-0" />
             <Link
               href="tel:+79932456882"
-              className="hover:text-[var(--color-teal)] dark:hover:text-teal-400 transition-colors"
+              className="hover:text-greenDefault dark:hover:text-teal-400 transition-colors"
             >
               +7 993 245 68 82
             </Link>
@@ -84,7 +84,7 @@ export default function Footer() {
 
           <li className="flex items-start">
             <svg
-              className="w-5 h-5 mr-3 mt-0.5 text-[var(--color-teal)] flex-shrink-0"
+              className="w-5 h-5 mr-3 mt-0.5 text-greenDefault flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -106,7 +106,7 @@ export default function Footer() {
           </li>
           <li className="flex items-start ">
             <svg
-              className="w-5 h-5 mr-3 mt-0.5 text-[var(--color-teal)] flex-shrink-0"
+              className="w-5 h-5 mr-3 mt-0.5 text-greenDefault flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -134,7 +134,7 @@ export default function Footer() {
         <div className="mt-6">
           <Link
             href="/pk"
-            className="text-sm text-gray-500 dark:text-gray-400 hover:text-[var(--color-teal)] dark:hover:text-teal-400 transition-colors underline"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-greenDefault dark:hover:text-teal-400 transition-colors underline"
           >
             Политика конфиденциальности
           </Link>

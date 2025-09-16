@@ -69,16 +69,16 @@ export default function NavbarHeroSection({ id }: { id: string }) {
                   className="flex cursor-pointer mb-1"
 
                 >
-                  <FaMapMarkerAlt className="mr-1 text-[var(--color-teal)]" />
+                  <FaMapMarkerAlt className="mr-1 text-greenDefault" />
                   <span className="text-white">Жуковский</span>
                 </div>
                 <div
                   className="flex cursor-pointer"
                 >
-                  <FaMapMarkerAlt className="mr-1 text-[var(--color-teal)]" />
+                  <FaMapMarkerAlt className="mr-1 text-greenDefault" />
                   <span className="text-white">Коломна</span>
                 </div>
-                <span className="text-sm text-white dark:text-gray-300 border-t-2 border-dashed border-[var(--color-teal)] mt-2 pt-2">
+                <span className="text-sm text-white dark:text-gray-300 border-t-2 border-dashed border-greenDefault mt-2 pt-2">
                   Ежедневно c 09:00 до 20:00
                 </span>
               </div>
@@ -90,7 +90,7 @@ export default function NavbarHeroSection({ id }: { id: string }) {
                 <Link
                   key={i}
                   href={el.link}
-                  className="text-xl font-bold text-white hover:text-[var(--color-teal)] hover:underline hover:decoration-2 hover:underline-offset-8"
+                  className="text-xl font-bold text-white hover:text-greenDefault hover:underline hover:decoration-2 hover:underline-offset-8"
                 >
                   {el.label}
                 </Link>
@@ -100,14 +100,14 @@ export default function NavbarHeroSection({ id }: { id: string }) {
           <CallbackModal
             trigger={
               <div className="group flex items-center cursor-pointer w-fit left-4/5 relative">
-                <div className="rounded-full border-2 border-[var(--color-teal)] group-hover:border-[var(--color-teal-hover)] p-2 transition-colors duration-300">
+                <div className="rounded-full border-2 border-greenDefault group-hover:border-greenDefaultHover p-2 transition-colors duration-300">
                   <PhoneIcon className="w-10 h-10 text-white" />
                 </div>
                 <div className="ml-2 text-right">
                   <span className="text-xl text-white">+7 993 245 68 82</span>
                   <p
-                    className="text-xl text-[var(--color-teal)] hover:text-[var(--color-teal-hover)] border-b-2 border-dotted border-[var(--color-teal)] 
-group-hover:text-[var(--color-teal-hover)] group-hover:border-[var(--color-teal-hover)] transition-all duration-300"
+                    className="text-xl text-greenDefault hover:text-greenDefaultHover border-b-2 border-dotted border-greenDefault 
+group-hover:text-greenDefaultHover group-hover:border-greenDefaultHover transition-all duration-300"
                   >
                     Заказать звонок
                   </p>
@@ -121,10 +121,10 @@ group-hover:text-[var(--color-teal-hover)] group-hover:border-[var(--color-teal-
             <div className="py-8 flex flex-col items-end max-w-full mr-37">
               <h1 className="text-3xl font-bold text-white dark:text-white mb-4 text-center">
                 Защита авто от коррозии — <br />
-                <span className="text-[var(--color-teal)]">наша работа</span>
+                <span className="text-greenDefault">наша работа</span>
               </h1>
               <Button
-                className="h-16 w-100 inline-flex items-center justify-center px-8 py-4 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="h-16 w-100 inline-flex items-center justify-center px-8 py-4 bg-greenDefault hover:bg-greenDefaultHover text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 onClick={(e) => handleScroll(e, "auto-price")}
               >
                 <p className="text-3xl mt-4">Остановить коррозию</p>
@@ -140,7 +140,7 @@ group-hover:text-[var(--color-teal-hover)] group-hover:border-[var(--color-teal-
               className="flex"
             >
               <div
-                className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                className="w-10 h-10 bg-greenDefault hover:bg-greenDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                 title="WhatsApp"
               >
                 <Image
@@ -159,7 +159,7 @@ group-hover:text-[var(--color-teal-hover)] group-hover:border-[var(--color-teal-
               className="flex"
             >
               <div
-                className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                className="w-10 h-10 bg-greenDefault hover:bg-greenDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                 title="Telegram"
               >
                 <Image
@@ -178,7 +178,7 @@ group-hover:text-[var(--color-teal-hover)] group-hover:border-[var(--color-teal-
               className="flex"
             >
               <div
-                className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                className="w-10 h-10 bg-greenDefault hover:bg-greenDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                 title="VK"
               >
                 <Image
@@ -197,7 +197,7 @@ group-hover:text-[var(--color-teal-hover)] group-hover:border-[var(--color-teal-
               className="flex"
             >
               <div
-                className="w-10 h-10 bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
+                className="w-10 h-10 bg-greenDefault hover:bg-greenDefaultHover rounded-full flex items-center justify-center shadow-md transition-transform duration-500 hover:scale-110"
                 title="RUTUBE"
               >
                 <Image

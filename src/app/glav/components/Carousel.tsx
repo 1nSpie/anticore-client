@@ -175,7 +175,7 @@ export default function CarouselSection({ id }: Props) {
                   key={key}
                   className="md:basis-1/2 lg:basis-1/3 w-full shrink-0"
                 >
-                  <div className="h-full border-[var(--color-teal)] border-2 p-2 dark:bg-backgroundDark1 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                  <div className="h-full border-greenDefault border-2 p-2 dark:bg-backgroundDark1 rounded-2xl hover:shadow-lg transition-shadow duration-300">
                     <div className="flex flex-col items-center h-full text-center">
                       <Image
                         src={slide.img}

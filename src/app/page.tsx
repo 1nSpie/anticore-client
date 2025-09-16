@@ -16,13 +16,7 @@ export default function GlavPage() {
     <div className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen">
       {/* Декоративные элементы для фона */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-          <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
-        </div>
-        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
-          <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
-        </div>
+        
 
         <FloatingNavigation />
         <main className="flex-1 relative z-10">
@@ -125,9 +119,7 @@ export default function GlavPage() {
             </div>
           </div>
 
-          <div className="py-16 lg:py-20">
             <YandexMap id="map" />
-          </div>
         </main>
       </div>
     </div>

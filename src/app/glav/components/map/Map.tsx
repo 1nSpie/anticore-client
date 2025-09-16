@@ -10,6 +10,7 @@ import {
 import { PhoneIcon, ClockIcon, HomeIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { YandexMapWidget } from "./YandexMapWidget";
 import Link from "next/link";
+import FeedbackLine from "@/app/ui/ui/FeedbackLine";
 
 type Props = {
   id: string;
@@ -19,7 +20,6 @@ export default function YandexMap({ id }: Props) {
   return (
     <section
       id={id}
-      className="py-16 lg:py-24"
     >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#007478]/10 to-transparent dark:from-[#007478]/20 dark:to-transparent pointer-events-none" />
@@ -245,6 +245,7 @@ export default function YandexMap({ id }: Props) {
           <YandexMapWidget />
         </div>
       </div>
+            <FeedbackLine />
     </section>
   );
 }

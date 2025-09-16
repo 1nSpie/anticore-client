@@ -59,7 +59,7 @@ export default function Herosection({ id }: { id: string }) {
             >
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
                 Защитим Ваш автомобиль от коррозии{' '}
-                <span className="text-[var(--color-teal)] bg-gradient-to-r from-[var(--color-teal)] to-[var(--color-teal-hover)] bg-clip-text">
+                <span className="text-greenDefault bg-gradient-to-r from-greenDefault to-greenDefaultHover bg-clip-text">
                   с гарантией до 5 лет
                 </span>
               </h1>
@@ -78,7 +78,7 @@ export default function Herosection({ id }: { id: string }) {
               <Button
                 onClick={scrollToAutoPrice}
                 size="lg"
-                className="bg-[var(--color-teal)] hover:bg-[var(--color-teal-hover)] text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+                className="bg-greenDefault hover:bg-greenDefaultHover text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               >
                 Рассчитать стоимость
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -88,7 +88,7 @@ export default function Herosection({ id }: { id: string }) {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-2 border-[var(--color-teal)] text-[var(--color-teal)] hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors"
+                    className="border-2 border-greenDefault text-greenDefault hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors"
                   >
                     <Phone className="mr-2 w-4 h-4" />
                     Заказать звонок
@@ -105,13 +105,13 @@ export default function Herosection({ id }: { id: string }) {
               className="grid grid-cols-3 gap-6 py-4"
             >
               <div className="text-center">
-                <div className="text-2xl font-bold text-[var(--color-teal)]">5</div>
+                <div className="text-2xl font-bold text-greenDefault">5</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Лет гарантии
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[var(--color-teal)]">
+                <div className="text-2xl font-bold text-greenDefault">
                   500+
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -119,7 +119,7 @@ export default function Herosection({ id }: { id: string }) {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[var(--color-teal)]">8ч</div>
+                <div className="text-2xl font-bold text-greenDefault">8ч</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   время обработки
                 </div>
@@ -237,7 +237,7 @@ export default function Herosection({ id }: { id: string }) {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                className="absolute -top-4 -right-4 bg-[var(--color-teal)] text-white rounded-xl shadow-lg p-3"
+                className="absolute -top-4 -right-4 bg-greenDefault text-white rounded-xl shadow-lg p-3"
               >
                 <div className="flex items-center gap-2">
                   <Zap className="w-5 h-5" />
