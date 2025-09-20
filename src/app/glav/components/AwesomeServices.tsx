@@ -71,18 +71,13 @@ export default function AwesomeServices({ id }: { id: string }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="mb-12"
+          className="mb-6"
         >
-          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black leading-none mb-4">
+          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black leading-none">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orangeDefault via-teal-400 to-orangeDefault animate-gradient-x">
               АВАНКОР
             </span>
           </h1>
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-light text-white/80 leading-none tracking-widest">
-            <span className="inline-block border-2 border-white/20 px-8 py-4 backdrop-blur-sm">
-              СЕРВИС
-            </span>
-          </h2>
         </motion.div>
 
         {/* Subtitle */}
@@ -97,7 +92,7 @@ export default function AwesomeServices({ id }: { id: string }) {
             <div className="w-12 h-px bg-orangeDefault"></div>
           </div>
           <p className="text-xl sm:text-2xl text-gray-300 font-light tracking-wide max-w-3xl mx-auto">
-            Профессиональная защита вашего автомобиля от коррозии
+            Профессиональная защита вашего автомобиля от коррозии{" "}
             <br className="hidden sm:block" />с гарантией до 5 лет
           </p>
         </motion.div>
