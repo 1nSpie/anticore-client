@@ -92,7 +92,7 @@ export default function AwesomeServices({ id }: { id: string }) {
             <div className="w-12 h-px bg-orangeDefault"></div>
           </div>
           <p className="text-xl sm:text-2xl text-gray-300 font-light tracking-wide max-w-3xl mx-auto">
-            Профессиональная защита вашего автомобиля от коррозии{" "}
+            Профессиональная защита Вашего автомобиля от коррозии{" "}
             <br className="hidden sm:block" />с гарантией до 5 лет
           </p>
         </motion.div>
