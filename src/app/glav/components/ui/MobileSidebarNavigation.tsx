@@ -9,7 +9,6 @@ import telegramIcon from "public/icons8-телеграм.svg";
 import whatsappIcon from "public/icons8-whatsapp.svg";
 import vkIcon from "public/icons8-vk.svg";
 import rutubeIcon from "public/Rutube_icon.svg";
-import ThemeSwitcher from "src/app/ui/ui/ThemeSwitcher";
 
 export default function MobileSidebarNavigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -140,9 +139,6 @@ export default function MobileSidebarNavigation() {
                     </div>
                   </Link>
                 </div>
-              </div>
-              <div className="mt-4">
-                <ThemeSwitcher />
               </div>
             </div>
           </div>
