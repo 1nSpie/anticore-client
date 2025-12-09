@@ -158,7 +158,7 @@ export default function PriceCardList({ id }: Props) {
   return (
     <div className="bg-transparent">
       <motion.div
-        className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24  lg:px-8"
+        className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-8 section-surface rounded-3xl"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}

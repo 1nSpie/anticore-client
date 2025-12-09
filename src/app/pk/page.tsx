@@ -6,14 +6,11 @@ export default function PrivacyPolicyPage() {
   const SITE_LINK = process.env.SITE_LINK || "http://localhost:3000";
   return (
     <>
-      <div className="min-h-screen bg-background dark:bg-backgroundDark py-12 px-6 pt-30">
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
-      <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-        <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
-      </div>
-      <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
-        <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
-      </div>
+      <div className="min-h-screen py-12 px-6 pt-30"
+      style={{
+        background:
+          "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+      }}>
         <div className="max-w-4xl mx-auto bg-background1 dark:bg-backgroundDark1 shadow-lg rounded-lg p-8">
           <h1 className="text-3xl font-bold text-center text-black dark:text-white mb-6">
             Политика в отношении обработки персональных данных

@@ -66,9 +66,9 @@ export const stepsData: Step[] = [
 
 export default function TechProcces({ id }: Props) {
   return (
-    <section id={id} className="relative py-16 lg:py-20 overflow-hidden bg-transparent">
+    <section id={id} className="relative py-16 lg:py-20 overflow-hidden">
 
-      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 section-surface rounded-3xl">
         {/* Enhanced title section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl lg:leading-tight text-black dark:text-white mb-6 tracking-tight">

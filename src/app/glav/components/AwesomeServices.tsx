@@ -1,4 +1,3 @@
-// AwesomeServices.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -21,7 +20,7 @@ export default function AwesomeServices({ id }: { id: string }) {
   return (
     <section
       id={id}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900 text-white"
     >
       {/* Background Video */}
       <video
@@ -32,7 +31,10 @@ export default function AwesomeServices({ id }: { id: string }) {
         className="absolute inset-0 object-cover w-full h-full z-0"
         preload="auto"
       >
-        <source src={`${API_BASE_URL}/video/videoStart.mp4`} type="video/mp4" />
+        <source
+          src={`${API_BASE_URL}/video/videoStart.mp4`}
+          type="video/mp4"
+        />
         Ваш браузер не поддерживает видео.
       </video>
 
@@ -41,9 +43,9 @@ export default function AwesomeServices({ id }: { id: string }) {
         className="absolute inset-0 z-10"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 20% 80%, rgba(0, 116, 120, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(0, 116, 120, 0.2) 0%, transparent 50%),
-            linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)
+            radial-gradient(900px circle at 18% 78%, rgba(0, 148, 151, 0.22), transparent 55%),
+            radial-gradient(820px circle at 82% 18%, rgba(0, 116, 120, 0.18), transparent 52%),
+            linear-gradient(120deg, rgba(8, 13, 24, 0.9) 0%, rgba(12, 19, 32, 0.82) 100%)
           `,
         }}
       ></div>

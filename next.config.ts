@@ -6,14 +6,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-        port: "3001",
-        pathname: "**",
+        port: "4444",
+        pathname: "/static/images/**",
       },
       {
         protocol: 'https',
-        hostname: 'xn--80aaag6amsblus.xn--p1ai', // 👈 Punycode
+        hostname: 'xn--80aaag6amsblus.xn--p1ai',
         port: '',
-        pathname: '/api/static/images/**',
+        pathname: '/static/images/**',
       },
     ],
   },
@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "/api/:path*", // Внутренние API-роуты
+        destination: "/api/:path*",
       },
     ];
   },
@@ -46,9 +46,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/glav", // Исходный путь
-        destination: "/", // Путь, куда нужно перенаправить
-        permanent: true, // `true` для постоянного редиректа (HTTP 308), `false` для временного (HTTP 307)
+        source: "/glav",
+        destination: "/",
+        permanent: true,
       },
     ];
   },

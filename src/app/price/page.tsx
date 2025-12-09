@@ -39,18 +39,14 @@ export default function ServicesPage() {
       exit="exit"
       variants={pageVariants}
       transition={{ type: "spring", duration: 0.5 }}
-      className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen"
+className="min-h-screen"
+      style={{
+        background:
+          "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+      }}
     >
       {/* Обернул декоративные элементы в контейнер с hidden overflow */}
       <div className="relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-          <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
-        </div>
-        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
-          <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
-        </div>
 
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 pt-30">

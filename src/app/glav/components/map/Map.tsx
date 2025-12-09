@@ -1,5 +1,5 @@
 "use client";
-import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
+import { YMaps, Map, Placemark } from '@iminside/react-yandex-maps';
 import { LOCATION } from "./helpers";
 import {
   Tabs,

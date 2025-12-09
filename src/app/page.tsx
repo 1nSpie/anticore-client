@@ -13,11 +13,14 @@ import Marquee from "react-fast-marquee";
 
 export default function GlavPage() {
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen">
-      {/* Декоративные элементы для фона */}
+    <div
+      className="min-h-screen"
+      style={{
+        background:
+          "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+      }}
+    >
       <div className="relative overflow-hidden">
-        
-
         <FloatingNavigation />
         <main className="flex-1 relative z-10">
           <AwesomeServices id="hero" />
@@ -118,7 +121,7 @@ export default function GlavPage() {
               </Marquee>
             </div>
           </div>
-            <YandexMap id="map" />
+          <YandexMap id="map" />
         </main>
       </div>
     </div>

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import LightLogo from "public/trans_bg.svg";
 import DarkLogo from "public/shapka_dark.svg";
-import ThemeSwitcher from "src/app/ui/ui/ThemeSwitcher";
 import Link from "next/link";
 import NavigationButton from "@/app/glav/components/ui/NavButton";
 import { Phone } from "lucide-react";
@@ -65,9 +64,6 @@ export default function Navigation() {
           <Phone className="w-5 h-5" />
           <span className="font-medium">+7 (993) 245-68-82</span>
         </Link>
-
-        <ThemeSwitcher />
-
         <NavigationButton />
       </div>
     </header>

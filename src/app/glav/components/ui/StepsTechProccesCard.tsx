@@ -17,7 +17,11 @@ interface StepCardProps {
 export default function StepCard({ step, index = 0 }: StepCardProps) {
   return (
     <motion.div
-      className="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 shadow-lg border border-teal-200 dark:border-gray-600 h-full flex flex-col relative overflow-hidden"
+      className="
+    rounded-xl p-6 border h-full flex flex-col relative overflow-hidden
+    backdrop-blur-[10px]
+    shadow-lg
+  "
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

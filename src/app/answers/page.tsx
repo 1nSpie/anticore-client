@@ -87,27 +87,26 @@ export default function AnswersPage() {
       exit="exit"
       variants={pageVariants}
       transition={{ type: "spring", duration: 0.5 }}
-      className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen"
+      className="
+  min-h-screen
+  relative
+  overflow-hidden
+"
+      style={{
+        background:
+          "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+      }}
     >
-      {/* Обернул декоративные элементы в контейнер с hidden overflow */}
       <div className="relative overflow-hidden lg:pt-10 pt-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-          <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
-        </div>
-        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
-          <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
-        </div>
-        
-        <section className="relative max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <section className="relative max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto section-surface rounded-3xl">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl lg:leading-tight text-black dark:text-white">
+            <h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl lg:leading-tight text-white">
               Ответы на частые вопросы
             </h1>
-            <p className="mt-4 md:text-lg text-black dark:text-neutral-200 max-w-3xl mx-auto">
-              Здесь собраны ответы на самые популярные вопросы об антикоррозийной
-              обработке автомобилей
+            <p className="mt-4 md:text-lg text-gray-200 max-w-3xl mx-auto">
+              Здесь собраны ответы на самые популярные вопросы об
+              антикоррозийной обработке автомобилей
             </p>
           </div>
 
@@ -117,17 +116,17 @@ export default function AnswersPage() {
               {faqs.map((faq) => (
                 <div
                   key={faq.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
+                  className="section-surface rounded-2xl shadow-lg border border-white/5 overflow-hidden"
                 >
                   <button
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
                   >
-                    <h3 className="text-lg font-semibold text-black dark:text-white pr-4">
+                    <h3 className="text-lg font-semibold text-white pr-4">
                       {faq.question}
                     </h3>
                     <svg
-                      className={`w-5 h-5 text-gray-500 dark:text-gray-400 transform transition-transform ${
+                      className={`w-5 h-5 text-gray-400 transform transition-transform ${
                         openFaq === faq.id ? "rotate-180" : ""
                       }`}
                       fill="none"
@@ -145,8 +144,8 @@ export default function AnswersPage() {
 
                   {openFaq === faq.id && (
                     <div className="px-6 pb-4">
-                      <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      <div className="border-t border-white/5 pt-4">
+                        <p className="text-gray-300 leading-relaxed">
                           {faq.answer}
                         </p>
                       </div>
@@ -159,10 +158,10 @@ export default function AnswersPage() {
 
           {/* Additional Help Section */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center shadow-md">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div className="section-surface rounded-2xl p-6 text-center shadow-lg border border-white/5">
+              <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6 text-teal-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -175,18 +174,18 @@ export default function AnswersPage() {
                   />
                 </svg>
               </div>
-              <h4 className="text-lg font-semibold text-black dark:text-white mb-2">
+              <h4 className="text-lg font-semibold text-white mb-2">
                 Телефонная консультация
               </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
+              <p className="text-gray-300 text-sm">
                 Получите ответы на вопросы по телефону в рабочее время
               </p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div className="section-surface rounded-2xl p-6 text-center shadow-lg border border-white/5">
+              <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-6 h-6 text-green-600"
+                  className="w-6 h-6 text-teal-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -199,18 +198,18 @@ export default function AnswersPage() {
                   />
                 </svg>
               </div>
-              <h4 className="text-lg font-semibold text-black dark:text-white mb-2">
+              <h4 className="text-lg font-semibold text-white mb-2">
                 Онлайн-чат
               </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
+              <p className="text-gray-300 text-sm">
                 Быстрые ответы в мессенджерах и на сайте
               </p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center shadow-md">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div className="section-surface rounded-2xl p-6 text-center shadow-lg border border-white/5">
+              <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-6 h-6 text-purple-600"
+                  className="w-6 h-6 text-teal-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -229,10 +228,10 @@ export default function AnswersPage() {
                   />
                 </svg>
               </div>
-              <h4 className="text-lg font-semibold text-black dark:text-white mb-2">
+              <h4 className="text-lg font-semibold text-white mb-2">
                 Личная консультация
               </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
+              <p className="text-gray-300 text-sm">
                 Приезжайте к нам для подробной консультации и осмотра авто
               </p>
             </div>

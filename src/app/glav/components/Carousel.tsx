@@ -144,8 +144,11 @@ export default function CarouselSection({ id }: Props) {
   );
 
   return (
-    <section id={id}>
-      <div className="max-w-[85rem] mx-auto h-auto px-8 py-16 sm:px-6 lg:px-20 lg:py-20">
+    <section
+      id={id}
+      className="relative py-16 lg:py-20 overflow-hidden"
+    >
+      <div className="max-w-[85rem] mx-auto h-auto px-6 sm:px-6 lg:px-12">
         {/* Заголовок */}
         <div className="rounded-xl text-black dark:text-white block max-w-[85rem] mx-auto text-center pb-10">
           <h2 className="text-2xl font-bold text-black dark:text-white mb-4">
@@ -157,7 +160,7 @@ export default function CarouselSection({ id }: Props) {
         </div>
 
         {/* Контейнер для карусели и блока информации */}
-        <div className="grid grid-cols-1 items-center gap-12">
+        <div className="grid grid-cols-1 items-center gap-12 section-surface rounded-3xl p-8 shadow-lg">
           {/* Карусель */}
           <Carousel
             plugins={[plugin.current]}

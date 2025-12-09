@@ -48,7 +48,13 @@ export default function WorkDetailPage() {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen flex items-center justify-center">
+      <div
+        className=" min-h-screen flex items-center justify-center"
+        style={{
+          background:
+            "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+        }}
+      >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007478] mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">Загрузка...</p>
@@ -59,9 +65,15 @@ export default function WorkDetailPage() {
 
   if (error || !work) {
     return (
-      <div className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen flex items-center justify-center">
+      <div
+        className=" min-h-screen flex items-center justify-center"
+        style={{
+          background:
+            "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+        }}
+      >
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Ошибка</h2>
+          <h2 className="text-2xl font-bold mb-4">Ошибка</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-4">
             {error || "Работа не найдена"}
           </p>
@@ -78,20 +90,17 @@ export default function WorkDetailPage() {
 
   return (
     <>
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 dark:to-transparent" />
-      <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-        <div className="w-64 h-64 bg-gradient-to-br from-teal-200/20 to-teal-300/20 dark:from-teal-700/20 dark:to-teal-600/20 rounded-full blur-3xl" />
-      </div>
-      <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12">
-        <div className="w-48 h-48 bg-gradient-to-br from-blue-200/20 to-blue-300/20 dark:from-blue-700/20 dark:to-blue-600/20 rounded-full blur-3xl" />
-      </div>
       <motion.div
         initial="hidden"
         animate="enter"
         exit="exit"
         variants={pageVariants}
         transition={{ type: "spring", duration: 0.5 }}
-        className="bg-gradient-to-br from-gray-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-teal-900/20 min-h-screen pt-20"
+        className="min-h-screen pt-20"
+        style={{
+          background:
+            "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+        }}
       >
         {/* Background decoration */}
         <div className="max-w-6xl mx-auto px-4 py-8">

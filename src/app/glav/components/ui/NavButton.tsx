@@ -1,102 +1,108 @@
 // components/NavigationButton.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { navigationLinks } from "src/lib/contants";
 
-export default function NavigationButton() {
+// Оригинальные стили
+const buttonStyles =
+  "p-3 text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-colors duration-300 bg-white/10 dark:bg-black/10 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-full hover:bg-white/20 dark:hover:bg-white/5";
+const linkStyles =
+  "block text-4xl lg:text-6xl font-light text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-all duration-500 hover:scale-105 transform";
+const linkStyleObject = {
+  fontFamily: "system-ui, -apple-system, sans-serif",
+  letterSpacing: "0.1em",
+};
+
+const NavigationButton = memo(() => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsMenuOpen(true)}
-        className="p-3 text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-colors duration-300 bg-white/10 dark:bg-black/10 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-full hover:bg-white/20 dark:hover:bg-white/5"
+      <button
+        onClick={toggleMenu}
+        className={buttonStyles}
+        aria-label={isMenuOpen ? "Закрыть меню" : "Открыть меню"}
       >
-        <Menu className="w-5 h-5" />
-      </motion.button>
+        {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: isMenuOpen ? 1 : 0,
-          pointerEvents: isMenuOpen ? "auto" : "none",
-        }}
-        transition={{ duration: 0.3 }}
-        className="fixed inset-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-md"
-      >
-        <div className="flex flex-col min-h-screen">
-          <div className="flex items-center justify-between p-6 lg:p-8">
-            <div className="w-12 h-12"></div> {/* Пустой элемент для баланса */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={closeMenu}
-              className="p-3 mt-3.5 text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-colors duration-300 bg-white/10 dark:bg-black/10 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-full hover:bg-white/20 dark:hover:bg-white/5"
-            >
-              <X className="w-5 h-5" />
-            </motion.button>
-          </div>
-          {/* Navigation Links */}
-          <div className="flex-1 flex items-center justify-center">
-            <nav className="text-center space-y-8">
-              {navigationLinks.map((link, index) => (
-                <motion.div
-                  key={link.label}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{
-                    opacity: isMenuOpen ? 1 : 0,
-                    x: isMenuOpen ? 0 : -50,
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    delay: isMenuOpen ? index * 0.1 : 0,
-                  }}
-                >
-                  <Link
-                    href={link.link}
-                    onClick={closeMenu}
-                    className="block text-4xl lg:text-6xl font-light text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-all duration-500 hover:scale-105 transform"
-                    style={{
-                      fontFamily: "system-ui, -apple-system, sans-serif",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    {link.label}
-                  </Link>
-                </motion.div>
-              ))}
-            </nav>
-          </div>
-
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50">
+          {/* Фон */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{
-              opacity: isMenuOpen ? 1 : 0,
-              y: isMenuOpen ? 0 : 50,
-            }}
-            transition={{ duration: 0.5, delay: isMenuOpen ? 0.6 : 0 }}
-            className="p-6 lg:p-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-md"
+            onClick={closeMenu}
+          />
+
+          {/* Контент меню с кнопкой закрытия */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0"
           >
-            <div className="space-y-2">
-              <Link
-                href="tel:+79932456882"
-                className="block text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-colors text-xl"
+            {/* Кнопка закрытия в правом верхнем углу */}
+            <div className="absolute right-6 top-6 z-10">
+              <button
                 onClick={closeMenu}
+                className={`${buttonStyles} mt-3.5`}
+                aria-label="Закрыть меню"
               >
-                +7 (993) 245-68-82
-              </Link>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Основной контент */}
+            <div
+              className="flex flex-col items-center justify-center h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Навигация */}
+              <nav className="text-center space-y-8">
+                {navigationLinks.map((link) => (
+                  <div key={link.label}>
+                    <Link
+                      href={link.link}
+                      onClick={closeMenu}
+                      className={linkStyles}
+                      style={linkStyleObject}
+                    >
+                      {link.label}
+                    </Link>
+                  </div>
+                ))}
+              </nav>
+
+              {/* Телефон */}
+              <div className="mt-12">
+                <Link
+                  href="tel:+79932456882"
+                  onClick={closeMenu}
+                  className="block text-black dark:text-white hover:text-orangeDefault dark:hover:text-orangeLight transition-colors text-xl"
+                >
+                  +7 (993) 245-68-82
+                </Link>
+              </div>
             </div>
           </motion.div>
         </div>
-      </motion.div>
+      )}
     </>
   );
-}
+});
+
+NavigationButton.displayName = "NavigationButton";
+
+export default NavigationButton;
