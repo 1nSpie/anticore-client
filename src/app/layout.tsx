@@ -1,8 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "../lib/ThemeProvider";
+import { ThemeProvider } from "next-themes";
 import Footer from "../components/Footer";
 import Navigation from "../components/Navigation";
 import { Toaster } from "src/shadcn/sonner";
@@ -93,8 +92,7 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
+          forcedTheme="dark"
         >
           <ModalProvider>
             <span className="text-[0px] hidden">
