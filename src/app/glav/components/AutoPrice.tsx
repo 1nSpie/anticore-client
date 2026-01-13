@@ -41,6 +41,10 @@ import {
   type AutoPriceFormData,
 } from "src/lib/validations";
 import { toast } from "sonner";
+import { checkDuplicateSubmission, saveSubmission, getLastSubmissionTime } from "src/lib/duplicateCheck";
+import { DuplicateWarningModal } from "src/app/ui/ui/DuplicateWarningModal";
+import { ScrollArea } from "@/shadcn/scroll-area";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 export default function AutoPrice({ id }: AutoPriceProps) {
   const {
@@ -68,9 +72,12 @@ export default function AutoPrice({ id }: AutoPriceProps) {
   const [viewPrice, setViewPrice] = useState<Car | null>(null);
   const { openModal, closeModal, isModalOpen, canOpenModal } = useModal();
 
+  const isMobile = useMediaQuery("(max-width: 1024px)");
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(
     null
   );
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [pendingData, setPendingData] = useState<AutoPriceFormData | null>(null);
 
   const SERVICE_MODAL_ID = "service-modal";
   const CONTACT_MODAL_ID = "contact-modal";
@@ -130,9 +137,10 @@ export default function AutoPrice({ id }: AutoPriceProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("isNotAuto")]);
 
-  const onSubmit = async (data: AutoPriceFormData) => {
+  const submitForm = async (data: AutoPriceFormData) => {
     try {
       await telegramApiClient.sendFullForm(data);
+      saveSubmission();
       toast.success("Ваша заявка отправлена!", {
         description: "Менеджер перезвонит вам в ближайшее время",
       });
@@ -145,66 +153,122 @@ export default function AutoPrice({ id }: AutoPriceProps) {
     }
   };
 
+  const onSubmit = async (data: AutoPriceFormData) => {
+    // Проверяем дубликат по времени
+    // if (checkDuplicateSubmission()) {
+    //   setPendingData(data);
+    //   setShowDuplicateWarning(true);
+    //   return;
+    // }
+
+    // Если дубликата нет, отправляем сразу
+    await submitForm(data);
+  };
+
+  const handleConfirmDuplicate = async () => {
+    setShowDuplicateWarning(false);
+    if (pendingData) {
+      await submitForm(pendingData);
+      setPendingData(null);
+    }
+  };
+
+  const handleCancelDuplicate = () => {
+    setShowDuplicateWarning(false);
+    setPendingData(null);
+  };
+
   const serviceDescriptions: ServiceDescriptions = {
     "Стандарт ML": {
       title: "Стандарт ML",
       description:
-        "При данном типе обработки мы демонтируем: колёса, подкрылки, локеры, все защиты дна автомобиля, а также пластиковые накладки порогов. Дно автомобиля тщательно промывается и высушивается.",
+        `При данном типе обработки мы демонтируем: колёса, подкрылки, локеры, все защитные
+элементы дна автомобиля, а также пластиковые накладки порогов. Дно автомобиля
+тщательно промывается и высушивается. Скрытые полости, днище и арки
+обрабатываются сначала проникающими, а затем консервирующими ML-составами. Рекомендуется повторять
+не реже, чем раз в год.`,
       includes: [
-        "Демонтаж защитных деталей",
-        "Промывка и сушка",
-        "Упаковка и обработка пластиком",
-        "Обработка антикоррозийным составом",
-        "Мойка",
-        "Финальная сборка",
+        "Снятие колес и разборка пластиковых защитных элементов.",
+        "Мойка под давлением.",
+        "Сушка",
+        "Маскировка кузова и рабочих систем автомобиля.",
+        "Обработка силовых скрытых полостей",
+        "Контроль качества",
+        "Сборка",
+
       ],
-      duration: "8 часов",
-      warranty: "3 года",
+      duration: "4-8 часов",
+      warranty: "1 год",
     },
     "Стандарт ML+BODY": {
       title: "Стандарт ML+BODY",
       description:
-        "При данном типе обработки демонтируются все защиты, а места коррозии зачищаются. Дно и арки обрабатываются с ингибитором коррозии для предотвращения появления коррозии в будущем.",
+        `При данном типе обработки демонтируются все защитные элемнеты, а места коррозии
+зачищаются. Дно и арки обрабатываются материалом с ингибитором коррозии для
+предотвращения появления коррозии в будущем.Подходит для автомобилей с
+небольшим пробегом или новых.`,
       includes: [
-        "Демонтаж защитных деталей",
-        "Зачистка и обработка мест коррозии",
-        "Обработка составами с ингибитором",
-        "Покрытие навесного оборудования восками",
-        "Мойка",
-        "Финальная сборка",
+        "Снятие колес и разборка пластиковых защитных элементов.",
+        "Мойка под давлением",
+        "Сушка",
+        "Маскировка кузова и рабочих систем автомобиля",
+        "Зачистка очагов коррозии",
+        "Обработка силовых скрытых полостей",
+        "Обработка днища и арок грунтовочным слоем с преобразователем ржавчины",
+        "Обработка днища и арок защитным полимерно-битумным материалом",
+        "Контроль качества",
+        "Сборка",
       ],
-      duration: "8 часов",
+      duration: "6-12 часов",
       warranty: "5 лет",
     },
     "Комплекс ML": {
       title: "Комплекс ML",
       description:
-        "Процесс включает демонтирование защитных деталей, тщательную промывку и сушку, а также нанесение ML консерванта во внутренние полости для защиты от коррозии.",
+        `При данном типе обработки мы демонтируем: колёса, подкрылки, локеры, все защитные
+элементы дна автомобиля, а также пластиковые накладки порогов. Дно автомобиля
+тщательно промывается и высушивается. Силовые скрытые полости, скрытые полости
+верха кузова, днище и арки обрабатываются сначала проникающими, а затем
+консервирующими ML-составами.
+Такой вариант обработки подходит для автомобилей с большим пробегом, с большим
+количеством коррозии на разной стадии в плоть до сквозной. Рекомендуется повторять
+не реже, чем раз в год.`,
       includes: [
-        "Демонтаж защитных деталей",
-        "Промывка с высоким давлением",
-        "Сушка и обработка консервантом",
-        "Покрытие навесного оборудования восками",
-        "Мойка",
-        "Финальная сборка",
+        "Снятие колес и разборка пластиковых защитных элементов.",
+        "Мойка под давлением",
+        "Сушка",
+        "Маскировка кузова и рабочих систем автомобиля",
+        "Обработка силовых скрытых полостей",
+        "Обработка днища и арок",
+        "Обработка скрытых полостей верха кузова",
+        "Контроль качества",
+        "Сборка",
       ],
-      duration: "8 часов",
-      warranty: "3 года",
+      duration: "5-8 часов",
+      warranty: "1 год",
     },
     "Комплекс ML+BODY": {
       title: "Комплекс ML+BODY",
       description:
-        "Полная обработка включает тщательную промывку, сушку и использование BPM состава для вибро-изоляции и долговременной защиты.",
+        `При данном типе обработки демонтируются все защитные элемнеты, а места коррозии
+зачищаются. Дно и арки обрабатываются материалом с ингибитором коррозии для
+предотвращения появления коррозии в будущем. Подходит для автомобилей с
+небольшим пробегом или новых.`,
       includes: [
-        "Демонтаж и промывка",
-        "Сушка и защита консервантом",
-        "Обработка BPM составом для виброизоляции",
-        "Покрытие воском",
-        "Мойка",
-        "Финальная сборка и проверка",
+        "Снятие колес и разборка пластиковых защитных элементов.",
+        "Мойка под давлением",
+        "Сушка",
+        "Маскировка кузова и рабочих систем автомобиля",
+        "Зачистка очагов коррозии",
+        "Обработка силовых скрытых полостей",
+        "Обработка днища и арок грунтовочным слоем с преобразователем ржавчины",
+        "Обработка днища и арок защитным полимерно-битумным материалом",
+        "Обработка скрытых полостей верах кузова",
+        "Контроль качества",
+        "Сборка",
       ],
-      duration: "8 часов",
-      warranty: "3 года",
+      duration: "6-12 часов",
+      warranty: "5 лет",
     },
   };
 
@@ -216,10 +280,15 @@ export default function AutoPrice({ id }: AutoPriceProps) {
   };
 
   const handleOrderService = () => {
+    // Сначала закрываем текущую модалку
     closeModal(SERVICE_MODAL_ID);
-    if (canOpenModal(CONTACT_MODAL_ID)) {
+
+    // Добавляем небольшую задержку для корректного закрытия
+    // На мобильных устройствах запрещаем открывать несколько разных модалок одновременно
+    // Поэтому здесь принудительно открываем модалку обратной связи после закрытия
+    setTimeout(() => {
       openModal(CONTACT_MODAL_ID);
-    }
+    }, 150); // Увеличьте задержку если нужно
   };
 
   const canOpenContactModal = () => {
@@ -280,11 +349,10 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         id="custom-brand"
                         placeholder="BMW"
                         {...register("customBrand")}
-                        className={`${
-                          errors.customBrand
-                            ? "border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                        className={`${errors.customBrand
+                          ? "border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                       />
                       {errors.customBrand && (
                         <p className="text-red-500 text-sm mt-1">
@@ -449,11 +517,10 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                           id="modal-name"
                           placeholder="Введите ваше имя"
                           {...register("name")}
-                          className={`${
-                            errors.name
-                              ? "border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                          className={`${errors.name
+                            ? "border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                         />
                         {errors.name && (
                           <p className="text-red-500 text-sm mt-1">
@@ -472,11 +539,10 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                           id="modal-phone"
                           placeholder="+7 (999) 999-99-99"
                           {...register("phone")}
-                          className={`${
-                            errors.phone
-                              ? "border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                          className={`${errors.phone
+                            ? "border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                         />
                         {errors.phone && (
                           <p className="text-red-500 text-sm mt-1">
@@ -670,6 +736,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
         </AnimatePresence>
 
         {/* Service Description Modal */}
+
         <Dialog
           open={isServiceModalOpen}
           onOpenChange={(open) =>
@@ -682,14 +749,14 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                 <span>{selectedService?.icon}</span>
                 <span>{selectedService?.label}</span>
               </DialogTitle>
-              <DialogDescription className="text-gray-600 dark:text-gray-300">
+              <DialogDescription className="text-gray-600 dark:text-gray-300 text-left">
                 {selectedService &&
                   serviceDescriptions[selectedService.label]?.description}
               </DialogDescription>
             </DialogHeader>
             <div>
-              <div className="grid grid-cols-1 md:grid-cols-2">
-                <div className="space-y-2">
+              <div className="flex justify-around">
+                <div className="flex flex-col items-center">
                   <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
                     Длительность
                   </h4>
@@ -698,7 +765,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       serviceDescriptions[selectedService.label]?.duration}
                   </p>
                 </div>
-                <div>
+                <div className="flex flex-col items-center">
                   <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
                     Гарантия
                   </h4>
@@ -713,7 +780,24 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                 <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
                   Что включено:
                 </h4>
-                <ul className="space-y-1">
+                {isMobile ? <ScrollArea className="max-h-40 overflow-x-hidden mb-4">
+                  <ul className="space-y-1">
+                    {selectedService &&
+                      serviceDescriptions[selectedService.label]?.includes.map(
+                        (item, index) => (
+                          <li
+                            key={index}
+                            className="flex items-start space-x-2 text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <span className="text-greenDefault dark:text-greenDefault mt-1">
+                              •
+                            </span>
+                            <span>{item}</span>
+                          </li>
+                        )
+                      )}
+                  </ul>
+                </ScrollArea> : <ul className="space-y-1">
                   {selectedService &&
                     serviceDescriptions[selectedService.label]?.includes.map(
                       (item, index) => (
@@ -728,7 +812,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         </li>
                       )
                     )}
-                </ul>
+                </ul>}
               </div>
 
               <div className="bg-teal-50 dark:bg-gray-700 p-4 rounded-lg border border-teal-100 dark:border-gray-600">
@@ -760,6 +844,13 @@ export default function AutoPrice({ id }: AutoPriceProps) {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* <DuplicateWarningModal
+        isOpen={showDuplicateWarning}
+        onConfirm={handleConfirmDuplicate}
+        onCancel={handleCancelDuplicate}
+        minutesAgo={getLastSubmissionTime() || 0}
+      /> */}
     </section>
   );
 }
