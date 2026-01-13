@@ -41,10 +41,11 @@ import {
   type AutoPriceFormData,
 } from "src/lib/validations";
 import { toast } from "sonner";
-import { checkDuplicateSubmission, saveSubmission, getLastSubmissionTime } from "src/lib/duplicateCheck";
-import { DuplicateWarningModal } from "src/app/ui/ui/DuplicateWarningModal";
+// import { checkDuplicateSubmission, saveSubmission, getLastSubmissionTime } from "src/lib/duplicateCheck";
+// import { DuplicateWarningModal } from "src/app/ui/ui/DuplicateWarningModal";
 import { ScrollArea } from "@/shadcn/scroll-area";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { saveSubmission } from "@/lib/duplicateCheck";
 
 export default function AutoPrice({ id }: AutoPriceProps) {
   const {
@@ -173,10 +174,10 @@ export default function AutoPrice({ id }: AutoPriceProps) {
     }
   };
 
-  const handleCancelDuplicate = () => {
-    setShowDuplicateWarning(false);
-    setPendingData(null);
-  };
+  // const handleCancelDuplicate = () => {
+  //   setShowDuplicateWarning(false);
+  //   setPendingData(null);
+  // };
 
   const serviceDescriptions: ServiceDescriptions = {
     "Стандарт ML": {
