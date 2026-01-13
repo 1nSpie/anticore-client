@@ -45,7 +45,6 @@ import { toast } from "sonner";
 // import { DuplicateWarningModal } from "src/app/ui/ui/DuplicateWarningModal";
 import { ScrollArea } from "@/shadcn/scroll-area";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { saveSubmission } from "@/lib/duplicateCheck";
 
 export default function AutoPrice({ id }: AutoPriceProps) {
   const {
@@ -141,7 +140,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
   const submitForm = async (data: AutoPriceFormData) => {
     try {
       await telegramApiClient.sendFullForm(data);
-      saveSubmission();
+      // saveSubmission();
       toast.success("Ваша заявка отправлена!", {
         description: "Менеджер перезвонит вам в ближайшее время",
       });
