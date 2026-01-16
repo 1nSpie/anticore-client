@@ -15,10 +15,25 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/static/images/**',
       },
+      {
+        protocol: 'https',
+        hostname: "93aa0dbd-5fad-472e-80c1-bb169b44d09c.selstorage.ru"
+      }
     ],
   },
   env: {
     API_URL: "/api",
+  },
+
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  // Улучшаем стабильность при пересборке
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
   async rewrites() {
     return [
@@ -28,7 +43,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Если используются внешние API
   async headers() {
     return [
       {
@@ -38,9 +52,19 @@ const nextConfig: NextConfig = {
             key: "Access-Control-Allow-Origin",
             value: "https://xn--80aaag6amsblus.xn--p1ai",
           },
-          { key: "Access-Control-Allow-Methods", value: "GET,POST,OPTIONS" },
+          { key: "Access-Control-Allow-Methods", value: "GET,POST,OPTIONS,PUT" },
         ],
       },
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "http://localhost:4444",
+          },
+          { key: "Access-Control-Allow-Methods", value: "GET,POST,OPTIONS,PUT" },
+        ],
+      }
     ];
   },
   async redirects() {
@@ -51,6 +75,12 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
+  },
+  // Логирование ошибок только в development
+  logging: {
+    fetches: {
+      fullUrl: process.env.NODE_ENV === 'development',
+    },
   },
 };
 
