@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -8,7 +9,7 @@ import { blogApiClient, BlogPost, BlogCategory } from "./blogApi";
 import FeedbackLine from "../ui/ui/FeedbackLine";
 import ServerImage from "../ui/ui/ServerImage";
 
-export default function BlogPage() {
+function BlogPageContent() {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category") || "all";
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
@@ -325,5 +326,30 @@ export default function BlogPage() {
       </div>
       <FeedbackLine />
     </motion.div>
+  );
+}
+
+function BlogPageFallback() {
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{
+        background:
+          "radial-gradient(1100px circle at 14% 16%, rgba(0,148,151,0.14), transparent 55%), radial-gradient(950px circle at 82% 10%, rgba(255,255,255,0.05), transparent 55%), linear-gradient(180deg, #0b1220, #0f172a)",
+      }}
+    >
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007478] mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-gray-300">Загрузка статей...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<BlogPageFallback />}>
+      <BlogPageContent />
+    </Suspense>
   );
 }
