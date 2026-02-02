@@ -30,17 +30,3 @@ export async function getAllCarWithBrand(
   return res.data;
 }
 
-export async function getAutoSegmentPrice(
-  id: number | undefined
-): Promise<Car[]> {
-  if (!id) {
-    throw new Error("id is not a number");
-  }
-  const res = await axiosAgent.get(`/segment/${id}`);
- 
-  if (!res.data) {
-    throw new Error("Failed to fetch services");
-  }
-
-  return res.data;
-}

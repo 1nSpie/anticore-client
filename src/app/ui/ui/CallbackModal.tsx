@@ -111,34 +111,36 @@ export function CallbackModal({
       onOpenChange={setView ? setView : setIsOpen}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <DialogContent className="sm:max-w-md bg-white border-orange-600 rounded-xl shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-gray-900 dark:text-white">
+          <DialogTitle className="text-gray-900">
             Заказать обратный звонок
           </DialogTitle>
-          <DialogDescription className="text-gray-600 dark:text-gray-300">
+          <DialogDescription className="text-gray-600">
             Оставьте свои контактные данные и мы свяжемся с вами в ближайшее время
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">
+            <Label htmlFor="name" className="text-gray-700">
               Ваше имя
             </Label>
             <Input
               id="name"
               {...register("name")}
               placeholder="Введите ваше имя"
-              className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
-                errors.name ? "border-red-500" : ""
-              }`}
+              className={`${
+                errors.name
+                  ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"
+                  : "border-orange-600/60 focus-visible:border-orange-600 focus-visible:ring-1 focus-visible:ring-orange-600/30 focus-visible:ring-offset-0"
+              } bg-white text-gray-900 placeholder:text-gray-500`}
             />
             {errors.name && (
               <p className="text-red-500 text-sm">{errors.name.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-200">
+            <Label htmlFor="phone" className="text-gray-700">
               Номер телефона
             </Label>
             <Input
@@ -146,28 +148,29 @@ export function CallbackModal({
               type="tel"
               {...register("phone")}
               placeholder="+7 (___) ___-__-__"
-              className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
-                errors.phone ? "border-red-500" : ""
-              }`}
+              className={`${
+                errors.phone
+                  ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"
+                  : "border-orange-600/60 focus-visible:border-orange-600 focus-visible:ring-1 focus-visible:ring-orange-600/30 focus-visible:ring-offset-0"
+              } bg-white text-gray-900 placeholder:text-gray-500`}
             />
             {errors.phone && (
               <p className="text-red-500 text-sm">{errors.phone.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label
-              htmlFor="message"
-              className="text-gray-700 dark:text-gray-200"
-            >
+            <Label htmlFor="message" className="text-gray-700">
               Сообщение (необязательно)
             </Label>
             <Textarea
               id="message"
               {...register("message")}
               placeholder="Расскажите о вашем автомобиле или задайте вопрос"
-              className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 resize-none ${
-                errors.message ? "border-red-500" : ""
-              }`}
+              className={`${
+                errors.message
+                  ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"
+                  : "border-orange-600/60 focus-visible:border-orange-600 focus-visible:ring-1 focus-visible:ring-orange-600/30 focus-visible:ring-offset-0"
+              } bg-white text-gray-900 placeholder:text-gray-500 resize-none`}
               rows={3}
             />
             {errors.message && (
@@ -177,7 +180,7 @@ export function CallbackModal({
           <DialogFooter className="pt-4">
             <Button
               type="submit"
-              className="w-full bg-[#007478] hover:bg-[#005a5e] dark:bg-[#009a9f] dark:hover:bg-[#007478] text-white shadow-md hover:shadow-lg transition-all duration-200"
+              className="w-full bg-gradient-to-r from-[#EF9147] to-[#FF6B35] hover:opacity-90 text-white shadow-md hover:shadow-orange-500/30 transition-all duration-200"
             >
               Отправить заявку
             </Button>

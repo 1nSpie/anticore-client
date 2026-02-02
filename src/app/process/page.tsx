@@ -86,6 +86,7 @@ const steps = [
 • Концевики и датчики
 
 Для маскировки используются бумага, пленка и малярный скотч высокого качества, чтобы не повредить ЛКП автомобиля.`,
+imgs:[`${IMAGE_URL}/process/maskirovka.jpg`,`${IMAGE_URL}/process/maskirovka2.jpg`]
   },
   {
     id: "zachistka",

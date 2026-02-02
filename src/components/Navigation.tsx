@@ -43,7 +43,7 @@ export default function Navigation() {
         transition: "background 0.4s ease, border-color 0.4s ease",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <div className="w-full px-8 h-full">
         <div className="flex items-center justify-between h-full gap-4">
           {/* Логотип слева */}
           <Link href="/" className="flex-shrink-0">

@@ -10,7 +10,9 @@ import car4 from "../../../../public/Auto_D_Class.png";
 import car5 from "../../../../public/Auto_E_Class.png";
 import car6 from "../../../../public/Auto_F_Class.png";
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:4444";
+const API_BASE =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:4444";
+const SEGMENT_LIST_URL = `${API_BASE.replace(/\/$/, "")}${API_BASE.endsWith("/api") ? "" : "/api"}/segment`;
 
 interface SegmentPrice {
   id: number;
@@ -35,7 +37,7 @@ const SEGMENT_META: Record<
   2: {
     name: "Легковые автомобили от 4 до 5 метров (Класс C,D,E)",
     exampleCars:
-      "Mazda 3, Ford Modeo, Focus, Mazda 6, Toyota Camry, Corolla, Avensis, KIA Optima, Rio, Hyundai Solaris",
+      "Mazda 3, Ford Mondeo, Focus, Mazda 6, Toyota Camry, Corolla, Avensis, KIA Optima, Rio, Hyundai Solaris",
     imageSrc: car4,
     imageAlt: "Класс C,D,E",
   },
@@ -63,7 +65,7 @@ const SEGMENT_META: Record<
   6: {
     name: "Премиум класс",
     exampleCars:
-      "Jaguar, BMW, Audi, Mercedes, Rover, Land Rover, Lexus, Volkswagen, Volvo, Mitsubishi (Pagero), Toyota Alphard",
+      "Jaguar, BMW, Audi, Mercedes, Rover, Land Rover, Lexus, Volkswagen, Volvo, Mitsubishi Pajero, Toyota Alphard",
     imageSrc: car2,
     imageAlt: "Премиум класс",
   },
@@ -83,7 +85,7 @@ export default function PriceCardList({ id }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}/segment`)
+    fetch(SEGMENT_LIST_URL)
       .then((res) => {
         if (!res.ok) throw new Error("Ошибка загрузки");
         return res.json();
@@ -157,29 +159,25 @@ export default function PriceCardList({ id }: Props) {
                   <div className="flex justify-between gap-2">
                     <span className="font-bold text-black">Стандарт ML:</span>
                     <span className="text-black">
-                      {formatPrice(segment.standartML)}
+                      {formatPrice(segment.segment === 6 ? null : segment.standartML)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <span className="font-bold text-black">
-                      Стандарт ML/Body:
-                    </span>
+                    <span className="font-bold text-black">Стандарт ML/Body:</span>
                     <span className="text-black">
-                      {formatPrice(segment.standartMLBody)}
+                      {formatPrice(segment.segment === 6 ? null : segment.standartMLBody)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
                     <span className="font-bold text-black">Комплекс ML:</span>
                     <span className="text-black">
-                      {formatPrice(segment.complexML)}
+                      {formatPrice(segment.segment === 6 ? null : segment.complexML)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <span className="font-bold text-black">
-                      Комплекс ML/Body:
-                    </span>
+                    <span className="font-bold text-black">Комплекс ML/Body:</span>
                     <span className="text-black">
-                      {formatPrice(segment.complexMLBody)}
+                      {formatPrice(segment.segment === 6 ? null : segment.complexMLBody)}
                     </span>
                   </div>
                 </div>
