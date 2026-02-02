@@ -57,6 +57,18 @@ export const stepsData: Step[] = [
     icon: clear,
   },
   {
+    title: "Обработка",
+    description:
+      "Нанесение антикоррозийного состава на подготовленные поверхности. Обработка скрытых полостей, сварных швов и днища автомобиля.",
+    icon: clear,
+  },
+  {
+    title: "Контроль качества",
+    description:
+      "Проверка качества нанесения покрытия, отсутствия пропусков. Осмотр всех обработанных зон перед выдачей автомобиля клиенту.",
+    icon: diag,
+  },
+  {
     title: "Гарантийный талон",
     description:
       "После того, как Вы осмотрите автомобиль и примете работу, менеджер выпишет Вам гарантийный талон.",
@@ -66,7 +78,7 @@ export const stepsData: Step[] = [
 
 export default function TechProcces({ id }: Props) {
   return (
-    <section id={id} className="relative py-16 lg:py-20 overflow-hidden">
+    <section id={id} className="relative py-16 lg:py-20 overflow-hidden bg-[url(public/bgfon.png)]">
 
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 section-surface rounded-3xl">
         {/* Enhanced title section */}
@@ -89,12 +101,12 @@ export default function TechProcces({ id }: Props) {
 
         {/* Bottom decoration */}
         <div className="mt-16 text-center">
-          <div className="inline-flex items-center space-x-2 text-greenDefaultHover font-medium">
-            <div className="w-8 h-0.5 bg-greenDefaultHover rounded-full"></div>
+          <div className="inline-flex items-center space-x-2 text-orange-500 font-medium">
+            <div className="w-8 h-0.5 bg-orange-500 rounded-full"></div>
             <span className="text-sm uppercase tracking-wide">
               Качество гарантировано
             </span>
-            <div className="w-8 h-0.5 bg-greenDefaultHover rounded-full"></div>
+            <div className="w-8 h-0.5 bg-orange-500 rounded-full"></div>
           </div>
         </div>
       </div>

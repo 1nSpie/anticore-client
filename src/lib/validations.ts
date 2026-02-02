@@ -1,7 +1,15 @@
 import { z } from 'zod';
 
-// Phone number validation regex
-const phoneRegex = /^[+]?[0-9\s\-\(\)]{10,20}$/;
+// Russian phone: 10 digits (9XX mobile, 3/4/5/8 XX regional) or 11 digits (7/8 + 10)
+function isValidRussianPhone(value: string): boolean {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 10) {
+    const first = digits[0];
+    return ['3', '4', '5', '8', '9'].includes(first);
+  }
+  if (digits.length === 11 && (digits.startsWith('7') || digits.startsWith('8'))) return true;
+  return false;
+}
 
 
 // Base schemas
@@ -13,9 +21,15 @@ export const nameSchema = z
 
 export const phoneSchema = z
   .string()
-  .min(10, 'Номер телефона должен содержать минимум 10 цифр')
-  .max(20, 'Номер телефона не должен превышать 20 символов')
-  .regex(phoneRegex, 'Неверный формат номера телефона');
+  .min(10, 'Введите номер телефона')
+  .refine(
+    (val) => val.replace(/\D/g, '').length >= 10,
+    'Номер должен содержать минимум 10 цифр'
+  )
+  .refine(
+    isValidRussianPhone,
+    'Введите корректный номер'
+  );
 
 export const messageSchema = z
   .string()

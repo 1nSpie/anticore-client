@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import blogApiClient, { BlogPost } from "../blogApi";
+import blogApiClient, { BlogPost, ContentBlock } from "../blogApi";
 import { ChevronLeft, Clock, Calendar, User } from "lucide-react";
 import FeedbackLine from "src/app/ui/ui/FeedbackLine";
 import ServerImage from "src/app/ui/ui/ServerImage";
@@ -188,9 +188,25 @@ export default function BlogPostPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-lg p-8 mb-12 prose dark:prose-invert max-w-none prose-headings:text-black dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-black dark:prose-strong:text-white prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-h2:text-2xl prose-h2:font-bold prose-h2:mb-6 prose-h2:mt-8 prose-h3:text-xl prose-h3:font-semibold prose-h3:mb-4 prose-h3:mt-6 prose-ul:mb-6 prose-ol:mb-6 prose-li:mb-2 prose-p:mb-4 prose-p:leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+          className="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-10 mb-12 shadow-lg"
+        >
+          {post.content.map((block: ContentBlock, index: number) => (
+            <div key={index} className={index > 0 ? "mt-8" : ""}>
+              {block.subtitle && (
+                <h2 className="text-xl md:text-2xl font-bold text-[#007478] dark:text-[#00a2a6] mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+                  {block.subtitle}
+                </h2>
+              )}
+              <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                {block.text.split('\n\n').map((paragraph, pIndex) => (
+                  <p key={pIndex} className={pIndex > 0 ? "mt-4" : ""}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </motion.article>
 
         {/* Call to Action */}
 

@@ -3,12 +3,15 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { blogApiClient, BlogPost, BlogCategory } from "./blogApi";
 import FeedbackLine from "../ui/ui/FeedbackLine";
 import ServerImage from "../ui/ui/ServerImage";
 
 export default function BlogPage() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get("category") || "all";
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [featuredPost, setFeaturedPost] = useState<BlogPost | null>(null);
@@ -28,8 +31,13 @@ export default function BlogPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
+        const category = searchParams.get("category") || "all";
+        setSelectedCategory(category);
+
         const [postsData, categoriesData, featuredData] = await Promise.all([
-          blogApiClient.getPosts({ limit: 20 }),
+          category === "all"
+            ? blogApiClient.getPosts({ limit: 20 })
+            : blogApiClient.getPosts({ category, limit: 20 }),
           blogApiClient.getCategories(),
           blogApiClient.getFeaturedPost(),
         ]);
@@ -49,7 +57,7 @@ export default function BlogPage() {
     };
 
     fetchData();
-  }, []);
+  }, [searchParams]);
 
   const handleCategoryChange = async (category: string) => {
     setSelectedCategory(category);
@@ -79,7 +87,11 @@ export default function BlogPage() {
           exit: { opacity: 0, y: -10 },
         }}
         transition={{ type: "spring", duration: 0.5 }}
-        className="bg-background1 dark:bg-backgroundDark min-h-screen flex items-center justify-center"
+        className=" min-h-screen flex items-center justify-center"
+         style={{
+        background:
+          "radial-gradient(1100px circle at 14% 16%, rgba(0,148,151,0.14), transparent 55%), radial-gradient(950px circle at 82% 10%, rgba(255,255,255,0.05), transparent 55%), linear-gradient(180deg, #0b1220, #0f172a)",
+      }}
       >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007478] mx-auto mb-4"></div>
@@ -101,7 +113,11 @@ export default function BlogPage() {
           exit: { opacity: 0, y: -10 },
         }}
         transition={{ type: "spring", duration: 0.5 }}
-        className="bg-background1 dark:bg-backgroundDark min-h-screen flex items-center justify-center"
+        className="min-h-screen flex items-center justify-center"
+        style={{
+        background:
+          "radial-gradient(1100px circle at 14% 16%, rgba(0,148,151,0.14), transparent 55%), radial-gradient(950px circle at 82% 10%, rgba(255,255,255,0.05), transparent 55%), linear-gradient(180deg, #0b1220, #0f172a)",
+      }}
       >
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-500 mb-4">
@@ -238,7 +254,7 @@ export default function BlogPage() {
                 категорию.
               </p>
               <button
-                onClick={() => setSelectedCategory("Все")}
+                onClick={() => handleCategoryChange("all")}
                 className="bg-[#007478] hover:bg-[#005a5e] dark:hover:bg-[#009a9f] text-white px-6 py-3 rounded-lg transition-colors"
               >
                 Показать все статьи

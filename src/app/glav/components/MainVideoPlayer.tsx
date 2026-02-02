@@ -1,112 +1,145 @@
+"use client";
+
+import { Button } from "@/shadcn/button";
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
+import { CallbackModal } from "src/app/ui/ui/CallbackModal";
+
+const BENEFITS = [
+  "Профессиональные кузовные работы",
+  "Качественный результат",
+  "Соблюдение сроков",
+];
+
+const VIDEO_CARD_STYLE = {
+  boxShadow: "5px 25px 50px -12px #FF5347",
+  border: "2px solid rgba(255, 83, 71, 0.4)",
+  borderRadius: "10px",
+};
 
 export default function MainVideoPlayer() {
   const [videoError, setVideoError] = useState(false);
-  const baseApiUrl =
-    process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:4444";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
-  const handleVideoError = () => {
+  const handleError = () => {
     setVideoError(true);
   };
 
   if (videoError) {
     return (
-        <div className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-8 bg-transparent">
-          <div className=" rounded-lg p-8 text-center">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+      <section
+        className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: "url(/bgfon.png)" }}
+      >
+        <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-8">
+          <div className="rounded-xl bg-white/10 backdrop-blur p-8 text-center">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
               Видео временно недоступно
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 mb-6">
               Пожалуйста, попробуйте позже или обновите страницу
             </p>
             <button
               onClick={() => setVideoError(false)}
-              className=" bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-[#FF5347] to-[#EA5E33] text-white font-medium rounded-lg transition-all shadow-lg hover:opacity-90"
             >
               Попробовать снова
             </button>
           </div>
         </div>
+      </section>
     );
   }
 
   return (
-    <div className="bg-transparent">
-      <section
-        className="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-8 section-surface rounded-3xl"
-      >
+    <section
+      className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
+      style={{ backgroundImage: "url(/bgfon.png)" }}
+    >
+      <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
             Наша работа в действии
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-white text-lg max-w-2xl mx-auto">
             Посмотрите, как мы профессионально выполняем кузовные работы
           </p>
         </div>
 
-        {/* Video Player Container */}
-        <div className="relative">
-          <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
+        {/* Video Cards */}
+        <div className="flex flex-col gap-6 sm:gap-8">
+          <div
+            className="relative w-full overflow-hidden bg-black rounded-[10px] aspect-video lg:h-[550px] lg:aspect-auto"
+            style={VIDEO_CARD_STYLE}
+          >
             <ReactPlayer
-              src={`${baseApiUrl}/video/video.mp4`}
-              width={"auto"}
-              height={"auto"}
+              src={`${API_BASE_URL}/video/video1.mp4`}
               controls
-              onError={handleVideoError}
+              width="100%"
+              height="100%"
+              onError={handleError}
+              className="absolute top-0 left-0"
             />
           </div>
 
-          {/* Video Description */}
-          <div className="mt-8 text-center">
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-              <span className="flex items-center gap-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Профессиональные кузовные работы
-              </span>
-              <span className="flex items-center gap-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Качественный результат
-              </span>
-              <span className="flex items-center gap-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Соблюдение сроков
-              </span>
-            </div>
+          <div
+            className="relative w-full overflow-hidden bg-black rounded-[10px] aspect-video lg:h-[550px] lg:aspect-auto"
+            style={VIDEO_CARD_STYLE}
+          >
+            <ReactPlayer
+              src={`${API_BASE_URL}/video/video2.mp4`}
+              controls
+              width="100%"
+              height="100%"
+              onError={handleError}
+              className="absolute top-0 left-0"
+            />
           </div>
         </div>
-      </section>
-    </div>
+
+        {/* Benefits List */}
+        <ul className="flex flex-wrap justify-center gap-6 sm:gap-10 mt-12 sm:mt-16">
+          {BENEFITS.map((item, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-3 text-gray-700 text-base sm:text-lg"
+            >
+              <span
+                className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ backgroundColor: "#FF5347" }}
+              />
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        {/* CTA Button */}
+        <div className="text-center mt-12 sm:mt-16">
+          <CallbackModal
+            trigger={
+              <Button
+                type="button"
+                className="inline-flex items-center justify-center text-white transition-all hover:opacity-95 hover:scale-[1.02] w-full max-w-[305px] h-[72px]"
+                style={{
+                  background: "linear-gradient(90deg, #EF9147 0%, #FF6B35 100%)",
+                  borderRadius: 16,
+                  boxShadow:
+                    "0px 4px 6px -4px #0000004D, 0px 10px 15px -3px #FF5347CC",
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 700,
+                  fontSize: 25,
+                  lineHeight: "24px",
+                  letterSpacing: 0,
+                  textAlign: "center",
+                }}
+              >
+                Записаться
+              </Button>
+            }
+          />
+        </div>
+      </div>
+    </section>
   );
 }

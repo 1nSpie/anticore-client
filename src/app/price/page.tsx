@@ -50,7 +50,7 @@ className="min-h-screen"
 
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 pt-30">
-          <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-340 mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
               {/* Badge */}
               <motion.div
@@ -65,7 +65,7 @@ className="min-h-screen"
 
               {/* Main heading */}
               <motion.h1 
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-teal-700 dark:from-white dark:via-gray-100 dark:to-teal-300 bg-clip-text text-transparent leading-tight"
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-linear-to-r from-gray-900 via-gray-800 to-teal-700 dark:from-white dark:via-gray-100 dark:to-teal-300 bg-clip-text text-transparent leading-tight"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -95,7 +95,7 @@ className="min-h-screen"
               >
                 <Link
                   href="#services"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   Посмотреть услуги
                 </Link>
@@ -120,7 +120,7 @@ className="min-h-screen"
                   key={index}
                   className="text-center p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 group"
                 >
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-teal-100 to-teal-200 dark:from-teal-900/30 dark:to-teal-800/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-teal-100 to-teal-200 dark:from-teal-900/30 dark:to-teal-800/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <feature.icon className="w-8 h-8 text-teal-600 dark:text-teal-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -149,7 +149,7 @@ className="min-h-screen"
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                 Наши услуги
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-teal-500 to-teal-600 mx-auto rounded-full mb-6" />
+              <div className="w-24 h-1 bg-linear-to-r from-teal-500 to-teal-600 mx-auto rounded-full mb-6" />
               <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Выберите подходящий пакет услуг для защиты вашего автомобиля
               </p>

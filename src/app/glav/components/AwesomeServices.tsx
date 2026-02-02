@@ -6,9 +6,7 @@ import { CallbackModal } from "src/app/ui/ui/CallbackModal";
 import { Phone } from "lucide-react";
 import Link from "next/link";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:3001/api";
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL
 export default function AwesomeServices({ id }: { id: string }) {
   const scrollToAutoPrice = () => {
     const element = document.getElementById("auto-price");
@@ -17,10 +15,11 @@ export default function AwesomeServices({ id }: { id: string }) {
     }
   };
 
+
   return (
     <section
       id={id}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900 text-white"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900 text-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
     >
       {/* Background Video */}
       <video
@@ -51,19 +50,16 @@ export default function AwesomeServices({ id }: { id: string }) {
       ></div>
 
       {/* Main Content */}
-      <div className="relative z-20 mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center pt-30">
+      <div className="relative z-20 mx-auto px-4 py-10 sm:py-14 md:py-16 sm:px-6 lg:px-8 text-center">
         {/* Service Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="inline-flex items-center gap-2 mb-8"
+          className="inline-flex items-center gap-2 mb-4 sm:mb-6 md:mb-8"
         >
-          <span className="text-orangeDefault font-mono text-lg tracking-wider">
-            01
-          </span>
-          <div className="w-16 h-px bg-orangeDefault"></div>
-          <span className="text-gray-300 font-light text-sm tracking-widest uppercase">
+          <div className="w-10 sm:w-16 h-px bg-orangeDefault" />
+          <span className="text-gray-300 font-light text-xs sm:text-sm tracking-widest uppercase">
             АНТИКОРРОЗИЙНАЯ ОБРАБОТКА
           </span>
         </motion.div>
@@ -73,10 +69,12 @@ export default function AwesomeServices({ id }: { id: string }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
-          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black leading-none">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orangeDefault via-teal-400 to-orangeDefault animate-gradient-x">
+          <h1>
+            <span
+              className="font-montserrat font-extrabold text-center align-middle text-white [text-shadow:0px_4px_4px_#FF5347] text-[48px] sm:text-[64px] md:text-[80px] lg:text-[100px] leading-tight sm:leading-none"
+            >
               АВАНКОР
             </span>
           </h1>
@@ -87,15 +85,16 @@ export default function AwesomeServices({ id }: { id: string }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="mb-12"
+          className="mb-8 sm:mb-10 md:mb-12"
         >
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-px bg-orangeDefault"></div>
-            <div className="w-12 h-px bg-orangeDefault"></div>
+          <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+            <div className="w-8 sm:w-12 h-px bg-orangeDefault" />
+            <div className="w-8 sm:w-12 h-px bg-orangeDefault" />
           </div>
-          <p className="text-xl sm:text-2xl text-gray-300 font-light tracking-wide max-w-3xl mx-auto">
-            Профессиональная защита Вашего автомобиля от коррозии{" "}
-            <br className="hidden sm:block" />с гарантией до 5 лет
+          <p className="text-base sm:text-xl md:text-2xl text-white font-bold tracking-wide max-w-3xl mx-auto leading-snug">
+            Профессиональная защита Вашего автомобиля от коррозии
+            <br className="hidden sm:block" />
+            с гарантией до 5 лет
           </p>
         </motion.div>
 
@@ -104,22 +103,22 @@ export default function AwesomeServices({ id }: { id: string }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 justify-center items-center w-full sm:w-auto"
         >
           <Button
             onClick={scrollToAutoPrice}
-            className="text-base h-14 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="w-full sm:w-auto text-sm sm:text-base h-12 sm:h-14 inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-gradient-to-r from-[#EF9147] to-[#FF6B35] text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg shadow-orange-500/50 hover:shadow-xl hover:shadow-orange-500/60 transform hover:scale-105 active:scale-100 transition-all duration-200"
           >
-            Расчитать стоимость
+            Рассчитать стоимость
           </Button>
 
           <CallbackModal
             trigger={
               <Link
-                href={""}
-                className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                href=""
+                className="w-full sm:w-auto inline-flex items-center justify-center h-12 sm:h-14 px-6 sm:px-8 py-4 text-black font-semibold rounded-xl sm:rounded-2xl bg-white shadow-lg shadow-orange-500/50 hover:shadow-xl hover:shadow-orange-500/60 transform hover:scale-105 active:scale-100 transition-all duration-200"
               >
-                <Phone className="mr-2 w-5 h-5" />
+                <Phone className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
                 Заказать звонок
               </Link>
             }
@@ -131,39 +130,23 @@ export default function AwesomeServices({ id }: { id: string }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.6 }}
-          className="grid md:grid-cols-4 grid-cols-2 gap-8 mt-16 m-auto mx-auto"
+          className="grid md:grid-cols-4 grid-cols-2 gap-8 mt-10 sm:mt-12 md:mt-16 m-auto mx-auto"
         >
-          <div className="text-center border-x border-white/10">
-            <div className="text-3xl font-bold text-orangeDefault mb-2">
-              До 5
-            </div>
-            <div className="text-sm text-gray-400 uppercase tracking-wide">
-              Лет гарантии
-            </div>
+          <div className="text-center border-x border-white/10 py-4 sm:py-5">
+            <div className="text-2xl sm:text-3xl font-bold text-orange-500 mb-1 sm:mb-2">До 5</div>
+            <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wide">Лет гарантии</div>
           </div>
-          <div className="text-center border-x border-white/10">
-            <div className="text-3xl font-bold text-orangeDefault mb-2">
-              5000+
-            </div>
-            <div className="text-sm text-gray-400 uppercase tracking-wide">
-              Авто защищено
-            </div>
+          <div className="text-center border-x border-white/10 py-4 sm:py-5">
+            <div className="text-2xl sm:text-3xl font-bold text-orange-500 mb-1 sm:mb-2">5000+</div>
+            <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wide">Авто защищено</div>
           </div>
-          <div className="text-center border-x border-white/10">
-            <div className="text-3xl font-bold text-orangeDefault mb-2">
-              от 8ч
-            </div>
-            <div className="text-sm text-gray-400 uppercase tracking-wide">
-              Время работы
-            </div>
+          <div className="text-center border-x border-white/10 py-4 sm:py-5">
+            <div className="text-2xl sm:text-3xl font-bold text-orange-500 mb-1 sm:mb-2">от 8ч</div>
+            <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wide">Время работы</div>
           </div>
-          <div className="text-center border-x border-white/10">
-            <div className="text-3xl font-bold text-orangeDefault mb-2">
-              Работаем
-            </div>
-            <div className="text-sm text-gray-400 uppercase tracking-wide">
-              Без выходных
-            </div>
+          <div className="text-center border-x border-white/10 py-4 sm:py-5">
+            <div className="text-2xl sm:text-3xl font-bold text-orange-500 mb-1 sm:mb-2">Работаем</div>
+            <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wide">Без выходных</div>
           </div>
         </motion.div>
       </div>

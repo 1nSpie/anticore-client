@@ -146,7 +146,7 @@ export default function CarouselSection({ id }: Props) {
   return (
     <section
       id={id}
-      className="relative py-16 lg:py-20 overflow-hidden"
+      className="relative py-16 lg:py-20 overflow-hidden bg-[url(public/bgfon.png)]"
     >
       <div className="max-w-[85rem] mx-auto h-auto px-6 sm:px-6 lg:px-12">
         {/* Заголовок */}
@@ -160,7 +160,7 @@ export default function CarouselSection({ id }: Props) {
         </div>
 
         {/* Контейнер для карусели и блока информации */}
-        <div className="grid grid-cols-1 items-center gap-12 section-surface rounded-3xl p-8 shadow-lg">
+        <div className="grid grid-cols-1 items-center gap-12 section-surface rounded-3xl p-8 ">
           {/* Карусель */}
           <Carousel
             plugins={[plugin.current]}
@@ -178,7 +178,7 @@ export default function CarouselSection({ id }: Props) {
                   key={key}
                   className="md:basis-1/2 lg:basis-1/3 w-full shrink-0"
                 >
-                  <div className="h-full border-greenDefault border-2 p-2 dark:bg-backgroundDark1 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                  <div className="h-full border-orange-600 border-2 p-2 bg-white rounded-2xl hover:shadow-lg transition-shadow duration-300">
                     <div className="flex flex-col items-center h-full text-center">
                       <Image
                         src={slide.img}
@@ -188,10 +188,10 @@ export default function CarouselSection({ id }: Props) {
                         className="w-35 h-35 object-cover mb-4 fill-white"
                       />
                       <div className="flex flex-col text-center h-fit">
-                        <span className="text-xl font-bold text-black transition-colors duration-300 dark:text-white">
+                        <span className="text-xl font-bold text-orange-500 transition-colors duration-300 ">
                           {slide.title}
                         </span>
-                        <span className="text-sm text-black transition-colors duration-300 dark:text-white leading-relaxed">
+                        <span className="text-sm text-black transition-colors duration-300 leading-relaxed">
                           {slide.content}
                         </span>
                       </div>
@@ -200,8 +200,8 @@ export default function CarouselSection({ id }: Props) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden lg:flex" />
-            <CarouselNext className="hidden lg:flex" />
+            <CarouselPrevious variant={"ghost"} className="bg-white text-black border"/>
+            <CarouselNext variant={"ghost"} className="bg-white text-black border"/>
           </Carousel>
           <div className="w-full">
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">

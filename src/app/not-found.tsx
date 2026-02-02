@@ -13,15 +13,6 @@ export default function Custom404() {
         background:
           "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
       }}>
-      <ReactPlayer
-        src={`${API_BASE_URL}/video/video1.mp4`}
-        controls
-        className="w-full h-full object-contain"
-        width={"auto"}
-        height={"auto"}
-      >
-        Ваш браузер не поддерживает воспроизведение видео.
-      </ReactPlayer>
       <div className="text-center max-w-2xl w-full">
         {/* Код ошибки */}
         <p className="text-base font-semibold text-[#007478] ">

@@ -1,9 +1,13 @@
 import { ServicePackage } from "./types";
+import { ShieldCheckIcon, CogIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline"
+import Svarka from "public/svarka.svg";
 
 export const services: ServicePackage[] = [
   {
     id: 1,
-    title: "Комплексная обработка",
+    title: "Антикоррозийная обработка",
+    available: true,
+    icon: ShieldCheckIcon,
     content: [
       {
         name: "Стандарт ML",
@@ -81,6 +85,18 @@ export const services: ServicePackage[] = [
         ],
       },
     ],
+  },
+  {
+    id: 2,
+    title: "Лазерная очистка",
+    icon: CogIcon,
+    available: false,
+  },
+  {
+    id: 3,
+    title: 'Сварка',
+    icon: Svarka,
+    available: false
   },
 ];
 

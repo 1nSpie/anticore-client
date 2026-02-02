@@ -16,11 +16,16 @@ const imageApi = axios.create({
   },
 });
 
+export interface ContentBlock {
+  subtitle?: string;
+  text: string;
+}
+
 export interface BlogPost {
   id: number;
   title: string;
   excerpt: string;
-  content: string;
+  content: ContentBlock[];
   slug: string;
   date: string;
   readTime: string;

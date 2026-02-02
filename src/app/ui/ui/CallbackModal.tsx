@@ -1,4 +1,3 @@
-// components/CallbackModal.tsx
 "use client";
 
 import {
@@ -21,6 +20,8 @@ import { telegramApiClient } from "src/components/telegram/api";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { callbackFormSchema, type CallbackFormData } from "src/lib/validations";
+import { checkDuplicateSubmission, saveSubmission, getLastSubmissionTime } from "src/lib/duplicateCheck";
+import { DuplicateWarningModal } from "./DuplicateWarningModal";
 
 interface CallbackModalProps {
   trigger?: React.ReactNode; // любая кнопка или элемент
@@ -34,6 +35,8 @@ export function CallbackModal({
   setView,
 }: CallbackModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [pendingData, setPendingData] = useState<CallbackFormData | null>(null);
   const pathName = usePathname();
   
   const {
@@ -51,9 +54,10 @@ export function CallbackModal({
     },
   });
 
-  const onSubmit = async (data: CallbackFormData) => {
+  const submitForm = async (data: CallbackFormData) => {
     try {
       await telegramApiClient.sendCallbackForm(data);
+      saveSubmission();
       toast.success("Ваша заявка отправлена!", {
         description: "Менеджер перезвонит вам в ближайшее время",
       });
@@ -76,6 +80,31 @@ export function CallbackModal({
     }
   };
 
+  const onSubmit = async (data: CallbackFormData) => {
+    // Проверяем дубликат по времени
+    if (checkDuplicateSubmission()) {
+      setPendingData(data);
+      setShowDuplicateWarning(true);
+      return;
+    }
+
+    // Если дубликата нет, отправляем сразу
+    await submitForm(data);
+  };
+
+  const handleConfirmDuplicate = async () => {
+    setShowDuplicateWarning(false);
+    if (pendingData) {
+      await submitForm(pendingData);
+      setPendingData(null);
+    }
+  };
+
+  const handleCancelDuplicate = () => {
+    setShowDuplicateWarning(false);
+    setPendingData(null);
+  };
+
   return (
     <Dialog
       open={hasOpen ? hasOpen : isOpen}
@@ -88,8 +117,7 @@ export function CallbackModal({
             Заказать обратный звонок
           </DialogTitle>
           <DialogDescription className="text-gray-600 dark:text-gray-300">
-            Оставьте свои контактные данные и мы свяжемся с вами в течение 15
-            минут
+            Оставьте свои контактные данные и мы свяжемся с вами в ближайшее время
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -156,6 +184,13 @@ export function CallbackModal({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      <DuplicateWarningModal
+        isOpen={showDuplicateWarning}
+        onConfirm={handleConfirmDuplicate}
+        onCancel={handleCancelDuplicate}
+        minutesAgo={getLastSubmissionTime() || 0}
+      />
     </Dialog>
   );
 }

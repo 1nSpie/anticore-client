@@ -8,6 +8,8 @@ export interface ServiceStep {
 
 export interface ServicePackage {
   id: number
-  title: string
-  content: ServiceStep[]
+  title: string;
+  available:boolean;
+  icon:any;
+  content?: ServiceStep[]
 }

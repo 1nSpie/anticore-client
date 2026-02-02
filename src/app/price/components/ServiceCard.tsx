@@ -2,6 +2,9 @@
 
 import Link from "next/link"
 import { ArrowRightIcon, ShieldCheckIcon, CogIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline"
+import Svarka from "public/svarka.svg";
+import React from "react";
+import Image from "next/image";
 
 interface ServiceCardProps {
   service: {
@@ -18,7 +21,7 @@ const getServiceIcon = (id: number) => {
     case 2:
       return CogIcon;
     case 3:
-      return WrenchScrewdriverIcon;
+      return Svarka;
     default:
       return ShieldCheckIcon;
   }
@@ -57,37 +60,47 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   const colorScheme = getColorScheme(service.id);
 
   return (
-    <Link href={`/price/${service.id}`} className="block group">
-      <div className={`relative overflow-hidden bg-gradient-to-br ${colorScheme.bg} ${colorScheme.hover} border ${colorScheme.border} rounded-3xl p-8 transition-all duration-300 hover:shadow-xl hover:shadow-[#007478]/10 dark:hover:shadow-[#007478]/5 transform hover:-translate-y-2 cursor-pointer h-full`}>
+    <Link href={`/price/${service.id}`} className="block group h-full">
+      <div className={`relative overflow-hidden bg-gradient-to-br ${colorScheme.bg} ${colorScheme.hover} border ${colorScheme.border} rounded-3xl p-8 transition-all duration-300 hover:shadow-xl hover:shadow-[#007478]/10 dark:hover:shadow-[#007478]/5 transform hover:-translate-y-2 cursor-pointer h-full flex flex-col`}>
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent rounded-full -translate-y-12 translate-x-12" />
-        
+
         {/* Icon */}
-        <div className={`inline-flex items-center justify-center w-16 h-16 ${colorScheme.icon} rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
-          <IconComponent className={`w-8 h-8 ${colorScheme.iconColor}`} />
+        <div className={`inline-flex items-center justify-center w-16 h-16 ${colorScheme.icon} rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+          {service.id === 3 ? (
+            <Image 
+              alt="svarka" 
+              src={Svarka} 
+              className={`w-8 h-8 ${colorScheme.iconColor}`} 
+            />
+          ) : (
+            <IconComponent className={`w-8 h-8 ${colorScheme.iconColor}`} />
+          )}
         </div>
-        
-        {/* Content */}
-        <div className="relative">
+
+        {/* Content - занимает всё доступное пространство */}
+        <div className="flex flex-col flex-grow">
           <h3 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
             {service.title}
           </h3>
-          
-          <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+
+          <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed flex-grow">
             Узнайте подробности о наших услугах и получите персональное предложение
           </p>
-          
-          {/* CTA */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-[#007478] dark:text-[#00a2a6]">
-              Подробнее
-            </span>
-            <div className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-700/80 rounded-full group-hover:bg-[#007478] group-hover:text-white transition-all duration-300">
-              <ArrowRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300" />
+
+          {/* CTA - всегда внизу */}
+          <div className="mt-auto pt-4 border-t border-gray-200/50 dark:border-gray-700/30">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-[#007478] dark:text-[#00a2a6]">
+                Подробнее
+              </span>
+              <div className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-700/80 rounded-full group-hover:bg-[#007478] group-hover:text-white transition-all duration-300">
+                <ArrowRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300" />
+              </div>
             </div>
           </div>
         </div>
-        
+
         {/* Hover effect overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#007478]/0 via-[#007478]/0 to-[#007478]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
       </div>

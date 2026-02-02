@@ -46,7 +46,7 @@ export default function ServiceDetailTable({ service }: Props) {
                 </AccordionTrigger>
                 <AccordionContent className="bg-white dark:bg-gray-900 rounded-lg p-4 shadow-inner">
                   <div className="space-y-2">
-                    {service.content.map((complex) => {
+                    {service.content && service.content.map((complex) => {
                       const price = complex.prices.find(
                         (p) => p.carType === carCategory
                       )?.price;
@@ -99,7 +99,7 @@ export default function ServiceDetailTable({ service }: Props) {
             >
               Категория авто
             </TableHead>
-            {service.content.map((complex, idx) => (
+            {service.content && service.content.map((complex, idx) => (
               <TableHead
                 align="center"
                 key={idx}
@@ -142,7 +142,7 @@ export default function ServiceDetailTable({ service }: Props) {
               <TableCell className="py-5 px-6 text-left text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">
                 {carCategory}
               </TableCell>
-              {service.content.map((complex, index) => {
+              {service.content && service.content.map((complex, index) => {
                 const price = complex.prices.find(
                   (price) => price.carType === carCategory
                 )?.price;

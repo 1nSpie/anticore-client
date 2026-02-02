@@ -15,19 +15,19 @@ import Link from "next/link";
 import FeedbackLine from "src/app/ui/ui/FeedbackLine";
 
 interface PriceCalculatorProps {
-  service: ServiceStep;
+  service?: ServiceStep;
 }
 
 const PriceCalculator = ({ service }: PriceCalculatorProps) => {
   const [selectedCarType, setSelectedCarType] =
     useState<CarType>("До 4-х метров");
-
+  if (!service) return
   const selectedPrice = service.prices.find(
     (p) => p.carType === selectedCarType
   )?.price;
 
   return (
-    <div className="bg-gradient-to-br from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10 rounded-3xl p-8 shadow-xl border border-[#007478]/30 dark:border-[#007478]/20">
+    <div className="bg-linear-to-br from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10 rounded-3xl p-8 shadow-xl border border-[#007478]/30 dark:border-[#007478]/20">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#007478]/10 dark:bg-[#007478]/20 rounded-2xl mb-4">
           <CalculatorIcon className="w-8 h-8 text-[#007478] dark:text-[#00a2a6]" />
@@ -45,21 +45,19 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
           <motion.button
             key={priceItem.carType}
             onClick={() => setSelectedCarType(priceItem.carType)}
-            className={`p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
-              selectedCarType === priceItem.carType
-                ? "border-[#007478] bg-[#007478] text-white shadow-lg"
-                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-[#007478] hover:shadow-md"
-            }`}
+            className={`p-4 rounded-2xl border-2 transition-all duration-300 text-left ${selectedCarType === priceItem.carType
+              ? "border-[#007478] bg-[#007478] text-white shadow-lg"
+              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-[#007478] hover:shadow-md"
+              }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <div className="text-sm font-medium">{priceItem.carType}</div>
             <div
-              className={`text-xs mt-1 ${
-                selectedCarType === priceItem.carType
-                  ? "text-[#007478]/80"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
+              className={`text-xs mt-1 ${selectedCarType === priceItem.carType
+                ? "text-[#007478]/80"
+                : "text-gray-500 dark:text-gray-400"
+                }`}
             >
               {typeof priceItem.price === "number"
                 ? `${priceItem.price.toLocaleString()} ₽`
@@ -120,28 +118,25 @@ const ProcessStep = ({
       initial={{ opacity: 0, x: -50 }}
       animate={{ opacity: isActive ? 1 : 0.4, x: 0 }}
       transition={{ delay: index * 0.1 }}
-      className={`flex items-start space-x-4 p-4 rounded-2xl transition-all duration-500 ${
-        isActive
-          ? "bg-[#007478]/10 dark:bg-[#007478]/20 border-2 border-[#007478]/30 dark:border-[#007478]/20 shadow-md"
-          : "bg-gray-50 dark:bg-gray-800/50"
-      }`}
+      className={`flex items-start space-x-4 p-4 rounded-2xl transition-all duration-500 ${isActive
+        ? "bg-[#007478]/10 dark:bg-[#007478]/20 border-2 border-[#007478]/30 dark:border-[#007478]/20 shadow-md"
+        : "bg-gray-50 dark:bg-gray-800/50"
+        }`}
     >
       <div
-        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 ${
-          isActive
-            ? "bg-[#007478] text-white"
-            : "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
-        }`}
+        className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 ${isActive
+          ? "bg-[#007478] text-white"
+          : "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
+          }`}
       >
         {isActive ? <CheckIcon className="w-5 h-5" /> : index + 1}
       </div>
       <div className="flex-1">
         <p
-          className={`text-sm font-medium transition-colors duration-300 ${
-            isActive
-              ? "text-gray-900 dark:text-white"
-              : "text-gray-500 dark:text-gray-400"
-          }`}
+          className={`text-sm font-medium transition-colors duration-300 ${isActive
+            ? "text-gray-900 dark:text-white"
+            : "text-gray-500 dark:text-gray-400"
+            }`}
         >
           {step}
         </p>
@@ -150,9 +145,9 @@ const ProcessStep = ({
   );
 };
 
-const ProcessVisualizer = ({ steps }: { steps: string[] }) => {
+const ProcessVisualizer = ({ steps }: { steps?: string[] }) => {
   const [activeStep, setActiveStep] = useState(0);
-
+  if (!steps) return
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % steps.length);
@@ -190,11 +185,10 @@ const ProcessVisualizer = ({ steps }: { steps: string[] }) => {
             <button
               key={index}
               onClick={() => setActiveStep(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index <= activeStep
-                  ? "bg-[#007478]"
-                  : "bg-gray-300 dark:bg-gray-600"
-              }`}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${index <= activeStep
+                ? "bg-[#007478]"
+                : "bg-gray-300 dark:bg-gray-600"
+                }`}
             />
           ))}
         </div>
@@ -211,11 +205,70 @@ export default function ServiceDetailPage() {
   const packageId = parseInt(params.id as string, 10);
   const service = services.find((item) => item.id === packageId);
 
-  if (!service) {
+  if (service?.available === false) {
+    return <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="h-full pt-10"
+      style={{
+        background:
+          "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
+      }}
+    >
+      {/* Обернул декоративные элементы в контейнер с hidden overflow */}
+      <div className="relative overflow-hidden">
+
+        {/* Hero Section */}
+        <section className="relative py-20 lg:py-32">
+          <div className="max-w-340 mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <button
+                onClick={() => router.back()}
+                className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-[#007478] dark:hover:text-[#00a2a6] transition-colors mb-8 px-4 py-2 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"
+              >
+                <ArrowLeftIcon className="w-5 h-5" />
+                <span>Назад к услугам</span>
+              </button>
+
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#007478]/10 dark:bg-[#007478]/20 backdrop-blur-sm rounded-full mb-8"
+              >
+                <CheckIcon className="w-5 h-5 text-[#007478] dark:text-[#00a2a6]" />
+                <span className="text-sm font-semibold text-[#007478] dark:text-[#00a2a6]">
+                  Профессиональная защита
+                </span>
+              </motion.div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-[#007478] dark:from-white dark:via-gray-100 dark:to-[#00a2a6] bg-clip-text text-transparent leading-tight mb-6">
+                {service.title}
+              </h1>
+              <h2 className="font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-[#007478] dark:from-white dark:via-gray-100 dark:to-[#00a2a6] bg-clip-text text-transparent leading-tight mb-6">
+                Извините, этот раздел пока в разработке
+              </h2>
+            </motion.div>
+          </div>
+        </section>
+
+      </div>
+
+      <FeedbackLine />
+    </motion.div>
+  }
+
+  if (!service?.content) {
     notFound();
   }
 
-  const currentService = service.content[selectedServiceIndex];
+  const currentService = service.content ? service.content[selectedServiceIndex] : undefined;
 
   // Color schemes for different service packages
   const getServiceColorScheme = (index: number) => {
@@ -248,7 +301,7 @@ export default function ServiceDetailPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-     className="min-h-screen"
+      className="min-h-screen"
       style={{
         background:
           "radial-gradient(900px circle at 20% 18%, rgba(0, 148, 151, 0.12), transparent 55%), radial-gradient(1100px circle at 80% 12%, rgba(15, 23, 42, 0.12), transparent 60%), linear-gradient(180deg, rgba(13, 22, 36, 0.94), rgba(13, 22, 36, 0.82))",
@@ -259,7 +312,7 @@ export default function ServiceDetailPage() {
 
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32">
-          <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-340 mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -324,11 +377,10 @@ export default function ServiceDetailPage() {
                   <motion.button
                     key={index}
                     onClick={() => setSelectedServiceIndex(index)}
-                    className={`relative p-6 rounded-3xl border-2 transition-all duration-300 text-left group overflow-hidden ${
-                      selectedServiceIndex === index
-                        ? "border-[#007478] bg-[#007478] text-white shadow-xl transform scale-105"
-                        : `bg-gradient-to-br ${colorScheme.bg} ${colorScheme.border} border text-gray-700 dark:text-gray-200 hover:shadow-lg hover:transform hover:scale-102`
-                    }`}
+                    className={`relative p-6 rounded-3xl border-2 transition-all duration-300 text-left group overflow-hidden ${selectedServiceIndex === index
+                      ? "border-[#007478] bg-[#007478] text-white shadow-xl transform scale-105"
+                      : `bg-gradient-to-br ${colorScheme.bg} ${colorScheme.border} border text-gray-700 dark:text-gray-200 hover:shadow-lg hover:transform hover:scale-102`
+                      }`}
                     whileHover={{
                       scale: selectedServiceIndex === index ? 1.05 : 1.02,
                     }}
@@ -344,21 +396,19 @@ export default function ServiceDetailPage() {
                       {serviceItem.name}
                     </h3>
                     <p
-                      className={`text-sm mb-4 relative z-10 ${
-                        selectedServiceIndex === index
-                          ? "text-white/90"
-                          : "text-gray-600 dark:text-gray-300"
-                      }`}
+                      className={`text-sm mb-4 relative z-10 ${selectedServiceIndex === index
+                        ? "text-white/90"
+                        : "text-gray-600 dark:text-gray-300"
+                        }`}
                     >
                       {serviceItem.steps.length} этапов обработки
                     </p>
                     <div className="relative z-10">
                       <span
-                        className={`text-xl font-bold ${
-                          selectedServiceIndex === index
-                            ? "text-white"
-                            : colorScheme.text
-                        }`}
+                        className={`text-xl font-bold ${selectedServiceIndex === index
+                          ? "text-white"
+                          : colorScheme.text
+                          }`}
                       >
                         от{" "}
                         {typeof serviceItem.prices[0].price === "number"
@@ -380,7 +430,7 @@ export default function ServiceDetailPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <ProcessVisualizer steps={currentService.steps} />
+                <ProcessVisualizer steps={currentService?.steps} />
               </motion.div>
 
               <motion.div
