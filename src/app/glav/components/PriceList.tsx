@@ -9,10 +9,13 @@ import car3 from "../../../../public/Auto_C_Class.png";
 import car4 from "../../../../public/Auto_D_Class.png";
 import car5 from "../../../../public/Auto_E_Class.png";
 import car6 from "../../../../public/Auto_F_Class.png";
+import { getCarsBySegment, type ApiCar } from "../api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:4444";
-const SEGMENT_LIST_URL = `${API_BASE.replace(/\/$/, "")}${API_BASE.endsWith("/api") ? "" : "/api"}/segment`;
+const SEGMENT_LIST_URL = `${API_BASE.replace(/\/$/, "")}${
+  API_BASE.endsWith("/api") ? "" : "/api"
+}/segment`;
 
 interface SegmentPrice {
   id: number;
@@ -25,51 +28,47 @@ interface SegmentPrice {
 
 const SEGMENT_META: Record<
   number,
-  { name: string; exampleCars: string; imageSrc: typeof car1; imageAlt: string }
+  { name: string; imageSrc: typeof car1; imageAlt: string }
 > = {
   1: {
     name: "Легковые автомобили до 4 метров (Класс A,B)",
-    exampleCars:
-      "Kia Picanto, Ford Fiesta, Chevrolet Spark, Lada Kalina, Nissan Micra, Peugeot 1007",
     imageSrc: car1,
     imageAlt: "Класс A,B",
   },
   2: {
     name: "Легковые автомобили от 4 до 5 метров (Класс C,D,E)",
-    exampleCars:
-      "Mazda 3, Ford Mondeo, Focus, Mazda 6, Toyota Camry, Corolla, Avensis, KIA Optima, Rio, Hyundai Solaris",
     imageSrc: car4,
     imageAlt: "Класс C,D,E",
   },
   3: {
     name: "Минивэны, кроссоверы",
-    exampleCars:
-      "KIA Sportage, Hyundai ix35, Nissan Qashqai, Renault Duster, Ford Kuga, Geely Engrand X7",
     imageSrc: car3,
     imageAlt: "Минивэны, кроссоверы",
   },
   4: {
     name: "Внедорожники",
-    exampleCars:
-      "Toyota Land Cruiser 100, 200, Prado, Highlander, Jeep, Opel Frontera, Cadillac Escalade, Chevrolet Suburban, УАЗ",
     imageSrc: car5,
     imageAlt: "Внедорожники",
   },
   5: {
     name: "Микроавтобусы и пикапы",
-    exampleCars:
-      "Mercedes-Benz Sprinter, Ford Transit, Fiat Ducato, Газель, Ford F150, Dodge Ram, Toyota Tundra, Volkswagen Amarok, Chevrolet Silverado",
     imageSrc: car6,
     imageAlt: "Микроавтобусы и пикапы",
   },
   6: {
     name: "Премиум класс",
-    exampleCars:
-      "Jaguar, BMW, Audi, Mercedes, Rover, Land Rover, Lexus, Volkswagen, Volvo, Mitsubishi Pajero, Toyota Alphard",
     imageSrc: car2,
     imageAlt: "Премиум класс",
   },
 };
+
+function formatExampleCars(cars: ApiCar[]): string {
+  if (!cars.length) return "";
+  const picked = cars.slice(0, 7);
+  return picked
+    .map((c) => (c.brand?.name ? `${c.brand.name} ${c.model}` : c.model))
+    .join(", ");
+}
 
 function formatPrice(value: number | null): string {
   return value == null ? "Договорная" : `${value} руб`;
@@ -81,18 +80,49 @@ type Props = {
 
 export default function PriceCardList({ id }: Props) {
   const [segments, setSegments] = useState<SegmentPrice[]>([]);
+  const [exampleCars, setExampleCars] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     fetch(SEGMENT_LIST_URL)
       .then((res) => {
         if (!res.ok) throw new Error("Ошибка загрузки");
         return res.json();
       })
-      .then((data: SegmentPrice[]) => setSegments(data))
+      .then((data: SegmentPrice[]) => {
+        if (cancelled) return;
+        setSegments(data);
+        const segmentIds = Array.from(new Set(data.map((s) => s.segment)));
+        return Promise.all(
+          segmentIds.map((segId) =>
+            getCarsBySegment(segId)
+              .then((cars) => ({ segId, cars }))
+              .catch(() => ({ segId, cars: [] as ApiCar[] }))
+          )
+        );
+      })
+      .then((results) => {
+        if (!results || cancelled) return;
+        const map: Record<number, string> = {};
+        results.forEach(({ segId, cars }) => {
+          const str = formatExampleCars(cars);
+          if (str) {
+            map[segId] = str;
+          }
+        });
+        setExampleCars(map);
+      })
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (loading) {
@@ -152,32 +182,32 @@ export default function PriceCardList({ id }: Props) {
 
                 <p className="text-sm text-gray-800 mb-4">
                   <span className="font-medium">Например: </span>
-                  {meta.exampleCars}
+                  {exampleCars[segment.segment] || "—"}
                 </p>
 
                 <div className="space-y-2">
                   <div className="flex justify-between gap-2">
                     <span className="font-bold text-black">Стандарт ML:</span>
                     <span className="text-black">
-                      {formatPrice(segment.segment === 6 ? null : segment.standartML)}
+                      {formatPrice(segment.standartML)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
                     <span className="font-bold text-black">Стандарт ML/Body:</span>
                     <span className="text-black">
-                      {formatPrice(segment.segment === 6 ? null : segment.standartMLBody)}
+                      {formatPrice(segment.standartMLBody)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
                     <span className="font-bold text-black">Комплекс ML:</span>
                     <span className="text-black">
-                      {formatPrice(segment.segment === 6 ? null : segment.complexML)}
+                      {formatPrice(segment.complexML)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
                     <span className="font-bold text-black">Комплекс ML/Body:</span>
                     <span className="text-black">
-                      {formatPrice(segment.segment === 6 ? null : segment.complexMLBody)}
+                      {formatPrice(segment.complexMLBody)}
                     </span>
                   </div>
                 </div>

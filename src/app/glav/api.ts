@@ -43,3 +43,18 @@ export async function getSegments(): Promise<SegmentPrice[]> {
   const res = await axiosAgent.get<SegmentPrice[]>("/segment");
   return Array.isArray(res.data) ? res.data : [];
 }
+
+export interface ApiCar {
+  id: number;
+  model: string;
+  segment: number;
+  brandId?: number | null;
+  brand?: { id: number; name: string } | null;
+}
+
+export async function getCarsBySegment(
+  segment: number
+): Promise<ApiCar[]> {
+  const res = await axiosAgent.get<ApiCar[]>(`/cars/by-segment/${segment}`);
+  return Array.isArray(res.data) ? res.data : [];
+}
