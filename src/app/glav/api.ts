@@ -30,3 +30,16 @@ export async function getAllCarWithBrand(
   return res.data;
 }
 
+export interface SegmentPrice {
+  id: number;
+  segment: number;
+  standartML: number | null;
+  standartMLBody: number | null;
+  complexML: number | null;
+  complexMLBody: number | null;
+}
+
+export async function getSegments(): Promise<SegmentPrice[]> {
+  const res = await axiosAgent.get<SegmentPrice[]>("/segment");
+  return Array.isArray(res.data) ? res.data : [];
+}

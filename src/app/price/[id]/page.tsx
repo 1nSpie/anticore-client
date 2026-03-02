@@ -10,21 +10,51 @@ import {
   CalculatorIcon,
 } from "@heroicons/react/24/outline";
 import { services } from "../components/servicesData";
-import { ServiceStep, CarType } from "../components/types";
+import { ServiceStep } from "../components/types";
 import Link from "next/link";
 import FeedbackLine from "src/app/ui/ui/FeedbackLine";
+import { getSegments, type SegmentPrice } from "src/app/glav/api";
+import { SEGMENT_NAMES, SERVICE_PRICE_KEYS } from "../lib/segments";
+
+const SEGMENT_IDS = [1, 2, 3, 4, 5, 6] as const;
+
+function formatPrice(value: number | null): string {
+  return value == null ? "Договорная" : `${value.toLocaleString()} ₽`;
+}
+
+function getPriceForSegmentAndService(
+  segments: SegmentPrice[],
+  segmentId: number,
+  serviceIndex: number
+): number | null {
+  const key = SERVICE_PRICE_KEYS[serviceIndex];
+  const row = segments.find((s) => s.segment === segmentId);
+  if (!row) return null;
+  const val = row[key];
+  return typeof val === "number" ? val : null;
+}
 
 interface PriceCalculatorProps {
   service?: ServiceStep;
+  serviceIndex: number;
+  segments: SegmentPrice[];
+  loading: boolean;
 }
 
-const PriceCalculator = ({ service }: PriceCalculatorProps) => {
-  const [selectedCarType, setSelectedCarType] =
-    useState<CarType>("До 4-х метров");
-  if (!service) return
-  const selectedPrice = service.prices.find(
-    (p) => p.carType === selectedCarType
-  )?.price;
+const PriceCalculator = ({
+  service,
+  serviceIndex,
+  segments,
+  loading,
+}: PriceCalculatorProps) => {
+  const [selectedSegment, setSelectedSegment] = useState(1);
+  if (!service) return null;
+
+  const price =
+    selectedSegment === 6
+      ? null
+      : getPriceForSegmentAndService(segments, selectedSegment, serviceIndex);
+  const displayPrice = formatPrice(price);
 
   return (
     <div className="bg-linear-to-br from-[#007478]/10 to-[#007478]/20 dark:from-[#007478]/20 dark:to-[#007478]/10 rounded-3xl p-8 shadow-xl border border-[#007478]/30 dark:border-[#007478]/20">
@@ -36,70 +66,85 @@ const PriceCalculator = ({ service }: PriceCalculatorProps) => {
           Калькулятор стоимости
         </h3>
         <p className="text-gray-600 dark:text-gray-300">
-          Выберите тип автомобиля для расчета цены
+          Выберите тип автомобиля для расчёта цены
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        {service.prices.map((priceItem) => (
-          <motion.button
-            key={priceItem.carType}
-            onClick={() => setSelectedCarType(priceItem.carType)}
-            className={`p-4 rounded-2xl border-2 transition-all duration-300 text-left ${selectedCarType === priceItem.carType
-              ? "border-[#007478] bg-[#007478] text-white shadow-lg"
-              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-[#007478] hover:shadow-md"
-              }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="text-sm font-medium">{priceItem.carType}</div>
-            <div
-              className={`text-xs mt-1 ${selectedCarType === priceItem.carType
-                ? "text-[#007478]/80"
-                : "text-gray-500 dark:text-gray-400"
-                }`}
-            >
-              {typeof priceItem.price === "number"
-                ? `${priceItem.price.toLocaleString()} ₽`
-                : priceItem.price}
-            </div>
-          </motion.button>
-        ))}
-      </div>
-
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="mt-6 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-[#007478] "
-        >
-          <div className="text-center">
-            <div className="text-3xl font-bold text-[#007478] dark:text-[#00a2a6] mb-2">
-              {typeof selectedPrice === "number"
-                ? `${selectedPrice.toLocaleString()} ₽`
-                : selectedPrice}
-            </div>
-            <div className="text-gray-600 dark:text-gray-300 mb-4">
-              за {selectedCarType.toLowerCase()}
-            </div>
-            <div className="flex space-x-3">
-              <Link
-                href="tel:+79932456882"
-                className="flex-1 bg-[#007478] hover:bg-[#005a5e] dark:hover:bg-[#009a9f] text-white py-3 rounded-xl font-medium transition-colors text-center"
-              >
-                Записаться
-              </Link>
-              <Link
-                href="/#auto-price"
-                className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-center"
-              >
-                Консультация
-              </Link>
-            </div>
+      {loading ? (
+        <div className="py-8 text-center text-gray-500 dark:text-gray-400">
+          Загрузка цен...
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            {SEGMENT_IDS.map((segId) => {
+              const p =
+                segId === 6
+                  ? null
+                  : getPriceForSegmentAndService(segments, segId, serviceIndex);
+              const isSelected = selectedSegment === segId;
+              return (
+                <motion.button
+                  key={segId}
+                  onClick={() => setSelectedSegment(segId)}
+                  className={`p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
+                    isSelected
+                      ? "border-[#007478] bg-[#007478] text-white shadow-lg"
+                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-[#007478] hover:shadow-md"
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="text-sm font-medium">
+                    {SEGMENT_NAMES[segId]}
+                  </div>
+                  <div
+                    className={`text-xs mt-1 ${
+                      isSelected
+                        ? "text-white/80"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  >
+                    {formatPrice(p)}
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
-        </motion.div>
-      </AnimatePresence>
+
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mt-6 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-[#007478]"
+            >
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[#007478] dark:text-[#00a2a6] mb-2">
+                  {displayPrice}
+                </div>
+                <div className="text-gray-600 dark:text-gray-300 mb-4">
+                  для {SEGMENT_NAMES[selectedSegment].toLowerCase()}
+                </div>
+                <div className="flex space-x-3">
+                  <Link
+                    href="tel:+79932456882"
+                    className="flex-1 bg-[#007478] hover:bg-[#005a5e] dark:hover:bg-[#009a9f] text-white py-3 rounded-xl font-medium transition-colors text-center"
+                  >
+                    Записаться
+                  </Link>
+                  <Link
+                    href="/#auto-price"
+                    className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-center"
+                  >
+                    Консультация
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </>
+      )}
     </div>
   );
 };
@@ -197,10 +242,32 @@ const ProcessVisualizer = ({ steps }: { steps?: string[] }) => {
   );
 };
 
+function getMinPriceForService(
+  segments: SegmentPrice[],
+  serviceIndex: number
+): number | null {
+  let min: number | null = null;
+  for (const seg of segments) {
+    if (seg.segment === 6) continue;
+    const val = seg[SERVICE_PRICE_KEYS[serviceIndex]];
+    if (typeof val === "number" && (min === null || val < min)) min = val;
+  }
+  return min;
+}
+
 export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(0);
+  const [segments, setSegments] = useState<SegmentPrice[]>([]);
+  const [segmentsLoading, setSegmentsLoading] = useState(true);
+
+  useEffect(() => {
+    getSegments()
+      .then(setSegments)
+      .catch(() => setSegments([]))
+      .finally(() => setSegmentsLoading(false));
+  }, []);
 
   const packageId = parseInt(params.id as string, 10);
   const service = services.find((item) => item.id === packageId);
@@ -405,16 +472,23 @@ export default function ServiceDetailPage() {
                     </p>
                     <div className="relative z-10">
                       <span
-                        className={`text-xl font-bold ${selectedServiceIndex === index
-                          ? "text-white"
-                          : colorScheme.text
-                          }`}
+                        className={`text-xl font-bold ${
+                          selectedServiceIndex === index
+                            ? "text-white"
+                            : colorScheme.text
+                        }`}
                       >
-                        от{" "}
-                        {typeof serviceItem.prices[0].price === "number"
-                          ? serviceItem.prices[0].price.toLocaleString()
-                          : serviceItem.prices[0].price}{" "}
-                        ₽
+                        {segmentsLoading ? (
+                          "от — ₽"
+                        ) : (() => {
+                          const minP = getMinPriceForService(
+                            segments,
+                            index
+                          );
+                          return minP != null
+                            ? `от ${minP.toLocaleString()} ₽`
+                            : "Договорная";
+                        })()}
                       </span>
                     </div>
                   </motion.button>
@@ -439,7 +513,12 @@ export default function ServiceDetailPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <PriceCalculator service={currentService} />
+                <PriceCalculator
+                  service={currentService}
+                  serviceIndex={selectedServiceIndex}
+                  segments={segments}
+                  loading={segmentsLoading}
+                />
               </motion.div>
             </div>
           </div>
