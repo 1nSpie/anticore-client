@@ -56,6 +56,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
+        <script type="text/javascript">window._ab_id_=169026</script>
+        <script src="https://cdn.botfaqtor.ru/one.js"></script>
         {/* Yandex.Metrika counter */}
         {isWorkYandexMetrics ? (
           <>
