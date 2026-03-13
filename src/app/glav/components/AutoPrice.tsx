@@ -49,9 +49,10 @@ export default function AutoPrice({ id }: AutoPriceProps) {
     watch,
     control,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid, isSubmitting },
   } = useForm<AutoPriceFormData>({
     resolver: zodResolver(autoPriceFormSchema),
+    mode: "onChange",
     defaultValues: {
       brand: "",
       model: "",
@@ -590,11 +591,8 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                       </Button>
                       <Button
                         type="submit"
-                        className="bg-gradient-to-r from-[#EF9147] to-[#FF6B35] hover:opacity-90 text-white shadow-orange-500"
-                        onClick={handleSubmit((data) => {
-                          onSubmit(data);
-                          closeModal(CONTACT_MODAL_ID);
-                        })}
+                        disabled={!isValid || isSubmitting}
+                        className="bg-gradient-to-r from-[#EF9147] to-[#FF6B35] hover:opacity-90 text-white shadow-orange-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:opacity-60"
                       >
                         Отправить заявку
                       </Button>
@@ -745,24 +743,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                 <h4 className="font-medium text-sm text-gray-700">
                   Что включено:
                 </h4>
-                {isMobile ? <ScrollArea className="max-h-40 overflow-x-hidden mb-4">
-                  <ul className="space-y-1">
-                    {selectedService &&
-                      serviceDescriptions[selectedService.label]?.includes.map(
-                        (item, index) => (
-                          <li
-                            key={index}
-                            className="flex items-start space-x-2 text-sm text-gray-700"
-                          >
-                            <span className="text-orange-600 mt-1">
-                              •
-                            </span>
-                            <span>{item}</span>
-                          </li>
-                        )
-                      )}
-                  </ul>
-                </ScrollArea> : <ul className="space-y-1">
+ <ul className="space-y-1">
                   {selectedService &&
                     serviceDescriptions[selectedService.label]?.includes.map(
                       (item, index) => (
@@ -777,7 +758,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                         </li>
                       )
                     )}
-                </ul>}
+                </ul>
               </div>
 
               <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">

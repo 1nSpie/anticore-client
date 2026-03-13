@@ -42,10 +42,11 @@ export function CallbackModal({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isSubmitting },
     reset,
   } = useForm<CallbackFormData>({
     resolver: zodResolver(callbackFormSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       phone: "",
@@ -180,7 +181,8 @@ export function CallbackModal({
           <DialogFooter className="pt-4">
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#EF9147] to-[#FF6B35] hover:opacity-90 text-white shadow-md hover:shadow-orange-500/30 transition-all duration-200"
+              disabled={!isValid || isSubmitting}
+              className="w-full bg-linear-to-r from-[#EF9147] to-[#FF6B35] hover:opacity-90 text-white shadow-md hover:shadow-orange-500/30 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:opacity-60"
             >
               Отправить заявку
             </Button>
