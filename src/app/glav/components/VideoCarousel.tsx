@@ -19,47 +19,47 @@ const VIDEOS = [
     id: 1,
     url: `${API_BASE_URL}/video/shorts/shorts1.mp4`,
     title: "Удаление ржавчины ЛАЗЕРОМ. Ржавая Toyota Land Cruiser 200",
-  
+
   },
   {
     id: 2,
     url: `${API_BASE_URL}/video/shorts/shorts2.mp4`,
     title: "Лазерное удаление ржавчины",
-   
+
   },
   {
     id: 3,
     url: `${API_BASE_URL}/video/shorts/shorts3.mp4`,
     title: "Антикор Китайского электропикапа Changan Hunter 2024",
-   
+
   },
   {
     id: 4,
     url: `${API_BASE_URL}/video/shorts/shorts4.mp4`,
     title: "Антикор Lada Granta",
-    
+
   },
   {
     id: 5,
     url: `${API_BASE_URL}/video/shorts/shorts5.mp4`,
     title: "Антикор Dodge Ram",
-   
+
   },
   {
     id: 6,
     url: `${API_BASE_URL}/video/shorts/shorts6.mp4`,
     title: "Антикор Chery Tiggo 8",
-   
+
   },
   {
     id: 7,
     url: `${API_BASE_URL}/video/shorts/shorts7.mp4`,
     title: "Антикор Tank 300",
-    
+
   },
 ];
 
-export default function VideoCarousel() {
+export default function VideoCarousel({ id }: { id: string }) {
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -90,7 +90,7 @@ export default function VideoCarousel() {
   }
 
   return (
-    <section className="py-12 lg:py-20 bg-[url(public/videocarouselbg.png)] bg-cover bg-center">
+    <section className="py-12 lg:py-20 bg-[url(public/videocarouselbg.png)] bg-cover bg-center" id={id}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
@@ -157,8 +157,8 @@ export default function VideoCarousel() {
                             left: 0,
                           }}
                         />
-                        
-                        
+
+
                       </div>
                     </div>
 
@@ -168,7 +168,7 @@ export default function VideoCarousel() {
                           {video.title}
                         </h3>
                       </div>
-                  
+
                     </div>
                   </div>
                 </CarouselItem>
@@ -228,7 +228,7 @@ export default function VideoCarousel() {
           </Carousel>
         </div>
 
-    
+
       </div>
     </section>
   );

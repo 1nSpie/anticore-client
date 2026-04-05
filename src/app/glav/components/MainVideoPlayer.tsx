@@ -17,7 +17,7 @@ const VIDEO_CARD_STYLE = {
   borderRadius: "10px",
 };
 
-export default function MainVideoPlayer() {
+export default function MainVideoPlayer({ id }: { id: string }) {
   const [videoError, setVideoError] = useState(false);
   const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
@@ -55,6 +55,7 @@ export default function MainVideoPlayer() {
     <section
       className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
       style={{ backgroundImage: "url(/bgfon.png)" }}
+      id={id}
     >
       <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-8">
         {/* Section Header */}

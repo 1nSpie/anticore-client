@@ -26,10 +26,10 @@ export default function GlavPage() {
             <AntiCorrosionSection />
             <AutoPrice id="auto-price" />
           </div>
-          <VideoCarousel />
+          <VideoCarousel id="video-carousel"/>
           <TechProcces id="tech-process" />
           <Garanty id="garanty" />
-          <MainVideoPlayer />
+          <MainVideoPlayer id="main-video"/>
           <CarouselSection id="reviews" />
           <PriceCardList id="prices" />
           <YandexMap id="map" />
