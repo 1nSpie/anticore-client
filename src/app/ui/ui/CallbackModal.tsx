@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { callbackFormSchema, type CallbackFormData } from "src/lib/validations";
 import { checkDuplicateSubmission, saveSubmission, getLastSubmissionTime } from "src/lib/duplicateCheck";
 import { DuplicateWarningModal } from "./DuplicateWarningModal";
+import { vkApiClient } from "@/components/vk/vk-api";
 
 interface CallbackModalProps {
   trigger?: React.ReactNode; // любая кнопка или элемент
@@ -57,7 +58,7 @@ export function CallbackModal({
 
   const submitForm = async (data: CallbackFormData) => {
     try {
-      await telegramApiClient.sendCallbackForm(data);
+      await vkApiClient.sendCallbackForm(data);
       saveSubmission();
       toast.success("Ваша заявка отправлена!", {
         description: "Менеджер перезвонит вам в ближайшее время",

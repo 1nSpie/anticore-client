@@ -41,6 +41,7 @@ import { ScrollArea } from "@/shadcn/scroll-area";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import bgfon from 'public/bgfon.png'
 import Marquee from "react-fast-marquee";
+import { vkApiClient } from "@/components/vk/vk-api";
 
 export default function AutoPrice({ id }: AutoPriceProps) {
   const {
@@ -136,7 +137,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
 
   const submitForm = async (data: AutoPriceFormData) => {
     try {
-      await telegramApiClient.sendFullForm(data);
+      await vkApiClient.sendFullForm(data);
       saveSubmission();
       toast.success("Ваша заявка отправлена!", {
         description: "Менеджер перезвонит вам в ближайшее время",
