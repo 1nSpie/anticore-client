@@ -88,7 +88,7 @@ export default function NewStart() {
                             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
                                 <CallbackModal
                                     trigger={
-                                        <button className=" text-[#F87346] border-[#F87346] border-4 text font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
+                                        <button className=" text-[#F87346] border-[#F87346] border-4 text font-bold py-4 px-20 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
                                             ЗАКАЗАТЬ ЗВОНОК
                                         </button>
                                     }
@@ -129,7 +129,17 @@ export default function NewStart() {
                             <div className="bg-white flex flex-col sm:flex-row items-center py-6 sm:py-8 px-4 sm:px-6 rounded-3xl w-full lg:w-fit gap-4">
                                 <button
                                     onClick={() => window.open('https://mrqz.me/avankor', '_blank')}
-                                    className="bg-[#F87346] hover:bg-[#ff6431] text-white font-bold py-3 px-6 sm:px-8 rounded-2xl transition-all transform hover:scale-105 shadow-lg flex items-center gap-2 text-base sm:text-lg"
+                                    className="
+    w-full md:w-auto
+    bg-[#F87346] hover:bg-[#ff6431] 
+    text-white font-bold 
+    py-3 px-4 md:px-8 
+    rounded-2xl 
+    transition-all transform hover:scale-105 
+    shadow-lg 
+    flex items-center justify-center gap-2 
+    text-sm md:text-base
+"
                                 >
                                     <div className="flex flex-col items-start">
                                         <span>РАССЧИТАТЬ СТОИМОСТЬ</span>
@@ -137,6 +147,7 @@ export default function NewStart() {
                                     </div>
                                     <MoveRight className="w-8 h-8 sm:w-10 sm:h-10" />
                                 </button>
+
                                 <p className="text-black font-montserrat font-semibold text-sm sm:text-base leading-5 w-auto sm:w-56 ml-0 sm:ml-10 mr-0 sm:mr-5 mb-0 text-center sm:text-left">
                                     За прохождение рассчета дарим PDF-файл “Антикор: сейчас или когда сгниёт” + СКИДКА 10%
                                 </p>
