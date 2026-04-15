@@ -22,7 +22,7 @@ export default function GlavPage() {
       <div className="relative overflow-hidden">
         <FloatingNavigation />
         <main className="flex-1 relative z-10">
-          <AwesomeServices id="hero" />
+          {/* <AwesomeServices id="hero" /> */}
           <NewStart />
           <div className="bg-[url(public/bgfon.png)]">
             <AntiCorrosionSection />

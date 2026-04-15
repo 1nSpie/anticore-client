@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef } from "react";
-import { Shield, Star, ClipboardCheck, MoveRight, PlayIcon, CheckCircle } from "lucide-react";
+import { Shield, Star, ClipboardCheck, MoveRight, PlayIcon, CheckCircle, Phone, Clock } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
 } from "@/shadcn/carousel";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -18,31 +17,18 @@ import logo from 'public/favicon.svg';
 import garanty from './imgs/garanty.png';
 import yandex from './imgs/yandex.png';
 import endoscope from './imgs/endoscope.png';
+import { CallbackModal } from "@/app/ui/ui/CallbackModal";
 
-// Массив слайдов для мобильной карусели (замените картинки)
 const carouselSlides = [
-    {
-        id: 1,
-        image: plakat,        // замените на реальное фото 1
-        title: "СКРЫТЫЕ ПОЛОСТИ ВЕРХ КУЗОВА",
-    },
-    {
-        id: 2,
-        image: plakat,        // замените на реальное фото 2
-        title: "СКРЫТЫЕ ПОЛОСТИ НИЗ КУЗОВА",
-    },
-    {
-        id: 3,
-        image: plakat,        // замените на реальное фото 3
-        title: "ОБРАБОТКА АРОК",
-    },
+    { id: 1, image: plakat, title: "СКРЫТЫЕ ПОЛОСТИ ВЕРХ КУЗОВА" },
+    { id: 2, image: plakat, title: "СКРЫТЫЕ ПОЛОСТИ НИЗ КУЗОВА" },
+    { id: 3, image: plakat, title: "ОБРАБОТКА АРОК" },
 ];
 
 export default function NewStart() {
     const [activeTitle, setActiveTitle] = useState(carouselSlides[0].title);
     const [api, setApi] = useState<any | null>();
 
-    // Автоплей для карусели (как в VideoCarousel)
     const plugin = useRef(
         Autoplay({
             delay: 4000,
@@ -52,7 +38,6 @@ export default function NewStart() {
         })
     );
 
-    // Подписка на смену слайда для обновления заголовка
     useEffect(() => {
         if (!api) return;
         const onSelect = () => {
@@ -60,19 +45,72 @@ export default function NewStart() {
             setActiveTitle(carouselSlides[index]?.title || carouselSlides[0].title);
         };
         api.on('select', onSelect);
-        onSelect(); // установить начальный заголовок
+        onSelect();
         return () => {
             api.off('select', onSelect);
         };
     }, [api]);
 
     return (
-        <div className="bg-[#3A767B]">
+        <div className="bg-[#3A767B] mt-15">
             <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-                {/* Верхний блок — колонка на мобиле, ряд на десктопе */}
-                <div className="flex flex-col lg:flex-row justify-center gap-8 lg:gap-12">
 
-                    {/* Левая колонка с текстом и кнопкой (без изменений) */}
+                {/* БЛОК КОНТАКТОВ — адаптивный: на десктопе колонка с номером+время и кнопка справа, на мобиле горизонтально/вертикально */}
+                <div className="w-full flex justify-end mb-6 lg:mb-8">
+                    <div className="rounded-2xl w-full sm:w-auto">
+                        {/* Десктопная версия (lg и выше) */}
+                        <div className="hidden lg:flex items-stretch gap-6">
+                            {/* Левая часть: номер сверху, время снизу */}
+                            <div className="flex flex-col justify-between text-white">
+                                <div className="flex items-center gap-2">
+                                    <Phone className="w-5 h-5 text-[#F87346]" />
+                                    <a href="tel:+79932456882" className="text-xl font-semibold underline">
+                                        7 (993) 245 68 82
+                                    </a>
+                                </div>
+                                <div className="flex items-center gap-2 text-white/90 text-sm mt-1">
+                                    <Clock className="w-4 h-4" />
+                                    <span>Работаем с 9:00 до 20:00</span>
+                                </div>
+                            </div>
+                            {/* Кнопка на всю высоту левой части */}
+                            <CallbackModal
+                                trigger={
+                                    <button className="bg-[#F87346] hover:bg-[#ff6431] text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap h-full">
+                                        ЗАКАЗАТЬ ЗВОНОК
+                                    </button>
+                                }
+                            />
+                        </div>
+
+                        {/* Мобильная/планшетная версия (меньше lg) */}
+                        <div className="lg:hidden">
+                            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+                                <div className="flex items-center gap-2 text-white">
+                                    <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-[#F87346]" />
+                                    <a href="tel:+79932456882" className="text-xl sm:text-xl underline font-semibold">
+                                        7 (993) 245 68 82
+                                    </a>
+                                </div>
+                                <div className="flex items-center gap-2 text-white/90 text-xs sm:text-sm">
+                                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                                    <span>Работаем с 9:00 до 20:00</span>
+                                </div>
+                                <CallbackModal
+                                    trigger={
+                                        <button className="bg-[#F87346] hover:bg-[#ff6431] text-white font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
+                                            ЗАКАЗАТЬ ЗВОНОК
+                                        </button>
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Основной контент — колонки (без изменений) */}
+                <div className="flex flex-col lg:flex-row justify-center gap-8 lg:gap-12">
+                    {/* Левая колонка с текстом и кнопкой */}
                     <div className="flex-1 px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
                         <div className="text-center lg:text-left">
                             <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-light">
@@ -87,21 +125,10 @@ export default function NewStart() {
                                 </div>
                             </div>
 
-                            {/* Иконки Play (на мобиле повёрнуты) */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pb-8">
                                 <div className="flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto pt-1 gap-1 lg:mb-12">
-                                    <PlayIcon
-                                        width={16}
-                                        height={16}
-                                        className="text-[#F8734666] rotate-90 sm:rotate-0"
-                                        fill="#F8734666"
-                                    />
-                                    <PlayIcon
-                                        width={16}
-                                        height={16}
-                                        className="text-[#F87346] rotate-90 sm:rotate-0"
-                                        fill="#F87346"
-                                    />
+                                    <PlayIcon width={16} height={16} className="text-[#F8734666] rotate-90 sm:rotate-0" fill="#F8734666" />
+                                    <PlayIcon width={16} height={16} className="text-[#F87346] rotate-90 sm:rotate-0" fill="#F87346" />
                                 </div>
                                 <p className="text-white text-sm sm:text-base text-center sm:text-left">
                                     <strong>Ответьте на 5 вопросов,</strong> чтобы узнать стоимость обработки вашего авто + <br />
@@ -109,7 +136,6 @@ export default function NewStart() {
                                 </p>
                             </div>
 
-                            {/* Блок с кнопкой и подарком */}
                             <div className="bg-white flex flex-col sm:flex-row items-center py-6 sm:py-8 px-4 sm:px-6 rounded-3xl w-full lg:w-fit gap-4">
                                 <button
                                     onClick={() => window.open('https://mrqz.me/avankor', '_blank')}
@@ -131,7 +157,6 @@ export default function NewStart() {
 
                     {/* ПРАВАЯ КОЛОНКА — статичный плакат на lg+, карусель на меньших экранах */}
                     <div className="flex flex-col items-center lg:items-start">
-                        {/* Заголовок: для мобильной карусели динамический, для десктопа статический */}
                         <p className="text-[#F87346] bg-white border-2 border-[#F87346] rounded px-2 py-1 text-base sm:text-lg md:text-[25px] font-black whitespace-nowrap" style={{ lineHeight: '39px' }}>
                             <span className="lg:hidden">{activeTitle}</span>
                             <span className="hidden lg:inline">СКРЫТЫЕ ПОЛОСТИ ВЕРХ КУЗОВА</span>
@@ -160,7 +185,6 @@ export default function NewStart() {
                             </Carousel>
                         </div>
 
-                        {/* Статичный плакат для десктопа (lg и выше) */}
                         <div className="hidden lg:block relative mt-2">
                             <Image
                                 alt="plakat"
@@ -168,11 +192,7 @@ export default function NewStart() {
                                 className="w-full max-w-md lg:max-w-full h-auto border-4 sm:border-8 border-orange-500 rounded-xl sm:rounded-2xl"
                             />
                             <div className="flex justify-end -mt-8 sm:-mt-12 md:-mt-16">
-                                <Image
-                                    alt='logo'
-                                    src={logo}
-                                    className="w-12 sm:w-16 md:w-20 lg:w-24 h-auto mr-2 sm:mr-4"
-                                />
+                                <Image alt='logo' src={logo} className="w-12 sm:w-16 md:w-20 lg:w-24 h-auto mr-2 sm:mr-4" />
                             </div>
                         </div>
                     </div>
@@ -180,9 +200,9 @@ export default function NewStart() {
 
                 {/* Нижний блок с карточками (без изменений) */}
                 <div className="mt-16 lg:mt-20 px-2 sm:px-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-                        {/* Карточка 1: 6+ лет */}
-                        <div className="bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col items-center justify-center text-center min-h-[220px] sm:min-h-[270px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 auto-rows-fr">
+                        {/* Карточка 1 */}
+                        <div className="bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col items-center justify-center text-center h-[280px] sm:h-auto sm:min-h-[270px]">
                             <div className="flex items-baseline justify-center text-[#F87346]">
                                 <span className="text-6xl sm:text-7xl lg:text-9xl font-extrabold">6</span>
                                 <span className="text-3xl sm:text-4xl lg:text-6xl font-extrabold">+ лет</span>
@@ -190,8 +210,8 @@ export default function NewStart() {
                             <div className="text-base sm:text-lg lg:text-xl font-medium mt-2">обрабатываем автомобили</div>
                         </div>
 
-                        {/* Карточка 2: ГАРАНТИЯ ПРОЗРАЧНОСТИ */}
-                        <div className="relative bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg overflow-hidden flex flex-col h-full">
+                        {/* Карточка 2 */}
+                        <div className="relative bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg overflow-hidden flex flex-col h-[280px] sm:h-auto sm:min-h-[270px]">
                             <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2">
                                 <Shield className="w-5 h-5 sm:w-6 sm:h-6" /> ГАРАНТИЯ ПРОЗРАЧНОСТИ:
                             </h3>
@@ -202,15 +222,11 @@ export default function NewStart() {
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Обучения мастеров по регламенту</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Безопасность для ЛКП и салона</li>
                             </ul>
-                            <Image
-                                alt='garanty'
-                                src={garanty}
-                                className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 w-24 sm:w-28 lg:w-36 h-auto opacity-90"
-                            />
+                            <Image alt='garanty' src={garanty} className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 w-24 sm:w-28 lg:w-36 h-auto opacity-90" />
                         </div>
 
-                        {/* Карточка 3: НАМ ДОВЕРЯЮТ */}
-                        <div className="bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col">
+                        {/* Карточка 3 */}
+                        <div className="bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col h-[280px] sm:h-auto sm:min-h-[270px]">
                             <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2">
                                 <Star className="w-5 h-5 sm:w-6 sm:h-6 fill-white" /> НАМ ДОВЕРЯЮТ:
                             </h3>
@@ -223,8 +239,8 @@ export default function NewStart() {
                             </div>
                         </div>
 
-                        {/* Карточка 4: ЭНДОСКОПИЯ до/после */}
-                        <div className="relative bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg overflow-hidden flex flex-col">
+                        {/* Карточка 4 */}
+                        <div className="relative bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg overflow-hidden flex flex-col h-[280px] sm:h-auto sm:min-h-[270px]">
                             <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2">
                                 <ClipboardCheck className="w-5 h-5 sm:w-6 sm:h-6" /> ЭНДОСКОПИЯ до/после
                             </h3>
@@ -232,11 +248,7 @@ export default function NewStart() {
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5" /> Полный фотоотчет</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5" /> Обработки скрытых полостей</li>
                             </ul>
-                            <Image
-                                alt='endoscope'
-                                src={endoscope}
-                                className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 w-28 sm:w-36 lg:w-48 h-auto opacity-90"
-                            />
+                            <Image alt='endoscope' src={endoscope} className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 w-28 sm:w-36 lg:w-48 h-auto opacity-90" />
                         </div>
                     </div>
                 </div>

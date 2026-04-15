@@ -22,7 +22,9 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const isHome = pathname === "/";
-  const showFullNav = !isHome || isScrolled;
+  // const showFullNav = !isHome || isScrolled;
+  const showFullNav = true;
+
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
