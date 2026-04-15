@@ -12,6 +12,7 @@ import PriceCardList from "./glav/components/PriceList";
 import TechProcces from "./glav/components/TechProcces";
 import Marquee from "react-fast-marquee";
 import AntiCorrosionSection from "./glav/components/AntiCorrosionSection";
+import NewStart from "./glav/components/NewStart";
 
 export default function GlavPage() {
   return (
@@ -22,6 +23,7 @@ export default function GlavPage() {
         <FloatingNavigation />
         <main className="flex-1 relative z-10">
           <AwesomeServices id="hero" />
+          <NewStart />
           <div className="bg-[url(public/bgfon.png)]">
             <AntiCorrosionSection />
             <AutoPrice id="auto-price" />
