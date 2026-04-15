@@ -56,7 +56,7 @@ export default function NewStart() {
             <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
 
                 {/* БЛОК КОНТАКТОВ — адаптивный: на десктопе колонка с номером+время и кнопка справа, на мобиле горизонтально/вертикально */}
-                <div className="w-full flex justify-end mb-6 lg:mb-8">
+                <div className="w-full flex justify-end mb-0 lg:mb-8">
                     <div className="rounded-2xl w-full sm:w-auto">
                         {/* Десктопная версия (lg и выше) */}
                         <div className="hidden lg:flex items-stretch gap-6">
@@ -76,7 +76,7 @@ export default function NewStart() {
                             {/* Кнопка на всю высоту левой части */}
                             <CallbackModal
                                 trigger={
-                                    <button className="bg-[#F87346] hover:bg-[#ff6431] text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap h-full">
+                                    <button className=" text-[#F87346] border-[#F87346] border-4 text font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
                                         ЗАКАЗАТЬ ЗВОНОК
                                     </button>
                                 }
@@ -86,19 +86,9 @@ export default function NewStart() {
                         {/* Мобильная/планшетная версия (меньше lg) */}
                         <div className="lg:hidden">
                             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
-                                <div className="flex items-center gap-2 text-white">
-                                    <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-[#F87346]" />
-                                    <a href="tel:+79932456882" className="text-xl sm:text-xl underline font-semibold">
-                                        7 (993) 245 68 82
-                                    </a>
-                                </div>
-                                <div className="flex items-center gap-2 text-white/90 text-xs sm:text-sm">
-                                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                                    <span>Работаем с 9:00 до 20:00</span>
-                                </div>
                                 <CallbackModal
                                     trigger={
-                                        <button className="bg-[#F87346] hover:bg-[#ff6431] text-white font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
+                                        <button className=" text-[#F87346] border-[#F87346] border-4 text font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
                                             ЗАКАЗАТЬ ЗВОНОК
                                         </button>
                                     }
