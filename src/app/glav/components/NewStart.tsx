@@ -193,7 +193,7 @@ export default function NewStart() {
 
                         {/* Карточка 2 */}
                         <div
-                            className="relative bg-white/10 rounded-[20px] p-4 sm:p-6 text-white shadow-lg border border-white/20 overflow-hidden flex flex-col w-full max-w-[360px] h-[380px] lg:max-w-none lg:w-[474px] lg:h-[212px] shrink-0"
+                            className="relative bg-white/10 rounded-[20px] p-4 sm:p-6 text-white shadow-lg border border-white/20 overflow-hidden flex flex-col w-full h-[380px] lg:max-w-none lg:w-[474px] lg:h-[212px] shrink-0"
                             style={{ opacity: 1, backdropFilter: "blur(20px)" }}
                         >
                             <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2 lg:pr-24">
@@ -222,7 +222,7 @@ export default function NewStart() {
 
                         {/* Карточка 3 */}
                         <div
-                            className="relative bg-white/10 rounded-[20px] p-4 sm:p-6 text-white shadow-lg border border-white/20 flex flex-col w-full max-w-[360px] h-[192px] lg:max-w-none lg:w-[412px] lg:h-[212px] overflow-hidden shrink-0"
+                            className="relative bg-white/10 rounded-[20px] p-4 sm:p-6 text-white shadow-lg border border-white/20 flex flex-col w-full h-[192px] lg:max-w-none lg:w-[412px] lg:h-[212px] overflow-hidden shrink-0"
                             style={{ opacity: 1, backdropFilter: "blur(20px)" }}
                         >
                             <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2 pr-24">
