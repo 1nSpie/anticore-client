@@ -1,58 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef } from "react";
-import { Shield, Star, ClipboardCheck, MoveRight, PlayIcon, CheckCircle, Phone, Clock } from "lucide-react";
-import Image from "next/image";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-} from "@/shadcn/carousel";
-import Autoplay from "embla-carousel-autoplay";
 
+import { Shield, Star, MoveRight, PlayIcon, CheckCircle, Phone, Clock } from "lucide-react";
+import Image from "next/image";
 import car from './imgs/car.png';
-import plakat from './imgs/plakat.png';
 import plakat2obr from './imgs/plakat2obr.png';
-import plakat2 from './imgs/plakat2.jpg';
-import plakat3 from './imgs/plakat3.jpg';
 import garanty from './imgs/garanty.png';
 import yandex from './imgs/yandex.png';
 import { CallbackModal } from "@/app/ui/ui/CallbackModal";
+import logo from 'public/favicon.svg'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
-const carouselSlides = [
-    { id: 1, image: plakat, title: "СКРЫТЫЕ ПОЛОСТИ ВЕРХ КУЗОВА" },
-    { id: 2, image: plakat2, title: "СИЛОВЫЕ СКРЫТЫЕ ПОЛОСТИ" },
-    { id: 3, image: plakat3, title: "ОБРАБОТКА АРОК" },
-];
-
 export default function NewStart() {
-    const [activeTitle, setActiveTitle] = useState(carouselSlides[0].title);
-    const [api, setApi] = useState<any | null>();
-
-    const plugin = useRef(
-        Autoplay({
-            delay: 4000,
-            stopOnInteraction: true,
-            stopOnMouseEnter: true,
-            playOnInit: true,
-        })
-    );
-
-    useEffect(() => {
-        if (!api) return;
-        const onSelect = () => {
-            const index = api.selectedScrollSnap();
-            setActiveTitle(carouselSlides[index]?.title || carouselSlides[0].title);
-        };
-        api.on('select', onSelect);
-        onSelect();
-        return () => {
-            api.off('select', onSelect);
-        };
-    }, [api]);
-
     return (
         <section className="relative mt-15 overflow-hidden text-white ">
             <video
@@ -80,39 +40,59 @@ export default function NewStart() {
             <div className="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
 
                 {/* БЛОК КОНТАКТОВ — адаптивный: на десктопе колонка с номером+время и кнопка справа, на мобиле горизонтально/вертикально */}
-                <div className="w-full flex justify-end mb-0 lg:mb-8">
+                <div className="w-full mb-0 lg:mb-8">
                     <div className="rounded-2xl w-full sm:w-auto">
                         {/* Десктопная версия (lg и выше) */}
-                        <div className="hidden lg:flex items-stretch gap-6">
-                            {/* Левая часть: номер сверху, время снизу */}
-                            <div className="flex flex-col justify-between text-white">
-                                <div className="flex items-center gap-2">
-                                    <Phone className="w-5 h-5 text-[#F87346]" />
-                                    <a href="tel:+79932456882" className="text-xl font-semibold underline">
-                                        7 (993) 245 68 82
-                                    </a>
-                                </div>
-                                <div className="flex items-center gap-2 text-white/90 text-sm mt-1">
-                                    <Clock className="w-4 h-4" />
-                                    <span>Работаем с 9:00 до 20:00</span>
+                        <div className="hidden lg:flex items-center justify-between">
+                            {/* Логотип и название слева */}
+                            <div className="flex items-center gap-3">
+                                <Image
+                                    src={logo}
+                                    alt="Логотип"
+                                    width={75}
+                                    height={75}
+                                    className="object-contain flex-shrink-0"
+                                />
+                                <div className="flex flex-col">
+                                    <div className="font-bold text-white text-5xl leading-tight">
+                                        <span className="text-[#F87346]">Аван</span><span>Кор</span>
+                                    </div>
+                                    <div className="text-white/80 text-sm leading-tight">
+                                        антикоррозийная обработка
+                                    </div>
                                 </div>
                             </div>
-                            {/* Кнопка на всю высоту левой части */}
-                            <CallbackModal
-                                trigger={
-                                    <button className=" text-[#F87346] border-[#F87346] border-4 text font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
-                                        ЗАКАЗАТЬ ЗВОНОК
-                                    </button>
-                                }
-                            />
+
+                            {/* Правая часть (телефон + кнопка) – без изменений */}
+                            <div className="flex items-stretch gap-6">
+                                <div className="flex flex-col justify-between text-white">
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="w-5 h-5 text-[#F87346]" />
+                                        <a href="tel:+79932456882" className="text-xl font-semibold underline">
+                                            7 (993) 245 68 82
+                                        </a>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-white/90 text-sm mt-1">
+                                        <Clock className="w-4 h-4" />
+                                        <span>Работаем с 9:00 до 20:00</span>
+                                    </div>
+                                </div>
+                                <CallbackModal
+                                    trigger={
+                                        <button className="text-[#F87346] border-[#F87346] border-4 font-bold py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
+                                            ЗАКАЗАТЬ ЗВОНОК
+                                        </button>
+                                    }
+                                />
+                            </div>
                         </div>
 
-                        {/* Мобильная/планшетная версия (меньше lg) */}
+                        {/* Мобильная/планшетная версия (меньше lg) – без изменений */}
                         <div className="lg:hidden">
                             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
                                 <CallbackModal
                                     trigger={
-                                        <button className=" text-[#F87346] border-[#F87346] border-4 text font-bold py-4 px-20 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
+                                        <button className="text-[#F87346] border-[#F87346] border-4 font-bold py-4 px-20 sm:px-6 rounded-xl transition-all transform hover:scale-105 shadow-md whitespace-nowrap text-sm sm:text-base">
                                             ЗАКАЗАТЬ ЗВОНОК
                                         </button>
                                     }
@@ -133,7 +113,7 @@ export default function NewStart() {
                             <p className="text-xl sm:text-2xl md:text-3xl text-white mb-4 font-light">
                                 Помогаем сохранить рыночную <span className="font-extrabold">стоимость авто на 15-25%</span>
                             </p>
-                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pb-8">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pb-8">
                                 <div className="flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto pt-1 gap-1 lg:mb-12">
                                     <PlayIcon width={16} height={16} className="text-[#F8734666] rotate-90 sm:rotate-0" fill="#F8734666" />
                                     <PlayIcon width={16} height={16} className="text-[#F87346] rotate-90 sm:rotate-0" fill="#F87346" />
@@ -173,7 +153,7 @@ export default function NewStart() {
                             </div>
                         </div>
                     </div>
-                                    
+
                 </div>
 
                 {/* Нижний блок с карточками */}
