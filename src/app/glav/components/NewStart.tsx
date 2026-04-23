@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Shield, Star, ClipboardCheck, MoveRight, PlayIcon, CheckCircle, Phone, Clock } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import {
     Carousel,
     CarouselContent,
@@ -13,16 +12,19 @@ import Autoplay from "embla-carousel-autoplay";
 
 import car from './imgs/car.png';
 import plakat from './imgs/plakat.png';
-import logo from 'public/favicon.svg';
+import plakat2obr from './imgs/plakat2obr.png';
+import plakat2 from './imgs/plakat2.jpg';
+import plakat3 from './imgs/plakat3.jpg';
 import garanty from './imgs/garanty.png';
 import yandex from './imgs/yandex.png';
-import endoscope from './imgs/endoscope.png';
 import { CallbackModal } from "@/app/ui/ui/CallbackModal";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
 const carouselSlides = [
     { id: 1, image: plakat, title: "СКРЫТЫЕ ПОЛОСТИ ВЕРХ КУЗОВА" },
-    { id: 2, image: plakat, title: "СКРЫТЫЕ ПОЛОСТИ НИЗ КУЗОВА" },
-    { id: 3, image: plakat, title: "ОБРАБОТКА АРОК" },
+    { id: 2, image: plakat2, title: "СИЛОВЫЕ СКРЫТЫЕ ПОЛОСТИ" },
+    { id: 3, image: plakat3, title: "ОБРАБОТКА АРОК" },
 ];
 
 export default function NewStart() {
@@ -52,8 +54,30 @@ export default function NewStart() {
     }, [api]);
 
     return (
-        <div className="bg-[#3A767B] mt-15">
-            <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <section className="relative mt-15 overflow-hidden text-white ">
+            <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 object-cover w-full h-full z-0"
+                preload="auto"
+            >
+                <source src={`${API_BASE_URL}/video/videoStart.mp4`} type="video/mp4" />
+                Ваш браузер не поддерживает видео.
+            </video>
+            <div
+                className="absolute inset-0 z-10"
+                style={{
+                    backgroundImage: `
+            radial-gradient(900px circle at 18% 78%, rgba(0, 148, 151, 0.22), transparent 55%),
+            radial-gradient(820px circle at 82% 18%, rgba(0, 116, 120, 0.18), transparent 52%),
+            linear-gradient(120deg, rgba(8, 13, 24, 0.9) 0%, rgba(12, 19, 32, 0.82) 100%)
+          `,
+                }}
+            />
+
+            <div className="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
 
                 {/* БЛОК КОНТАКТОВ — адаптивный: на десктопе колонка с номером+время и кнопка справа, на мобиле горизонтально/вертикально */}
                 <div className="w-full flex justify-end mb-0 lg:mb-8">
@@ -98,40 +122,34 @@ export default function NewStart() {
                     </div>
                 </div>
 
-                {/* Основной контент — колонки (без изменений) */}
-                <div className="flex flex-col lg:flex-row justify-center gap-8 lg:gap-12">
+                {/* Основной контент */}
+                <div className="flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-10">
                     {/* Левая колонка с текстом и кнопкой */}
-                    <div className="flex-1 px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
+                    <div className="w-full px-1 sm:px-2 lg:px-0 pt-4 sm:pt-6">
                         <div className="text-center lg:text-left">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-light">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-light mb-2">
                                 Антикоррозийная обработка автомобиля с <span className="font-extrabold">гарантией до 5 лет</span>
                             </h2>
-                            <p className="text-xl sm:text-2xl md:text-3xl text-white mb-2 font-light">
+                            <p className="text-xl sm:text-2xl md:text-3xl text-white mb-4 font-light">
                                 Помогаем сохранить рыночную <span className="font-extrabold">стоимость авто на 15-25%</span>
                             </p>
-                            <div className="mt-4 mb-6">
-                                <div className="text-white px-4 py-0 sm:py-2 lg:py-12 rounded-full text-base sm:text-lg font-light">
-                                    Договор гарантии + Возможность продления гарантии
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pb-8">
+                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pb-8">
                                 <div className="flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto pt-1 gap-1 lg:mb-12">
                                     <PlayIcon width={16} height={16} className="text-[#F8734666] rotate-90 sm:rotate-0" fill="#F8734666" />
                                     <PlayIcon width={16} height={16} className="text-[#F87346] rotate-90 sm:rotate-0" fill="#F87346" />
                                 </div>
-                                <p className="text-white text-sm sm:text-base text-center sm:text-left">
+                                <p className="text-white text-sm sm:text-base text-center sm:text-left leading-6">
                                     <strong>Ответьте на 5 вопросов,</strong> чтобы узнать стоимость обработки вашего авто + <br />
                                     <strong>Бесплатную экспресс-диагностику скрытых полостей</strong>
                                 </p>
                             </div>
 
-                            <div className="bg-white flex flex-col sm:flex-row items-center py-6 sm:py-8 px-4 sm:px-6 rounded-3xl w-full lg:w-fit gap-4">
+                            <div className="bg-white flex flex-col sm:flex-row items-center py-4 sm:py-5 px-4 sm:px-5 rounded-2xl w-full lg:max-w-[759px] shadow-lg">
                                 <button
                                     onClick={() => window.open('https://mrqz.me/avankor', '_blank')}
                                     className="
-    w-full md:w-auto
-    bg-[#F87346] hover:bg-[#ff6431] 
+    w-[306px] h-[97px]
+    bg-linear-to-r from-[#EF9147] to-[#FF6B35] hover:opacity-90
     text-white font-bold 
     py-3 px-4 md:px-8 
     rounded-2xl 
@@ -141,119 +159,88 @@ export default function NewStart() {
     text-sm md:text-base
 "
                                 >
-                                    <div className="flex flex-col items-start">
+                                    <div className="flex flex-col items-start text-xs">
                                         <span>РАССЧИТАТЬ СТОИМОСТЬ</span>
                                         <span>И ЗАБРАТЬ ПОДАРОК</span>
                                     </div>
                                     <MoveRight className="w-8 h-8 sm:w-10 sm:h-10" />
                                 </button>
 
-                                <p className="text-black font-montserrat font-semibold text-sm sm:text-base leading-5 w-auto sm:w-56 ml-0 sm:ml-10 mr-0 sm:mr-5 mb-0 text-center sm:text-left">
+                                <p className="text-black font-montserrat text-sm sm:text-base leading-5 w-auto sm:w-56 pt-2 ml-0 sm:ml-10 mr-0 sm:mr-5 mb-0 text-center sm:text-left">
                                     За прохождение рассчета дарим PDF-файл “Антикор: сейчас или когда сгниёт” + СКИДКА 10%
                                 </p>
-                                <Image alt="image-car" src={car} width={100} height={100} />
+                                <Image alt="image-car" src={car} className="scale-x-[-1]" width={200} height={100} />
                             </div>
                         </div>
                     </div>
-
-                    {/* ПРАВАЯ КОЛОНКА — статичный плакат на lg+, карусель на меньших экранах */}
-                    <div className="flex flex-col items-center lg:items-start">
-                        <p className="text-[#F87346] bg-white border-2 border-[#F87346] rounded px-2 py-1 text-base sm:text-lg md:text-[25px] font-black whitespace-nowrap" style={{ lineHeight: '39px' }}>
-                            <span className="lg:hidden">{activeTitle}</span>
-                            <span className="hidden lg:inline">СКРЫТЫЕ ПОЛОСТИ ВЕРХ КУЗОВА</span>
-                        </p>
-
-                        <div className="block lg:hidden w-full mt-2">
-                            <Carousel
-                                className="w-full max-w-md mx-auto"
-                                plugins={[plugin.current]}
-                                opts={{ align: "start", loop: true }}
-                                setApi={setApi}
-                            >
-                                <CarouselContent>
-                                    {carouselSlides.map((slide) => (
-                                        <CarouselItem key={slide.id}>
-                                            <div className="relative">
-                                                <Image
-                                                    alt={slide.title}
-                                                    src={slide.image}
-                                                    className="w-full h-auto border-4 border-orange-500 rounded-xl"
-                                                />
-                                            </div>
-                                        </CarouselItem>
-                                    ))}
-                                </CarouselContent>
-                            </Carousel>
-                        </div>
-
-                        <div className="hidden lg:block relative mt-2">
-                            <Image
-                                alt="plakat"
-                                src={plakat}
-                                className="w-full max-w-md lg:max-w-full h-auto border-4 sm:border-8 border-orange-500 rounded-xl sm:rounded-2xl"
-                            />
-                            <div className="flex justify-end -mt-8 sm:-mt-12 md:-mt-16">
-                                <Image alt='logo' src={logo} className="w-12 sm:w-16 md:w-20 lg:w-24 h-auto mr-2 sm:mr-4" />
-                            </div>
-                        </div>
-                    </div>
+                                    
                 </div>
 
-                {/* Нижний блок с карточками (без изменений) */}
-                <div className="mt-16 lg:mt-20 px-2 sm:px-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 auto-rows-fr">
+                {/* Нижний блок с карточками */}
+                <div className="mt-12 lg:mt-14 px-0">
+                    <div className="flex flex-col lg:flex-row gap-5 sm:gap-6">
                         {/* Карточка 1 */}
-                        <div className="bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col items-center justify-center text-center h-[280px] sm:h-auto sm:min-h-[270px]">
+                        <div
+                            className="bg-white/8 rounded-[20px] p-2 text-white shadow-lg border border-white/20 border-dashed flex flex-col items-center justify-center text-center min-h-[212px] lg:w-[245px] lg:h-[212px] shrink-0"
+                            style={{ opacity: 1, backdropFilter: "blur(20px)" }}
+                        >
                             <div className="flex items-baseline justify-center text-[#F87346]">
-                                <span className="text-6xl sm:text-7xl lg:text-9xl font-extrabold">6</span>
-                                <span className="text-3xl sm:text-4xl lg:text-6xl font-extrabold">+ лет</span>
+                                <span className="text-6xl sm:text-7xl lg:text-8xl font-extrabold">6</span>
+                                <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold">+ лет</span>
                             </div>
-                            <div className="text-base sm:text-lg lg:text-xl font-medium mt-2">обрабатываем автомобили</div>
+                            <div className="text-base sm:text-lg font-medium mt-2">в области обработки авто.<br />Защищаем от коррозии.</div>
                         </div>
 
                         {/* Карточка 2 */}
-                        <div className="relative bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg overflow-hidden flex flex-col h-[280px] sm:h-auto sm:min-h-[270px]">
-                            <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2">
+                        <div
+                            className="relative bg-white/10 rounded-[20px] p-4 sm:p-6 text-white shadow-lg border border-white/20 overflow-hidden flex flex-col w-full max-w-[360px] h-[380px] lg:max-w-none lg:w-[474px] lg:h-[212px] shrink-0"
+                            style={{ opacity: 1, backdropFilter: "blur(20px)" }}
+                        >
+                            <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2 lg:pr-24">
                                 <Shield className="w-5 h-5 sm:w-6 sm:h-6" /> ГАРАНТИЯ ПРОЗРАЧНОСТИ:
                             </h3>
-                            <ul className="space-y-2 text-xs sm:text-sm md:text-md flex-grow">
+                            <ul className="space-y-2 text-xs sm:text-sm md:text-md grow lg:pr-24">
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Договор + гарантийный талон</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Фотофиксация всего процесса</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Сертифицированные материалы</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Обучения мастеров по регламенту</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" /> Безопасность для ЛКП и салона</li>
                             </ul>
-                            <Image alt='garanty' src={garanty} className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 w-24 sm:w-28 lg:w-36 h-auto opacity-90" />
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[282px] lg:hidden">
+                                <Image
+                                    alt='plakat2obr'
+                                    src={plakat2obr}
+                                    className="w-[282px] object-cover opacity-95"
+                                />
+                            </div>
+                            <Image
+                                alt='garanty'
+                                src={garanty}
+                                className="hidden lg:block absolute top-0 right-0 w-auto h-full object-contain opacity-95"
+                            />
                         </div>
 
                         {/* Карточка 3 */}
-                        <div className="bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col h-[280px] sm:h-auto sm:min-h-[270px]">
-                            <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2">
+                        <div
+                            className="relative bg-white/10 rounded-[20px] p-4 sm:p-6 text-white shadow-lg border border-white/20 flex flex-col w-full max-w-[360px] h-[192px] lg:max-w-none lg:w-[412px] lg:h-[212px] overflow-hidden shrink-0"
+                            style={{ opacity: 1, backdropFilter: "blur(20px)" }}
+                        >
+                            <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2 pr-24">
                                 <Star className="w-5 h-5 sm:w-6 sm:h-6 fill-white" /> НАМ ДОВЕРЯЮТ:
                             </h3>
-                            <ul className="space-y-2 text-xs sm:text-sm md:text-md flex-grow">
+                            <ul className="space-y-2 text-xs sm:text-sm md:text-md grow pr-24">
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5" /> Обработали более 4000+ авто</li>
                                 <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5" /> Оценка 5 на Яндекс</li>
                             </ul>
-                            <div className="flex justify-end mt-4">
-                                <Image alt='yandex' src={yandex} className="w-24 sm:w-28 lg:w-32 h-auto" />
-                            </div>
-                        </div>
-
-                        {/* Карточка 4 */}
-                        <div className="relative bg-[#F87346]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 text-white shadow-lg overflow-hidden flex flex-col h-[280px] sm:h-auto sm:min-h-[270px]">
-                            <h3 className="font-bold text-base sm:text-lg lg:text-xl mb-3 flex items-center gap-2">
-                                <ClipboardCheck className="w-5 h-5 sm:w-6 sm:h-6" /> ЭНДОСКОПИЯ до/после
-                            </h3>
-                            <ul className="space-y-2 text-xs sm:text-sm md:text-md">
-                                <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5" /> Полный фотоотчет</li>
-                                <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5" /> Обработки скрытых полостей</li>
-                            </ul>
-                            <Image alt='endoscope' src={endoscope} className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 w-28 sm:w-36 lg:w-48 h-auto opacity-90" />
+                            <Image
+                                alt='yandex'
+                                src={yandex}
+                                className="absolute top-0 right-0 h-full w-auto object-contain opacity-95"
+                            />
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }
