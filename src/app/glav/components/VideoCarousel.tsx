@@ -11,6 +11,7 @@ import {
 import ReactPlayer from "react-player";
 import Autoplay from "embla-carousel-autoplay";
 import { PlayCircle, PauseCircle } from "lucide-react";
+import heroImg from "public/heroImg.jpg"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
@@ -19,42 +20,48 @@ const VIDEOS = [
     id: 1,
     url: `${API_BASE_URL}/video/shorts/shorts1.mp4`,
     title: "Удаление ржавчины ЛАЗЕРОМ. Ржавая Toyota Land Cruiser 200",
-
+    preview: `${API_BASE_URL}/video/shorts/shorts1.jpg`
   },
   {
     id: 2,
     url: `${API_BASE_URL}/video/shorts/shorts2.mp4`,
     title: "Лазерное удаление ржавчины",
+    preview: `${API_BASE_URL}/video/shorts/shorts2.jpg`
 
   },
   {
     id: 3,
     url: `${API_BASE_URL}/video/shorts/shorts3.mp4`,
     title: "Антикор Китайского электропикапа Changan Hunter 2024",
+    preview: `${API_BASE_URL}/video/shorts/shorts3.jpg`
 
   },
   {
     id: 4,
     url: `${API_BASE_URL}/video/shorts/shorts4.mp4`,
     title: "Антикор Lada Granta",
+    preview: `${API_BASE_URL}/video/shorts/shorts4.jpg`
 
   },
   {
     id: 5,
     url: `${API_BASE_URL}/video/shorts/shorts5.mp4`,
     title: "Антикор Dodge Ram",
+    preview: `${API_BASE_URL}/video/shorts/shorts5.jpg`
 
   },
   {
     id: 6,
     url: `${API_BASE_URL}/video/shorts/shorts6.mp4`,
     title: "Антикор Chery Tiggo 8",
+    preview: `${API_BASE_URL}/video/shorts/shorts6.jpg`
 
   },
   {
     id: 7,
     url: `${API_BASE_URL}/video/shorts/shorts7.mp4`,
     title: "Антикор Tank 300",
+    preview: `${API_BASE_URL}/video/shorts/shorts7.jpg`
 
   },
 ];
@@ -143,6 +150,7 @@ export default function VideoCarousel({ id }: { id: string }) {
                       {/* Контейнер видео */}
                       <div className="relative w-full h-full">
                         <ReactPlayer
+                          light={video.preview}
                           src={video.url}
                           width="100%"
                           height="100%"

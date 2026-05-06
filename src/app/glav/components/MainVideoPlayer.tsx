@@ -76,6 +76,7 @@ export default function MainVideoPlayer({ id }: { id: string }) {
           >
             <ReactPlayer
               src={`${API_BASE_URL}/video/video1.mp4`}
+              light={`${API_BASE_URL}/video/video1.jpg`}
               controls
               width="100%"
               height="100%"
@@ -90,6 +91,7 @@ export default function MainVideoPlayer({ id }: { id: string }) {
           >
             <ReactPlayer
               src={`${API_BASE_URL}/video/video2.mp4`}
+              light={`${API_BASE_URL}/video/video2.jpg`}
               controls
               width="100%"
               height="100%"
