@@ -139,7 +139,34 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-gray-200/50 dark:border-gray-800/50 pt-8 flex flex-col sm:flex-row items-center justify-between">
+        <div className="mt-12 border-t border-gray-200/50 dark:border-gray-800/50 pt-8">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+            Реквизиты
+          </h3>
+          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed space-y-1 max-w-3xl">
+            <p>
+              Полное наименование: Индивидуальный предприниматель Стражников
+              Алексей Львович
+            </p>
+            <p>ИНН: 504032243409</p>
+            <p>ОГРН/ОГРНИП: 321508100480776</p>
+            <p>
+              Адрес юридического лица: 140181, обл. Московская, г. Жуковский,
+              ул. Маяковского, д. 20, кв. 55
+            </p>
+            <p>
+              Почта:{" "}
+              <Link
+                href="mailto:anticorpower@mail.ru"
+                className="hover:text-greenDefault dark:hover:text-teal-400 transition-colors"
+              >
+                anticorpower@mail.ru
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 border-t border-gray-200/50 dark:border-gray-800/50 pt-8 flex flex-col sm:flex-row items-center justify-between">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} AvanCore™. Все права защищены.
           </p>

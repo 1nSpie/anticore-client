@@ -26,7 +26,7 @@ import {
   DialogTitle,
 } from "src/shadcn/dialog";
 import { Button } from "src/shadcn/button";
-import { MessageCircle, Phone, Send, Info } from "lucide-react";
+import { MessageCircle, Phone, Send, Info, ShieldCheck, FlaskConical, Sparkles } from "lucide-react";
 import Link from "next/link";
 import {
   autoPriceFormSchema,
@@ -80,22 +80,23 @@ export default function AutoPrice({ id }: AutoPriceProps) {
 
   const isNotAuto = watch("isNotAuto");
 
-  const svgIcon = (
-    <svg
-      className="shrink-0 mt-0.5 size-5 text-orange-500"
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
+  const benefits = [
+    {
+      id: "warranty",
+      Icon: ShieldCheck,
+      text: "Гарантия 7 лет на отсутствие коррозии. Предоставляем программу поддержки и обслуживания покрытия. Сами приглашаем на ежегодную профилактику для поддержания эффективности защиты.",
+    },
+    {
+      id: "materials",
+      Icon: FlaskConical,
+      text: "Профессиональные материалы. Используем проверенные антикоррозионные составы, рассчитанные на длительную защиту в сложных климатических условиях.",
+    },
+    {
+      id: "preparation",
+      Icon: Sparkles,
+      text: "Тщательная подготовка. Качественная мойка, очистка и подготовка поверхности позволяют защитным материалам работать максимально эффективно.",
+    },
+  ] as const;
 
   // Загружаем бренды при монтировании
   useEffect(() => {
@@ -297,19 +298,17 @@ export default function AutoPrice({ id }: AutoPriceProps) {
               Мы — ваш надежный партнер в защите автомобиля.
             </p>
             <div className="mt-8">
-              <ul className="mt-2 space-y-2">
-                <li className="flex gap-x-3 items-center">
-                  {svgIcon}
-                  <span>Используем только высококачественные материалы</span>
-                </li>
-                <li className="flex gap-x-3 items-center">
-                  {svgIcon}
-                  <span>Предоставляем гарантию на все виды работ</span>
-                </li>
-                <li className="flex gap-x-3 items-center">
-                  {svgIcon}
-                  <span>Обеспечиваем индивидуальный подход</span>
-                </li>
+              <ul className="mt-2 space-y-5">
+                {benefits.map(({ id, Icon, text }) => (
+                  <li key={id} className="flex gap-x-3 items-start">
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500">
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                    <span className="text-black dark:text-neutral-200 leading-relaxed">
+                      {text}
+                    </span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
