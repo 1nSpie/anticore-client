@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import NavigationButton from "@/app/glav/components/ui/NavButton";
+import DesktopNavLinks from "@/components/DesktopNavLinks";
 import { Phone, MapPin, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { navigationLinks } from "src/lib/contants";
 
 const ADDRESSES = [
   { name: "Жуковский", address: "Речной проезд, 14", link: "/#map" },
@@ -18,6 +18,7 @@ const PRICE_RANGE = "Цены";
 
 export default function Navigation() {
   const pathname = usePathname();
+  if (pathname.startsWith("/crm")) return null;
   const [showAddresses, setShowAddresses] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -65,22 +66,9 @@ export default function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="hidden lg:flex items-center gap-5 xl:gap-6 flex-1 justify-center min-w-0"
+              className="hidden lg:flex flex-1 min-w-0"
             >
-              {navigationLinks.map((link) => (
-                <Link
-                  key={link.link}
-                  href={link.link}
-                  className={`text-sm font-medium transition-colors shrink-0 ${
-                    pathname === link.link ||
-                    (link.link === "/" && pathname === "/")
-                      ? "text-teal-700"
-                      : "text-gray-700 hover:text-teal-600"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <DesktopNavLinks />
             </motion.nav>
           ) : (
             <div className="hidden lg:block flex-1 min-w-0" aria-hidden />
@@ -100,6 +88,19 @@ export default function Navigation() {
                   className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:text-teal-600 hover:bg-teal-100/50 transition-all duration-200"
                 >
                   <span className="text-sm font-medium">{PRICE_RANGE}</span>
+                </Link>
+
+                {/* md–lg: центрального меню нет — дублируем ссылку справа */}
+                <Link
+                  href="/cabinet"
+                  prefetch={false}
+                  className={`hidden md:flex lg:hidden items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                    pathname.startsWith("/cabinet")
+                      ? "text-teal-700 bg-teal-100/60"
+                      : "text-gray-700 hover:text-teal-600 hover:bg-teal-100/50"
+                  }`}
+                >
+                  <span className="text-sm font-medium">Личный кабинет</span>
                 </Link>
 
                 <div className="relative hidden lg:block">

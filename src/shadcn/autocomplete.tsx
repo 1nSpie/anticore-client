@@ -147,9 +147,14 @@ export function Autocomplete({
       </div>
 
       {isOpen && (
-        <div className={cn("absolute top-full left-0 right-0 mt-1 z-50 overflow-hidden rounded-xl shadow-lg border border-orange-600 bg-white", dropdownClassName)}>
+        <div
+          className={cn(
+            "absolute top-full left-0 right-0 mt-1 z-50 overflow-hidden rounded-xl shadow-lg border border-orange-600 bg-white",
+            dropdownClassName,
+          )}
+        >
           {filtered.length === 0 ? (
-            <div className="px-3 py-4 text-sm text-gray-500 text-center">
+            <div className="autocomplete-empty px-3 py-4 text-sm text-gray-500 text-center">
               {emptyMessage}
             </div>
           ) : (
@@ -158,12 +163,15 @@ export function Autocomplete({
                 <button
                   key={opt.value}
                   type="button"
+                  data-selected={opt.value === value ? true : undefined}
+                  data-highlighted={
+                    i === highlightedIndex && opt.value !== value ? true : undefined
+                  }
                   className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors block text-gray-900",
-                    opt.value === value
-                      ? "bg-orange-100 text-orange-600"
-                      : "hover:bg-orange-50",
-                    i === highlightedIndex && "bg-orange-50"
+                    "autocomplete-option w-full text-left px-3 py-2 rounded-lg text-sm transition-colors block text-gray-900",
+                    "hover:bg-orange-50",
+                    "data-[selected]:bg-orange-100 data-[selected]:text-orange-600 data-[selected]:font-medium",
+                    "data-[highlighted]:bg-orange-50",
                   )}
                   onMouseDown={(e) => {
                     e.preventDefault();

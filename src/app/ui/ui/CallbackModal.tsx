@@ -13,6 +13,7 @@ import { Button } from "src/shadcn/button";
 import { Input } from "src/shadcn/input";
 import { Label } from "src/shadcn/label";
 import { Textarea } from "src/shadcn/textarea";
+import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +21,7 @@ import { telegramApiClient } from "src/components/telegram/api";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { callbackFormSchema, type CallbackFormData } from "src/lib/validations";
+import { PHONE_RU_INPUT_PREFIX } from "@/lib/phoneRu";
 import { checkDuplicateSubmission, saveSubmission, getLastSubmissionTime } from "src/lib/duplicateCheck";
 import { DuplicateWarningModal } from "./DuplicateWarningModal";
 import { vkApiClient } from "@/components/vk/vk-api";
@@ -50,7 +52,7 @@ export function CallbackModal({
     mode: "onChange",
     defaultValues: {
       name: "",
-      phone: "",
+      phone: PHONE_RU_INPUT_PREFIX,
       message: "",
       href: pathName,
     },
@@ -145,11 +147,9 @@ export function CallbackModal({
             <Label htmlFor="phone" className="text-gray-700">
               Номер телефона
             </Label>
-            <Input
+            <PhoneRuInput
               id="phone"
-              type="tel"
               {...register("phone")}
-              placeholder="+7 (___) ___-__-__"
               className={`${
                 errors.phone
                   ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"

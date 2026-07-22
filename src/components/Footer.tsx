@@ -2,12 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import LightLogo from "public/shapka1.svg";
 import DarkLogo from "public/shapka_dark.svg";
 import { navigationLinks } from "src/lib/contants";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/crm")) return null;
+
   return (
     <footer
       className="relative py-16 lg:py-20 overflow-hidden"
