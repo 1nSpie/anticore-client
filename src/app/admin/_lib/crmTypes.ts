@@ -83,6 +83,7 @@ export type ServiceType = {
 export type SiteLeadStatus =
   | "NEW"
   | "IN_PROGRESS"
+  | "NEEDS_CLARIFICATION"
   | "SCHEDULED"
   | "REJECTED"
   | "COMPLETED";
@@ -100,6 +101,7 @@ export type SiteLead = {
   status: SiteLeadStatus;
   adminNote: string | null;
   diskLink: string | null;
+  followUpAt: string | null;
   visitId: number | null;
   processedAt: string | null;
   createdAt: string;

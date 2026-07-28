@@ -5,12 +5,21 @@ import Link from "next/link";
 import { formatPhoneRuDisplay } from "@/lib/phoneRu";
 import { adminApi } from "../../_lib/api";
 import type { SiteLead, SiteLeadStatus, ServiceType } from "../../_lib/crmTypes";
+import {
+  FILTER_STATUSES,
+  STATUS_CLASS,
+  STATUS_LABELS,
+  hasAdminNote,
+  requiresAdminNoteOnStatusChange,
+  type LeadFilterStatus,
+} from "../../_lib/leadStatus";
 import { AppointmentDialog } from "../crm/AppointmentDialog";
 import { LeadEditDialog } from "./LeadEditDialog";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
 import { Textarea } from "@/shadcn/textarea";
+import { Checkbox } from "@/shadcn/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -21,39 +30,14 @@ import {
 import { toast } from "sonner";
 import { cn } from "src/lib/utils";
 
-const STATUS_LABELS: Record<SiteLeadStatus, string> = {
-  NEW: "Новая",
-  IN_PROGRESS: "В работе",
-  SCHEDULED: "В календаре",
-  REJECTED: "Отклонена",
-  COMPLETED: "Выполнена",
-};
-
-const STATUS_CLASS: Record<SiteLeadStatus, string> = {
-  NEW: "bg-blue-500/20 text-blue-300",
-  IN_PROGRESS: "bg-amber-500/20 text-amber-300",
-  SCHEDULED: "bg-emerald-500/20 text-emerald-300",
-  REJECTED: "bg-slate-500/20 text-slate-400",
-  COMPLETED: "bg-teal-500/20 text-teal-300",
-};
-
 const KIND_LABELS = {
   CALLBACK: "Обратный звонок",
   PRICE_REQUEST: "Расчёт цены",
 } as const;
 
-const FILTER_STATUSES = [
-  "ALL",
-  "NEW",
-  "IN_PROGRESS",
-  "SCHEDULED",
-  "COMPLETED",
-  "REJECTED",
-] as const;
-
 export default function LeadsManager() {
   const [leads, setLeads] = useState<SiteLead[]>([]);
-  const [filter, setFilter] = useState<(typeof FILTER_STATUSES)[number]>("ALL");
+  const [filter, setFilter] = useState<LeadFilterStatus>("ALL");
   const [scheduleLead, setScheduleLead] = useState<SiteLead | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
@@ -61,12 +45,26 @@ export default function LeadsManager() {
   const [completeLink, setCompleteLink] = useState("");
   const [completing, setCompleting] = useState(false);
   const [editLead, setEditLead] = useState<SiteLead | null>(null);
+  const [followUpDates, setFollowUpDates] = useState<Record<number, string>>({});
+  const [followUpEnabled, setFollowUpEnabled] = useState<Record<number, boolean>>(
+    {},
+  );
 
   const load = useCallback(async () => {
     const { data } = await adminApi.get<SiteLead[]>("/crm/leads", {
       params: filter !== "ALL" ? { status: filter } : undefined,
     });
     setLeads(data);
+    const dates: Record<number, string> = {};
+    const enabled: Record<number, boolean> = {};
+    for (const lead of data) {
+      if (lead.followUpAt) {
+        enabled[lead.id] = true;
+        dates[lead.id] = lead.followUpAt.slice(0, 10);
+      }
+    }
+    setFollowUpDates(dates);
+    setFollowUpEnabled(enabled);
   }, [filter]);
 
   useEffect(() => {
@@ -76,10 +74,30 @@ export default function LeadsManager() {
       .then(({ data }) => setServiceTypes(data.filter((t) => t.active)));
   }, [load]);
 
-  const updateStatus = async (id: number, status: SiteLeadStatus) => {
-    await adminApi.patch(`/crm/leads/${id}`, { status });
-    toast.success("Статус обновлён");
-    await load();
+  const updateStatus = async (
+    lead: SiteLead,
+    status: SiteLeadStatus,
+    adminNote?: string,
+  ) => {
+    if (
+      requiresAdminNoteOnStatusChange(lead.status, status) &&
+      !hasAdminNote(adminNote ?? lead.adminNote)
+    ) {
+      toast.error("Укажите комментарий администратора перед сменой статуса");
+      return;
+    }
+    try {
+      await adminApi.patch(`/crm/leads/${lead.id}`, { status });
+      toast.success("Статус обновлён");
+      await load();
+    } catch (e: unknown) {
+      const msg =
+        e && typeof e === "object" && "response" in e
+          ? (e as { response?: { data?: { message?: string } } }).response?.data
+              ?.message
+          : null;
+      toast.error(msg || "Не удалось обновить статус");
+    }
   };
 
   const saveNote = async (id: number, adminNote: string) => {
@@ -88,7 +106,34 @@ export default function LeadsManager() {
     await load();
   };
 
+  const saveFollowUp = async (lead: SiteLead) => {
+    const enabled = followUpEnabled[lead.id];
+    const date = followUpDates[lead.id];
+    if (enabled && !date) {
+      toast.error("Укажите дату повторной связи");
+      return;
+    }
+    try {
+      await adminApi.patch(`/crm/leads/${lead.id}`, {
+        followUpAt: enabled && date ? `${date}T09:00:00.000Z` : null,
+      });
+      toast.success(
+        enabled ? "Повторная связь запланирована" : "Повторная связь отменена",
+      );
+      await load();
+    } catch {
+      toast.error("Не удалось сохранить дату повторной связи");
+    }
+  };
+
   const openSchedule = (lead: SiteLead) => {
+    if (
+      requiresAdminNoteOnStatusChange(lead.status, "SCHEDULED") &&
+      !hasAdminNote(lead.adminNote)
+    ) {
+      toast.error("Укажите комментарий администратора перед записью в календарь");
+      return;
+    }
     setScheduleLead(lead);
     setDialogOpen(true);
   };
@@ -103,6 +148,13 @@ export default function LeadsManager() {
     const link = completeLink.trim();
     if (!link) {
       toast.error("Укажите ссылку на Яндекс.Диск");
+      return;
+    }
+    if (
+      requiresAdminNoteOnStatusChange(completeLead.status, "COMPLETED") &&
+      !hasAdminNote(completeLead.adminNote)
+    ) {
+      toast.error("Укажите комментарий администратора перед закрытием заявки");
       return;
     }
     setCompleting(true);
@@ -126,7 +178,9 @@ export default function LeadsManager() {
     filter === "ALL" ? leads : leads.filter((l) => l.status === filter);
 
   const canSchedule = (status: SiteLeadStatus) =>
-    status !== "SCHEDULED" && status !== "REJECTED" && status !== "COMPLETED";
+    status !== "SCHEDULED" &&
+    status !== "REJECTED" &&
+    status !== "COMPLETED";
 
   const canComplete = (status: SiteLeadStatus) =>
     status !== "REJECTED" && status !== "COMPLETED";
@@ -171,6 +225,12 @@ export default function LeadsManager() {
                   <span className="text-xs text-slate-500">
                     {KIND_LABELS[lead.kind]}
                   </span>
+                  {lead.followUpAt && (
+                    <span className="text-xs text-orange-400">
+                      Повторная связь:{" "}
+                      {new Date(lead.followUpAt).toLocaleDateString("ru-RU")}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 text-sm text-slate-300">
                   {formatPhoneRuDisplay(lead.phone)}
@@ -213,7 +273,7 @@ export default function LeadsManager() {
                     size="sm"
                     variant="outline"
                     className="border-white/20"
-                    onClick={() => void updateStatus(lead.id, "IN_PROGRESS")}
+                    onClick={() => void updateStatus(lead, "IN_PROGRESS")}
                   >
                     В работу
                   </Button>
@@ -224,8 +284,8 @@ export default function LeadsManager() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-slate-400"
-                      onClick={() => void updateStatus(lead.id, "REJECTED")}
+                      className="text-slate-400 hover:bg-red-600/20 hover:text-red-400"
+                      onClick={() => void updateStatus(lead, "REJECTED")}
                     >
                       Отклонить
                     </Button>
@@ -271,7 +331,7 @@ export default function LeadsManager() {
               <Textarea
                 rows={2}
                 className="border-white/15 bg-slate-800 text-sm text-white"
-                placeholder="Заметка администратора"
+                placeholder="Комментарий администратора"
                 defaultValue={lead.adminNote ?? ""}
                 onBlur={(e) => {
                   if (e.target.value !== (lead.adminNote ?? "")) {
@@ -280,6 +340,48 @@ export default function LeadsManager() {
                 }}
               />
             </div>
+
+            {lead.status !== "REJECTED" && lead.status !== "COMPLETED" && (
+              <div className="mt-3 flex flex-wrap items-end gap-3 rounded-lg border border-white/5 bg-slate-800/40 p-3">
+                <label className="flex cursor-pointer items-center gap-2">
+                  <Checkbox
+                    checked={followUpEnabled[lead.id] ?? false}
+                    onCheckedChange={(v) =>
+                      setFollowUpEnabled((prev) => ({
+                        ...prev,
+                        [lead.id]: v === true,
+                      }))
+                    }
+                    className="border-white/20 data-[state=checked]:bg-orange-600"
+                  />
+                  <span className="text-sm text-slate-200">Повторная связь</span>
+                </label>
+                {(followUpEnabled[lead.id] ?? false) && (
+                  <div className="space-y-1">
+                    <Label className="text-xs text-slate-400">Дата</Label>
+                    <Input
+                      type="date"
+                      className="border-white/15 bg-slate-900 text-sm text-white"
+                      value={followUpDates[lead.id] ?? ""}
+                      onChange={(e) =>
+                        setFollowUpDates((prev) => ({
+                          ...prev,
+                          [lead.id]: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-white/20"
+                  onClick={() => void saveFollowUp(lead)}
+                >
+                  Сохранить дату
+                </Button>
+              </div>
+            )}
           </article>
         ))}
       </div>

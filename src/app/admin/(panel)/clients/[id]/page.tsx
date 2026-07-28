@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { adminApi } from "../../../_lib/api";
 import type { CrmClient, CrmClientVisit } from "../../../_lib/crmTypes";
 import { CarCatalogFields } from "../../../components/cars/CarCatalogFields";
+import { SegmentPricePreview } from "../../../components/prices/SegmentPricePreview";
 import { useCarCatalog } from "../../../components/cars/useCarCatalog";
 import { ClientVisitsSection } from "../../../components/clients/ClientVisitsSection";
 import { PhoneRuInput } from "@/components/PhoneRuInput";
@@ -54,7 +55,7 @@ export default function AdminClientCardPage() {
     smsEnabled: true,
     notifyReminder: true,
   });
-  const { brands, cars, resolveCarId } = useCarCatalog(form.brand);
+  const { brands, cars, resolveCarId, resolveCarSegment } = useCarCatalog(form.brand);
 
   const reloadClient = async () => {
     if (isNew) return;
@@ -288,15 +289,24 @@ export default function AdminClientCardPage() {
                 onChange={(e) => setForm((f) => ({ ...f, customCar: e.target.value }))}
               />
             ) : (
-              <CarCatalogFields
-                brand={form.brand}
-                model={form.model}
-                brands={brands}
-                cars={cars}
-                onBrandChange={(brand) => setForm((f) => ({ ...f, brand, model: "" }))}
-                onModelChange={(model) => setForm((f) => ({ ...f, model }))}
-                inputClassName={fieldClass}
-              />
+              <>
+                <CarCatalogFields
+                  brand={form.brand}
+                  model={form.model}
+                  brands={brands}
+                  cars={cars}
+                  onBrandChange={(brand) => setForm((f) => ({ ...f, brand, model: "" }))}
+                  onModelChange={(model) => setForm((f) => ({ ...f, model }))}
+                  inputClassName={fieldClass}
+                />
+                {form.model && (
+                  <SegmentPricePreview
+                    segment={resolveCarSegment(form.model)}
+                    brand={form.brand}
+                    model={form.model}
+                  />
+                )}
+              </>
             )}
           </div>
 

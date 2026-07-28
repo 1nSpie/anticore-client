@@ -22,6 +22,7 @@ interface SegmentPrice {
   complexMLBody: number | null;
 }
 
+import { SEGMENT_NAMES } from "@/lib/segments";
 
 const SEGMENT_EXAMPLES: Record<number, string> = {
   1: "Toyota Pixis Epoch, Hyundai EON, Peugeot 107, Suzuki Kei, Subaru R2, Toyota Sparky, Honda N-One",
@@ -34,35 +35,29 @@ const SEGMENT_EXAMPLES: Record<number, string> = {
 
 const SEGMENT_META: Record<
   number,
-  { name: string; imageSrc: typeof car1; imageAlt: string }
+  { imageSrc: typeof car1; imageAlt: string }
 > = {
   1: {
-    name: "Легковые автомобили до 4 метров (Класс A,B)",
     imageSrc: car1,
     imageAlt: "Класс A,B",
   },
   2: {
-    name: "Легковые автомобили от 4 до 5 метров (Класс C,D,E)",
     imageSrc: car4,
     imageAlt: "Класс C,D,E",
   },
   3: {
-    name: "Кроссоверы",
     imageSrc: car3,
-    imageAlt: "Кроссоверы",
+    imageAlt: "Минивэны, кроссоверы",
   },
   4: {
-    name: "Внедорожники",
     imageSrc: car5,
     imageAlt: "Внедорожники",
   },
   5: {
-    name: "Микроавтобусы и пикапы",
     imageSrc: car6,
     imageAlt: "Микроавтобусы и пикапы",
   },
   6: {
-    name: "Премиум класс",
     imageSrc: car2,
     imageAlt: "Премиум класс",
   },
@@ -152,7 +147,7 @@ export default function PriceCardList({ id }: Props) {
                     />
                   </div>
                   <h3 className="text-lg font-bold text-black leading-tight">
-                    {meta.name}
+                    {SEGMENT_NAMES[segment.segment]}
                   </h3>
                 </div>
 

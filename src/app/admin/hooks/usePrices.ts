@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { adminApi } from "../_lib/api";
 import { PriceData } from "../_lib/types";
+import { segmentName } from "@/lib/segments";
 
 export const usePrices = () => {
   const [prices, setPrices] = useState<PriceData[]>([]);
@@ -70,7 +71,7 @@ export const usePrices = () => {
 
         await adminApi.put(`/segment/by-segment/${segment}`, updateData);
 
-        toast.success(`Цены для сегмента ${segment} обновлены`);
+        toast.success(`Цены для «${segmentName(segment)}» обновлены`);
 
         setEditingPrices((prev) => {
           const newState = { ...prev };

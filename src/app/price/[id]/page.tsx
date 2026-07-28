@@ -14,9 +14,7 @@ import { ServiceStep } from "../components/types";
 import Link from "next/link";
 import FeedbackLine from "src/app/ui/ui/FeedbackLine";
 import { getSegments, type SegmentPrice } from "src/app/glav/api";
-import { SEGMENT_NAMES, SERVICE_PRICE_KEYS } from "../lib/segments";
-
-const SEGMENT_IDS = [1, 2, 3, 4, 5, 6] as const;
+import { SEGMENT_NAMES, SEGMENT_IDS, SERVICE_PRICE_KEYS } from "../lib/segments";
 
 function formatPrice(value: number | null): string {
   return value == null ? "Договорная" : `${value.toLocaleString()} ₽`;

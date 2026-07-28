@@ -31,7 +31,8 @@ import {
   Building2,
   Loader2,
 } from "lucide-react";
-import { Brand, Car, SEGMENT_COLORS } from "../../_lib/types";
+import { Brand, Car, SEGMENT_COLORS, segmentName } from "../../_lib/types";
+import { Autocomplete } from "@/shadcn/autocomplete";
 import axios from "axios";
 
 export default function CarsManager() {
@@ -339,30 +340,26 @@ export default function CarsManager() {
                       placeholder="Название новой марки"
                     />
                   ) : (
-                    <Select
-                      value={currentCar.brandId?.toString() ?? ""}
-                      onValueChange={(value) =>
+                    <Autocomplete
+                      options={brands.map((brand) => ({
+                        value: brand.name,
+                        label: brand.name,
+                      }))}
+                      value={
+                        brands.find((b) => b.id === currentCar.brandId)?.name ??
+                        ""
+                      }
+                      onChange={(name) => {
+                        const brand = brands.find((b) => b.name === name);
                         setCurrentCar((prev) => ({
                           ...prev,
-                          brandId: Number(value),
-                        }))
-                      }
-                    >
-                      <SelectTrigger className="bg-slate-900/80 border-white/10 text-slate-50">
-                        <SelectValue placeholder="Выберите марку" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-white/10 max-h-60">
-                        {brands.map((brand) => (
-                          <SelectItem
-                            key={brand.id}
-                            value={brand.id.toString()}
-                            className="text-slate-50"
-                          >
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                          brandId: brand?.id,
+                        }));
+                      }}
+                      placeholder="Выберите марку"
+                      emptyMessage="Марка не найдена"
+                      inputClassName="bg-slate-900/80 border-white/10 text-slate-50"
+                    />
                   )}
                 </div>
 
@@ -384,10 +381,10 @@ export default function CarsManager() {
                   />
                 </div>
 
-                {/* Сегмент */}
+                {/* Тип автомобиля */}
                 <div className="space-y-2">
                   <label className="text-sm text-slate-300 font-medium">
-                    Сегмент
+                    Тип автомобиля
                   </label>
                   <Select
                     value={currentCar.segment?.toString() ?? ""}
@@ -408,7 +405,7 @@ export default function CarsManager() {
                           value={seg.toString()}
                           className="text-slate-50"
                         >
-                          Сегмент {seg}
+                          {segmentName(seg)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -545,7 +542,7 @@ export default function CarsManager() {
                                 "bg-slate-500/20 text-slate-300"
                               }`}
                             >
-                              {car.segment}
+                              {segmentName(car.segment)}
                             </span>
                           </div>
                           <div className="flex gap-1">

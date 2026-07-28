@@ -2,7 +2,7 @@
 
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
-import { PriceData, SEGMENT_NAMES } from "../../_lib/types";
+import { PriceData, segmentName } from "../../_lib/types";
 import { Save } from "lucide-react";
 
 interface PriceSegmentCardProps {
@@ -36,7 +36,7 @@ export function PriceSegmentCard({
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-lg font-semibold text-slate-50 flex items-center gap-2">
           <span className="w-1 h-5 bg-emerald-500 rounded-full" />
-          {SEGMENT_NAMES[price.segment] || `Сегмент ${price.segment}`}
+          {segmentName(price.segment)}
         </h3>
         {hasChanges && (
           <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">

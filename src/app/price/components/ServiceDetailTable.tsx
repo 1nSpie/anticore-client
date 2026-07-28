@@ -10,10 +10,8 @@ import {
   TableRow,
 } from "src/shadcn/table";
 import { ServicePackage } from "./types";
-import { SEGMENT_NAMES } from "../lib/segments";
+import { SEGMENT_NAMES, SEGMENT_IDS } from "../lib/segments";
 import type { SegmentPrice } from "src/app/glav/api";
-
-const SEGMENT_IDS = [1, 2, 3, 4, 5, 6] as const;
 const SERVICE_KEYS = [
   "standartML",
   "standartMLBody",

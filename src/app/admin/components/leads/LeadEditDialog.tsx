@@ -22,22 +22,20 @@ import {
 } from "@/shadcn/select";
 import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { useCarCatalog } from "../cars/useCarCatalog";
+import { SegmentPricePreview } from "../prices/SegmentPricePreview";
 import { adminApi } from "../../_lib/api";
 import type { SiteLead, SiteLeadStatus } from "../../_lib/crmTypes";
+import {
+  STATUS_LABELS,
+  hasAdminNote,
+  requiresAdminNoteOnStatusChange,
+} from "../../_lib/leadStatus";
 import {
   formatPhoneRuDisplay,
   normalizePhoneRu,
   PHONE_RU_INPUT_PREFIX,
 } from "@/lib/phoneRu";
 import { toast } from "sonner";
-
-const STATUS_LABELS: Record<SiteLeadStatus, string> = {
-  NEW: "Новая",
-  IN_PROGRESS: "В работе",
-  SCHEDULED: "В календаре",
-  REJECTED: "Отклонена",
-  COMPLETED: "Выполнена",
-};
 
 const fieldClass = "border-white/15 bg-slate-800 text-white";
 
@@ -53,6 +51,8 @@ type FormState = {
   adminNote: string;
   diskLink: string;
   status: SiteLeadStatus;
+  followUpAt: string;
+  followUpEnabled: boolean;
 };
 
 type Props = {
@@ -115,6 +115,8 @@ function leadToForm(lead: SiteLead): FormState {
     adminNote: lead.adminNote ?? "",
     diskLink: lead.diskLink ?? "",
     status: lead.status,
+    followUpAt: lead.followUpAt?.slice(0, 10) ?? "",
+    followUpEnabled: Boolean(lead.followUpAt),
   };
 }
 
@@ -123,7 +125,7 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
   const [saving, setSaving] = useState(false);
   const [carParsed, setCarParsed] = useState(false);
 
-  const { brands, cars } = useCarCatalog(form?.brand ?? "");
+  const { brands, cars, resolveCarSegment } = useCarCatalog(form?.brand ?? "");
 
   useEffect(() => {
     if (open && lead) {
@@ -180,6 +182,18 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
       toast.error("Для статуса «Выполнена» укажите ссылку на Яндекс.Диск");
       return;
     }
+    if (
+      lead &&
+      requiresAdminNoteOnStatusChange(lead.status, form.status) &&
+      !hasAdminNote(form.adminNote)
+    ) {
+      toast.error("Укажите комментарий администратора при смене статуса с «Новая»");
+      return;
+    }
+    if (form.followUpEnabled && !form.followUpAt) {
+      toast.error("Укажите дату повторной связи");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -192,6 +206,10 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
         adminNote: form.adminNote.trim() || null,
         diskLink: form.diskLink.trim() || null,
         status: form.status,
+        followUpAt:
+          form.followUpEnabled && form.followUpAt
+            ? `${form.followUpAt}T09:00:00.000Z`
+            : null,
       });
       toast.success("Заявка сохранена");
       await onSaved();
@@ -365,6 +383,13 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
                     </SelectContent>
                   </Select>
                 </div>
+                {form.model && (
+                  <SegmentPricePreview
+                    segment={resolveCarSegment(form.model)}
+                    brand={form.brand}
+                    model={form.model}
+                  />
+                )}
               </div>
             )}
           </div>
@@ -382,7 +407,7 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
           </div>
 
           <div className="space-y-2">
-            <Label>Заметка менеджера</Label>
+            <Label>Комментарий администратора</Label>
             <Textarea
               rows={2}
               className={fieldClass}
@@ -391,7 +416,50 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
                 setForm((f) => f && { ...f, adminNote: e.target.value })
               }
             />
+            {lead?.status === "NEW" && (
+              <p className="text-xs text-slate-500">
+                Обязателен при переводе заявки из статуса «Новая».
+              </p>
+            )}
           </div>
+
+          {form.status !== "REJECTED" && form.status !== "COMPLETED" && (
+            <div className="space-y-3 rounded-lg border border-white/10 p-3">
+              <label className="flex cursor-pointer items-center gap-2">
+                <Checkbox
+                  checked={form.followUpEnabled}
+                  onCheckedChange={(v) =>
+                    setForm((f) =>
+                      f
+                        ? {
+                            ...f,
+                            followUpEnabled: v === true,
+                            ...(v !== true ? { followUpAt: "" } : {}),
+                          }
+                        : f,
+                    )
+                  }
+                  className="border-white/20 data-[state=checked]:bg-orange-600"
+                />
+                <span className="text-sm text-slate-200">
+                  Повторная связь (вернётся в «На уточнении» в выбранную дату)
+                </span>
+              </label>
+              {form.followUpEnabled && (
+                <div className="space-y-2">
+                  <Label>Дата повторной связи</Label>
+                  <Input
+                    type="date"
+                    className={fieldClass}
+                    value={form.followUpAt}
+                    onChange={(e) =>
+                      setForm((f) => f && { ...f, followUpAt: e.target.value })
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           {(form.status === "COMPLETED" || form.diskLink) && (
             <div className="space-y-2">

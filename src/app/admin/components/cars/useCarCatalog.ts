@@ -46,5 +46,13 @@ export function useCarCatalog(brand: string) {
     [cars],
   );
 
-  return { brands, cars, resolveCarId, reloadBrands: loadBrands };
+  const resolveCarSegment = useCallback(
+    (model: string): number | null => {
+      const found = cars.find((c) => c.model === model);
+      return found?.segment ?? null;
+    },
+    [cars],
+  );
+
+  return { brands, cars, resolveCarId, resolveCarSegment, reloadBrands: loadBrands };
 }

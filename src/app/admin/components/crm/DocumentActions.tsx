@@ -5,12 +5,10 @@ import { pdf } from "@react-pdf/renderer";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/button";
 import type { CrmAppointment, CrmClient } from "../../_lib/crmTypes";
-import {
-  downloadBlob,
-  fillContractDocx,
-} from "./contract/fillContractDocx";
+import { downloadBlob } from "./contract/fillContractDocx";
 import { AcceptanceActPdf } from "./pdf/AcceptanceActPdf";
 import { CompletedWorksActPdf } from "./pdf/CompletedWorksActPdf";
+import { ContractPdf } from "./pdf/ContractPdf";
 import type { ActDocInput } from "./pdf/actShared";
 
 type DocKind = "contract" | "acceptance" | "works";
@@ -56,6 +54,17 @@ function buildActInput(
   };
 }
 
+function openPdfForPrint(blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, "_blank");
+  if (win) {
+    win.addEventListener("load", () => {
+      win.focus();
+      win.print();
+    });
+  }
+}
+
 export function DocumentActions({
   client,
   appointment,
@@ -72,19 +81,15 @@ export function DocumentActions({
     setBusy("contract");
     try {
       const act = buildActInput(client, appointment, overrides);
-      const blob = await fillContractDocx({
-        contractNumber: appointment.id,
-        fio: client.fio,
-        phone: client.phone,
-        birthDate: client.birthDate,
-        carModel: act.carModel || "",
-        vin: act.vin,
-        startsAt: act.startsAt,
-        endsAt: act.endsAt,
-        priceRub: act.priceRub,
-        serviceType: act.serviceType,
-      });
-      downloadBlob(blob, `dogovor-${appointment.id}.docx`);
+      const blob = await pdf(
+        <ContractPdf
+          {...act}
+          phone={client.phone}
+          birthDate={client.birthDate}
+        />,
+      ).toBlob();
+      downloadBlob(blob, `dogovor-${appointment.id}.pdf`);
+      openPdfForPrint(blob);
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Не удалось сформировать договор",
@@ -101,6 +106,7 @@ export function DocumentActions({
         <AcceptanceActPdf {...buildActInput(client, appointment, overrides)} />,
       ).toBlob();
       downloadBlob(blob, `akt-priema-${appointment.id}.pdf`);
+      openPdfForPrint(blob);
     } catch {
       toast.error("Не удалось сформировать акт приёма-передачи");
     } finally {
@@ -117,6 +123,7 @@ export function DocumentActions({
         />,
       ).toBlob();
       downloadBlob(blob, `akt-rabot-${appointment.id}.pdf`);
+      openPdfForPrint(blob);
     } catch {
       toast.error("Не удалось сформировать акт выполненных работ");
     } finally {
