@@ -1,5 +1,7 @@
 // Типы для админ-панели
 
+export { SEGMENT_NAMES, segmentName } from "@/lib/segments";
+
 export interface PriceData {
   id: number;
   segment: number;
@@ -78,15 +80,6 @@ export interface Work {
   featured: boolean;
   published: boolean;
 }
-
-export const SEGMENT_NAMES: Record<number, string> = {
-  1: "Сегмент 1",
-  2: "Сегмент 2",
-  3: "Сегмент 3",
-  4: "Сегмент 4",
-  5: "Сегмент 5",
-  6: "Сегмент 6",
-};
 
 export const SEGMENT_COLORS: Record<number, string> = {
   1: "bg-green-500/20 text-green-300 border-green-500/30",

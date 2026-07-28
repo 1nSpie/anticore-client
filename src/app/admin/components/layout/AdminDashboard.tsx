@@ -1,13 +1,14 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/tabs";
-import { DollarSign, Car as CarIcon, Package, FileText } from "lucide-react";
+import { DollarSign, Car as CarIcon, UserCircle2, Calendar } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/shadcn/button";
 import { AdminHeader } from "./AdminHeader";
 import { PriceManagement } from "../prices/PriceManagement";
 import { PriceData } from "../../_lib/types";
 import CarsManager from "../cars/CarsManager";
-import WorksManager from "../works/WorksManager";
-import BlogManager from "../blog/BlogManager";
+import CabinetUsersManager from "../cabinet/CabinetUsersManager";
 
 interface AdminDashboardProps {
   prices: PriceData[];
@@ -48,8 +49,20 @@ export function AdminDashboard({
             loading={loading}
           />
 
+          <div className="mb-6">
+            <Button
+              asChild
+              className="bg-emerald-600 hover:bg-emerald-500 text-white"
+            >
+              <Link href="/admin/crm">
+                <Calendar className="w-4 h-4 mr-2" />
+                CRM — календарь записей
+              </Link>
+            </Button>
+          </div>
+
           <Tabs defaultValue="prices" className="space-y-6">
-            <TabsList className="bg-slate-900/60 border border-white/10 p-1">
+            <TabsList className="bg-slate-900/60 border border-white/10 p-1 flex flex-wrap h-auto gap-1">
               <TabsTrigger
                 value="prices"
                 className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300 transition-all"
@@ -64,20 +77,13 @@ export function AdminDashboard({
                 <CarIcon className="w-4 h-4 mr-2" />
                 Автомобили
               </TabsTrigger>
-              {/* <TabsTrigger
-                value="works"
-                className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300 transition-all"
-              >
-                <Package className="w-4 h-4 mr-2" />
-                Работы
-              </TabsTrigger>
               <TabsTrigger
-                value="blog"
+                value="cabinet"
                 className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300 transition-all"
               >
-                <FileText className="w-4 h-4 mr-2" />
-                Блог
-              </TabsTrigger> */}
+                <UserCircle2 className="w-4 h-4 mr-2" />
+                Клиенты ЛК
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="prices" className="mt-6">
@@ -94,13 +100,9 @@ export function AdminDashboard({
               <CarsManager />
             </TabsContent>
 
-            {/* <TabsContent value="works" className="mt-6">
-              <WorksManager />
+            <TabsContent value="cabinet" className="mt-6">
+              <CabinetUsersManager />
             </TabsContent>
-
-            <TabsContent value="blog" className="mt-6">
-              <BlogManager />
-            </TabsContent> */}
           </Tabs>
         </div>
       </div>

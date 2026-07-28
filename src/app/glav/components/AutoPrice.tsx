@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete } from "../../../shadcn/autocomplete";
 import { Checkbox } from "../../../shadcn/checkbox";
 import { Input } from "../../../shadcn/input";
+import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { RadioGroup, RadioGroupItem } from "../../../shadcn/radio-group";
 import { getAllBrand, getAllCarWithBrand } from "../api";
 import {
@@ -28,6 +29,7 @@ import {
 import { Button } from "src/shadcn/button";
 import { MessageCircle, Phone, Send, Info, ShieldCheck, FlaskConical, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { PHONE_RU_INPUT_PREFIX } from "@/lib/phoneRu";
 import {
   autoPriceFormSchema,
   type AutoPriceFormData,
@@ -55,7 +57,7 @@ export default function AutoPrice({ id }: AutoPriceProps) {
       customBrand: "",
       isNotAuto: false,
       name: "",
-      phone: "",
+      phone: PHONE_RU_INPUT_PREFIX,
       contactMethod: "phone",
     },
   });
@@ -671,9 +673,8 @@ export default function AutoPrice({ id }: AutoPriceProps) {
                   >
                     Номер телефона
                   </label>
-                  <Input
+                  <PhoneRuInput
                     id="modal-phone"
-                    placeholder="+7 (999) 999-99-99"
                     {...register("phone")}
                     className={`${errors.phone
                       ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"

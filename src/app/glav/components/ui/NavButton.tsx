@@ -148,6 +148,25 @@ const NavigationButton = memo(({ variant = "dark" }: { variant?: "light" | "dark
                         </Link>
                       </motion.div>
                     ))}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: navigationLinks.length * 0.1,
+                        duration: 0.4,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <Link
+                        href="/cabinet"
+                        prefetch={false}
+                        onClick={closeMenu}
+                        className={`${linkStyles[variant]} block w-full`}
+                        style={linkStyleObject}
+                      >
+                        Личный кабинет
+                      </Link>
+                    </motion.div>
                   </nav>
 
                   {/* Контакты и дополнительные действия */}

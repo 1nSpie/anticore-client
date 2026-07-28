@@ -3,13 +3,17 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import telegramIcon from "public/icons8-телеграм.svg";
 import whatsappIcon from "public/icons8-whatsapp.svg";
 import { PhoneIcon } from "@heroicons/react/24/solid";
 
 export default function FloatingContactButton() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  if (pathname.startsWith("/crm")) return null;
+
   const toggleExpanded = () => {
     setIsOpen((prev)=> !prev);
   };

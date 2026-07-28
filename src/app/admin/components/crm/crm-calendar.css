@@ -1,0 +1,268 @@
+/* CRM calendar — readable dark theme for managers */
+
+.crm-calendar {
+  --fc-small-font-size: 0.75rem;
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: rgba(255, 255, 255, 0.04);
+  --fc-neutral-text-color: #9aa0a6;
+  --fc-border-color: rgba(255, 255, 255, 0.1);
+  --fc-button-text-color: #e8eaed;
+  --fc-button-bg-color: transparent;
+  --fc-button-border-color: rgba(255, 255, 255, 0.15);
+  --fc-button-hover-bg-color: rgba(255, 255, 255, 0.06);
+  --fc-button-hover-border-color: rgba(255, 255, 255, 0.2);
+  --fc-button-active-bg-color: rgba(16, 185, 129, 0.2);
+  --fc-button-active-border-color: rgba(16, 185, 129, 0.45);
+  --fc-event-bg-color: #1a73e8;
+  --fc-event-border-color: #1557b0;
+  --fc-event-text-color: #ffffff;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.2);
+  --fc-more-link-bg-color: rgba(255, 255, 255, 0.06);
+  --fc-more-link-text-color: #6ee7b7;
+  --fc-non-business-color: rgba(255, 255, 255, 0.02);
+  --fc-highlight-color: rgba(16, 185, 129, 0.18);
+  --fc-today-bg-color: rgba(16, 185, 129, 0.1);
+  --fc-now-indicator-color: #f87171;
+  --fc-daygrid-event-dot-width: 8px;
+
+  color: #e8eaed;
+  font-family: var(--font-geist-sans, system-ui, sans-serif);
+}
+
+.crm-calendar .fc {
+  --fc-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.crm-calendar .fc-theme-standard td,
+.crm-calendar .fc-theme-standard th {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.crm-calendar .fc-scrollgrid {
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+  border: none;
+}
+
+.crm-calendar .fc-col-header-cell {
+  background: rgba(15, 23, 42, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 0;
+}
+
+.crm-calendar .fc-col-header-cell-cushion {
+  padding: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.crm-calendar .fc-timegrid-axis-cushion,
+.crm-calendar .fc-timegrid-slot-label-cushion {
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.crm-calendar .fc-timegrid-slot {
+  height: 2.5rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.crm-calendar .fc-timegrid-slot:hover {
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.crm-calendar .fc-timegrid-slot-minor {
+  border-top-style: dotted;
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.crm-calendar .fc-timegrid-slot-label {
+  vertical-align: top;
+  border-top: none;
+}
+
+.crm-calendar .fc-timegrid-now-indicator-line {
+  border-width: 2px 0 0;
+  border-color: var(--fc-now-indicator-color);
+  z-index: 4;
+}
+
+.crm-calendar .fc-timegrid-now-indicator-arrow {
+  border-color: var(--fc-now-indicator-color);
+}
+
+.crm-calendar .fc-event {
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  margin: 1px 3px;
+  padding: 0;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.crm-calendar .fc-timegrid-event {
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  /* цвет левой полоски = borderColor события (услуга) */
+}
+
+.crm-calendar .fc-timegrid-event .fc-event-main {
+  padding: 2px 0;
+}
+
+.crm-calendar .fc-daygrid-event {
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin: 1px 2px;
+}
+
+.crm-calendar .fc-daygrid-day-number {
+  color: #e8eaed;
+  padding: 8px;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.crm-calendar .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background: #34d399;
+  color: #0f172a;
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.crm-calendar .fc-daygrid-day-top {
+  flex-direction: row;
+}
+
+.crm-calendar .fc-day-other .fc-daygrid-day-number {
+  color: #64748b;
+}
+
+.crm-calendar .fc-timegrid-col.fc-day-today {
+  background: var(--fc-today-bg-color);
+}
+
+.crm-calendar .fc-highlight {
+  background: var(--fc-highlight-color);
+}
+
+.crm-calendar .fc-more-link {
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.crm-fc-day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.crm-fc-day-header-weekday {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.crm-fc-day-header-num {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #e8eaed;
+  border-radius: 50%;
+}
+
+.crm-fc-day-header-num.is-today {
+  background: #34d399;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.crm-fc-event {
+  overflow: hidden;
+  padding: 3px 5px;
+  height: 100%;
+}
+
+.crm-fc-event--month {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 4px;
+}
+
+.crm-fc-event-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crm-fc-event-sub,
+.crm-fc-event-time {
+  font-size: 0.68rem;
+  opacity: 0.95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crm-fc-event-time {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+@media (max-width: 1023px) {
+  .crm-calendar .crm-cal-main {
+    min-height: 70vh;
+  }
+
+  .crm-calendar .fc-timegrid-slot {
+    height: 3rem;
+  }
+
+  .crm-calendar .fc-col-header-cell {
+    padding: 4px 0;
+  }
+
+  .crm-fc-day-header-weekday {
+    font-size: 0.6rem;
+  }
+
+  .crm-fc-day-header-num {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 1rem;
+  }
+
+  .crm-calendar .fc-event {
+    font-size: 0.75rem;
+  }
+
+  .crm-fc-event {
+    padding: 4px 6px;
+  }
+}
+
+/* Mobile agenda: без вложенного скролла FullCalendar */
+@media (max-width: 1023px) {
+  .crm-calendar {
+    min-height: unset;
+  }
+}

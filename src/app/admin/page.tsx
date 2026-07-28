@@ -1,76 +1,41 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
-import { usePrices } from "./hooks/usePrices";
 import { LoginForm } from "./components/auth/LoginForm";
 import { LoadingScreen } from "./components/auth/LoadingScreen";
-import { AdminDashboard } from "./components/layout/AdminDashboard";
-import { useEffect } from "react";
 
-export default function AdminPage() {
-  const {
-    authState,
-    loginData,
-    setLoginData,
-    handleLogin,
-    handleLogout,
-  } = useAuth();
+export default function AdminLoginPage() {
+  const router = useRouter();
+  const { authState, loginData, setLoginData, handleLogin } = useAuth();
 
-  const {
-    prices,
-    loading,
-    editingPrices,
-    loadPrices,
-    handlePriceChange,
-    savePrice,
-  } = usePrices();
-
-  // Загружаем цены после успешной авторизации
   useEffect(() => {
-    if (authState.isAuthenticated && !authState.isLoading) {
-      loadPrices();
+    if (!authState.isLoading && authState.isAuthenticated) {
+      router.replace("/admin/calendar");
     }
-  }, [authState.isAuthenticated, authState.isLoading, loadPrices]);
+  }, [authState.isAuthenticated, authState.isLoading, router]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleLogin();
-    }
-  };
+  if (authState.isLoading) return <LoadingScreen />;
 
-  // Показываем загрузку при проверке авторизации
-  if (authState.isLoading) {
-    return <LoadingScreen />;
-  }
+  if (authState.isAuthenticated) return <LoadingScreen />;
 
-  // Форма авторизации
-  if (!authState.isAuthenticated) {
-    return (
-      <LoginForm
-        loginData={loginData}
-        loading={false}
-        onLoginDataChange={setLoginData}
-        onLogin={async () => {
-          const success = await handleLogin();
-          if (success) {
-            await loadPrices();
-          }
-        }}
-        onKeyPress={handleKeyPress}
-      />
-    );
-  }
-
-  // Основной интерфейс админ-панели
   return (
-    <AdminDashboard
-      prices={prices}
-      loading={loading}
-      editingPrices={editingPrices}
-      onLogout={handleLogout}
-      onRefresh={loadPrices}
-      onPriceChange={handlePriceChange}
-      onSavePrice={savePrice}
+    <LoginForm
+      loginData={loginData}
+      loading={false}
+      onLoginDataChange={setLoginData}
+      onLogin={async () => {
+        const ok = await handleLogin();
+        if (ok) router.replace("/admin/calendar");
+      }}
+      onKeyPress={(e) => {
+        if (e.key === "Enter") {
+          void handleLogin().then((ok) => {
+            if (ok) router.replace("/admin/calendar");
+          });
+        }
+      }}
     />
   );
 }
