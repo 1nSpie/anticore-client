@@ -59,6 +59,7 @@ export type CrmAppointment = {
   serviceTypeId: number | null;
   priceRub: number;
   managerName: string | null;
+  location: "ZHUKOVSKY" | "RAMENSKOYE" | "KOLOMNA";
   title: string;
   /** Когда отправлено SMS с запросом отзыва (один раз на запись). */
   reviewSmsSentAt: string | null;
@@ -102,6 +103,7 @@ export type SiteLead = {
   adminNote: string | null;
   diskLink: string | null;
   followUpAt: string | null;
+  location: "ZHUKOVSKY" | "RAMENSKOYE" | "KOLOMNA" | null;
   visitId: number | null;
   processedAt: string | null;
   createdAt: string;

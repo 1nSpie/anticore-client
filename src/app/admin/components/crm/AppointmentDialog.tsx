@@ -21,6 +21,12 @@ import {
 } from "@/shadcn/select";
 import { adminApi } from "../../_lib/api";
 import type { CrmAppointment, CrmClient, ServiceType } from "../../_lib/crmTypes";
+import {
+  CRM_LOCATIONS,
+  CRM_LOCATION_LABELS,
+  DEFAULT_CRM_LOCATION,
+  type CrmLocationCode,
+} from "../../_lib/crmLocations";
 import { toast } from "sonner";
 import { ClientQuickCreate } from "./ClientQuickCreate";
 import { ClientSearchAutocomplete } from "./ClientSearchAutocomplete";
@@ -39,6 +45,8 @@ type Props = {
   onSaved: () => Promise<void>;
   leadId?: number | null;
   initialClientQuery?: string;
+  /** Филиал по умолчанию для новой записи (из активного расписания). */
+  defaultLocation?: CrmLocationCode;
 };
 
 function toLocalInput(iso: string) {
@@ -78,6 +86,7 @@ export function AppointmentDialog({
   onSaved,
   leadId,
   initialClientQuery,
+  defaultLocation = DEFAULT_CRM_LOCATION,
 }: Props) {
   const [selectedClient, setSelectedClient] = useState<CrmClient | null>(null);
   const [startsAt, setStartsAt] = useState("");
@@ -86,6 +95,7 @@ export function AppointmentDialog({
   const [serviceTypeId, setServiceTypeId] = useState<string>("");
   const [priceRub, setPriceRub] = useState("0");
   const [managerName, setManagerName] = useState("");
+  const [location, setLocation] = useState<CrmLocationCode>(defaultLocation);
   const [loading, setLoading] = useState(false);
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [clientSearchQuery, setClientSearchQuery] = useState("");
@@ -115,6 +125,7 @@ export function AppointmentDialog({
       );
       setPriceRub(String(appointment.priceRub));
       setManagerName(appointment.managerName ?? "");
+      setLocation(appointment.location ?? defaultLocation);
       setReviewSmsSentAt(appointment.reviewSmsSentAt ?? null);
 
       void adminApi
@@ -130,9 +141,10 @@ export function AppointmentDialog({
       setServiceTypeId(serviceTypes[0] ? String(serviceTypes[0].id) : "");
       setPriceRub("0");
       setManagerName("");
+      setLocation(defaultLocation);
       setReviewSmsSentAt(null);
     }
-  }, [open, appointment, slot, serviceTypes]);
+  }, [open, appointment, slot, serviceTypes, defaultLocation]);
 
   useEffect(() => {
     if (!appointment || !selectedClient) return;
@@ -141,6 +153,7 @@ export function AppointmentDialog({
   }, [appointment, selectedClient]);
 
   const save = async () => {
+    if (loading) return;
     if (!selectedClient) {
       toast.error("Выберите клиента");
       return;
@@ -163,15 +176,15 @@ export function AppointmentDialog({
         serviceTypeId: serviceTypeId ? Number(serviceTypeId) : undefined,
         priceRub: Number(priceRub) || 0,
         managerName: managerName.trim() || undefined,
+        location,
+        ...(leadId && !appointment ? { leadId } : {}),
       };
 
-      let visitId: number;
       if (appointment) {
-        const { data } = await adminApi.patch<CrmAppointment>(
+        await adminApi.patch<CrmAppointment>(
           `/crm/appointments/${appointment.id}`,
           body,
         );
-        visitId = data.id;
 
         const nextVin = vin.trim().toUpperCase() || null;
         const prevVin = selectedClient.vin?.trim().toUpperCase() || null;
@@ -185,22 +198,28 @@ export function AppointmentDialog({
 
         toast.success("Запись обновлена");
       } else {
-        const { data } = await adminApi.post<CrmAppointment>(
-          "/crm/appointments",
-          body,
+        const { data } = await adminApi.post<
+          CrmAppointment & { smsError?: string | null }
+        >("/crm/appointments", body);
+        toast.success(
+          leadId ? "Заявка записана в календарь" : "Запись создана",
         );
-        visitId = data.id;
-        toast.success("Запись создана");
-      }
-
-      if (leadId) {
-        await adminApi.post(`/crm/leads/${leadId}/schedule`, { visitId });
+        if (data.smsError) {
+          toast.error(data.smsError);
+        }
       }
 
       await onSaved();
       onOpenChange(false);
-    } catch {
-      toast.error("Ошибка сохранения");
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string | string[] } } })
+        ?.response?.data?.message;
+      const text = Array.isArray(msg)
+        ? msg.join(", ")
+        : typeof msg === "string"
+          ? msg
+          : "Ошибка сохранения";
+      toast.error(text);
     } finally {
       setLoading(false);
     }
@@ -303,6 +322,25 @@ export function AppointmentDialog({
                   onChange={(e) => setEndsAt(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Филиал</Label>
+              <Select
+                value={location}
+                onValueChange={(v) => setLocation(v as CrmLocationCode)}
+              >
+                <SelectTrigger className="w-full border-white/20 bg-slate-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CRM_LOCATIONS.map((code) => (
+                    <SelectItem key={code} value={code}>
+                      {CRM_LOCATION_LABELS[code]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

@@ -31,6 +31,11 @@ import {
   requiresAdminNoteOnStatusChange,
 } from "../../_lib/leadStatus";
 import {
+  CRM_LOCATIONS,
+  CRM_LOCATION_LABELS,
+  type CrmLocationCode,
+} from "../../_lib/crmLocations";
+import {
   formatPhoneRuDisplay,
   normalizePhoneRu,
   PHONE_RU_INPUT_PREFIX,
@@ -51,6 +56,7 @@ type FormState = {
   adminNote: string;
   diskLink: string;
   status: SiteLeadStatus;
+  location: CrmLocationCode | "";
   followUpAt: string;
   followUpEnabled: boolean;
 };
@@ -60,6 +66,10 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved: () => void | Promise<void>;
+  /** Режим «взять в работу»: статус по умолчанию IN_PROGRESS, другой заголовок. */
+  mode?: "edit" | "take";
+  /** После сохранения открыть запись в календарь. */
+  onSchedule?: (lead: SiteLead) => void;
 };
 
 /** Разбор «Toyota Camry» → марка/модель по каталогу. */
@@ -102,7 +112,13 @@ function buildCarDescription(form: FormState): string | null {
   return parts.length ? parts.join(" ") : null;
 }
 
-function leadToForm(lead: SiteLead): FormState {
+function leadToForm(lead: SiteLead, mode: "edit" | "take"): FormState {
+  const takeStatus =
+    mode === "take" &&
+    (lead.status === "NEW" || lead.status === "NEEDS_CLARIFICATION")
+      ? "IN_PROGRESS"
+      : lead.status;
+
   return {
     name: lead.name,
     phone: formatPhoneRuDisplay(lead.phone),
@@ -114,13 +130,21 @@ function leadToForm(lead: SiteLead): FormState {
     communicationMethod: lead.communicationMethod ?? "",
     adminNote: lead.adminNote ?? "",
     diskLink: lead.diskLink ?? "",
-    status: lead.status,
+    status: takeStatus,
+    location: lead.location ?? "",
     followUpAt: lead.followUpAt?.slice(0, 10) ?? "",
     followUpEnabled: Boolean(lead.followUpAt),
   };
 }
 
-export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
+export function LeadEditDialog({
+  lead,
+  open,
+  onOpenChange,
+  onSaved,
+  mode = "edit",
+  onSchedule,
+}: Props) {
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [carParsed, setCarParsed] = useState(false);
@@ -129,13 +153,13 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
 
   useEffect(() => {
     if (open && lead) {
-      setForm(leadToForm(lead));
+      setForm(leadToForm(lead, mode));
       setCarParsed(false);
     } else if (!open) {
       setForm(null);
       setCarParsed(false);
     }
-  }, [open, lead]);
+  }, [open, lead, mode]);
 
   useEffect(() => {
     if (!form || carParsed || brands.length === 0 || !lead) return;
@@ -154,20 +178,20 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
     setCarParsed(true);
   }, [brands, carParsed, form, lead]);
 
-  const save = async () => {
-    if (!lead || !form) return;
+  const persist = async (): Promise<SiteLead | null> => {
+    if (!lead || !form) return null;
     if (!form.name.trim()) {
       toast.error("Укажите имя");
-      return;
+      return null;
     }
     if (!form.phone.trim() || form.phone === PHONE_RU_INPUT_PREFIX) {
       toast.error("Укажите телефон");
-      return;
+      return null;
     }
     if (!form.isNotInCatalog && (form.brand || form.model)) {
       if (!form.brand || !form.model) {
         toast.error("Выберите марку и модель автомобиля");
-        return;
+        return null;
       }
     }
 
@@ -176,42 +200,55 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
       phone = normalizePhoneRu(form.phone);
     } catch {
       toast.error("Укажите мобильный номер России: +79 и ещё 9 цифр");
-      return;
+      return null;
     }
     if (form.status === "COMPLETED" && !form.diskLink.trim()) {
       toast.error("Для статуса «Выполнена» укажите ссылку на Яндекс.Диск");
-      return;
+      return null;
     }
     if (
-      lead &&
       requiresAdminNoteOnStatusChange(lead.status, form.status) &&
       !hasAdminNote(form.adminNote)
     ) {
       toast.error("Укажите комментарий администратора при смене статуса с «Новая»");
-      return;
+      return null;
     }
     if (form.followUpEnabled && !form.followUpAt) {
       toast.error("Укажите дату повторной связи");
-      return;
+      return null;
+    }
+    if (!form.location) {
+      toast.error("Выберите город (филиал)");
+      return null;
     }
 
+    const { data } = await adminApi.patch<SiteLead>(`/crm/leads/${lead.id}`, {
+      name: form.name.trim(),
+      phone,
+      message: form.message.trim() || null,
+      carDescription: buildCarDescription(form),
+      communicationMethod: form.communicationMethod || null,
+      adminNote: form.adminNote.trim() || null,
+      diskLink: form.diskLink.trim() || null,
+      status: form.status,
+      location: form.location,
+      followUpAt:
+        form.followUpEnabled && form.followUpAt
+          ? `${form.followUpAt}T09:00:00.000Z`
+          : null,
+    });
+    return data;
+  };
+
+  const save = async () => {
+    if (!lead || !form) return;
     setSaving(true);
     try {
-      await adminApi.patch(`/crm/leads/${lead.id}`, {
-        name: form.name.trim(),
-        phone,
-        message: form.message.trim() || null,
-        carDescription: buildCarDescription(form),
-        communicationMethod: form.communicationMethod || null,
-        adminNote: form.adminNote.trim() || null,
-        diskLink: form.diskLink.trim() || null,
-        status: form.status,
-        followUpAt:
-          form.followUpEnabled && form.followUpAt
-            ? `${form.followUpAt}T09:00:00.000Z`
-            : null,
-      });
-      toast.success("Заявка сохранена");
+      const updated = await persist();
+      if (!updated) return;
+      toast.success(
+        mode === "take" ? "Заявка взята в работу" : "Заявка сохранена",
+      );
       await onSaved();
       onOpenChange(false);
     } catch {
@@ -221,13 +258,47 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
     }
   };
 
+  const saveAndSchedule = async () => {
+    if (!lead || !form || !onSchedule) return;
+    if (
+      requiresAdminNoteOnStatusChange(lead.status, form.status) &&
+      !hasAdminNote(form.adminNote)
+    ) {
+      toast.error("Укажите комментарий администратора перед записью в календарь");
+      return;
+    }
+    setSaving(true);
+    try {
+      const updated = await persist();
+      if (!updated) return;
+      await onSaved();
+      onOpenChange(false);
+      onSchedule(updated);
+    } catch {
+      toast.error("Не удалось сохранить заявку");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!form) return null;
+
+  const canSchedule =
+    onSchedule &&
+    !lead?.visitId &&
+    form.status !== "SCHEDULED" &&
+    form.status !== "REJECTED" &&
+    form.status !== "COMPLETED";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-slate-950 text-white sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Редактирование заявки #{lead?.id}</DialogTitle>
+          <DialogTitle>
+            {mode === "take"
+              ? `Взять в работу · заявка #${lead?.id}`
+              : `Заявка #${lead?.id}`}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -292,6 +363,27 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
                 <SelectItem value="phone">Телефон</SelectItem>
                 <SelectItem value="telegram">Telegram</SelectItem>
                 <SelectItem value="whatsapp">WhatsApp</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Город *</Label>
+            <Select
+              value={form.location || undefined}
+              onValueChange={(v) =>
+                setForm((f) => f && { ...f, location: v as CrmLocationCode })
+              }
+            >
+              <SelectTrigger className={fieldClass}>
+                <SelectValue placeholder="Выберите город" />
+              </SelectTrigger>
+              <SelectContent>
+                {CRM_LOCATIONS.map((code) => (
+                  <SelectItem key={code} value={code}>
+                    {CRM_LOCATION_LABELS[code]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -479,7 +571,7 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
           <Button
             variant="outline"
             className="border-white/20"
@@ -487,8 +579,21 @@ export function LeadEditDialog({ lead, open, onOpenChange, onSaved }: Props) {
           >
             Отмена
           </Button>
+          {canSchedule && (
+            <Button
+              variant="secondary"
+              disabled={saving}
+              onClick={() => void saveAndSchedule()}
+            >
+              {saving ? "…" : "В календарь"}
+            </Button>
+          )}
           <Button disabled={saving} onClick={() => void save()}>
-            {saving ? "Сохранение…" : "Сохранить"}
+            {saving
+              ? "Сохранение…"
+              : mode === "take"
+                ? "Взять в работу"
+                : "Сохранить"}
           </Button>
         </DialogFooter>
       </DialogContent>

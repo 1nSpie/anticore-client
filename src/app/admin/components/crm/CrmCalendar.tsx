@@ -16,6 +16,10 @@ import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import { adminApi } from "../../_lib/api";
 import type { CrmAppointment, ServiceType } from "../../_lib/crmTypes";
+import {
+  DEFAULT_CRM_LOCATION,
+  type CrmLocationCode,
+} from "../../_lib/crmLocations";
 import { AppointmentDialog } from "./AppointmentDialog";
 import { CrmCalendarToolbar, type CalendarViewType } from "./CrmCalendarToolbar";
 import { CrmMiniCalendar } from "./CrmMiniCalendar";
@@ -228,6 +232,7 @@ export function CrmCalendar() {
   const [slot, setSlot] = useState<{ start: string; end: string } | null>(null);
   const [view, setView] = useState<CalendarViewType>("timeGridWeek");
   const [focusDate, setFocusDate] = useState(() => new Date());
+  const [location, setLocation] = useState<CrmLocationCode>(DEFAULT_CRM_LOCATION);
   const [layout, setLayout] = useState<"unknown" | "mobile" | "desktop">(
     "unknown",
   );
@@ -261,12 +266,18 @@ export function CrmCalendar() {
     return set;
   }, [events]);
 
-  const loadEvents = useCallback(async (from?: string, to?: string) => {
-    const { data } = await adminApi.get<CrmAppointment[]>("/crm/appointments", {
-      params: { from, to },
-    });
-    setEvents(data);
-  }, []);
+  const loadEvents = useCallback(
+    async (from?: string, to?: string, loc: CrmLocationCode = location) => {
+      const { data } = await adminApi.get<CrmAppointment[]>(
+        "/crm/appointments",
+        {
+          params: { from, to, location: loc },
+        },
+      );
+      setEvents(data);
+    },
+    [location],
+  );
 
   const loadMeta = useCallback(async () => {
     const { data } = await adminApi.get<ServiceType[]>(
@@ -296,14 +307,15 @@ export function CrmCalendar() {
   useEffect(() => {
     if (!isMobile) return;
     const next = weekRangeIso(focusDate);
-    const changed =
-      !rangeRef.current ||
-      rangeRef.current.from !== next.from ||
-      rangeRef.current.to !== next.to;
-    if (!changed) return;
     rangeRef.current = next;
-    void loadEvents(next.from, next.to);
-  }, [isMobile, focusDate, loadEvents]);
+    void loadEvents(next.from, next.to, location);
+  }, [isMobile, focusDate, location, loadEvents]);
+
+  /** Смена филиала на десктопе — перезагрузить текущий диапазон. */
+  useEffect(() => {
+    if (!isDesktop || !rangeRef.current) return;
+    void loadEvents(rangeRef.current.from, rangeRef.current.to, location);
+  }, [location, isDesktop, loadEvents]);
 
   const api = () => calendarRef.current?.getApi();
 
@@ -488,6 +500,8 @@ export function CrmCalendar() {
         <CrmCalendarToolbar
           title={title}
           view={view}
+          location={location}
+          onLocationChange={setLocation}
           mobile={isMobile}
           onToday={handleToday}
           onPrev={handlePrev}
@@ -601,6 +615,7 @@ export function CrmCalendar() {
         appointment={editing}
         slot={slot}
         serviceTypes={serviceTypes}
+        defaultLocation={location}
         onSaved={handleSaved}
       />
     </>
