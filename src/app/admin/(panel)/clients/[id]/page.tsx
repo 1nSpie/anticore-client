@@ -1,12 +1,17 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { adminApi } from "../../../_lib/api";
-import type { CrmClient, CrmClientVisit } from "../../../_lib/crmTypes";
+import type {
+  ClientVehicle,
+  CrmClient,
+  CrmClientVisit,
+} from "../../../_lib/crmTypes";
 import { CarCatalogFields } from "../../../components/cars/CarCatalogFields";
 import { SegmentPricePreview } from "../../../components/prices/SegmentPricePreview";
 import { useCarCatalog } from "../../../components/cars/useCarCatalog";
+import { ClientVehiclesSection } from "../../../components/clients/ClientVehiclesSection";
 import { ClientVisitsSection } from "../../../components/clients/ClientVisitsSection";
 import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { Input } from "@/shadcn/input";
@@ -21,7 +26,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shadcn/card";
-import { normalizePhoneRu, formatPhoneRuDisplay, PHONE_RU_INPUT_PREFIX } from "@/lib/phoneRu";
+import {
+  normalizePhoneRu,
+  formatPhoneRuDisplay,
+  PHONE_RU_INPUT_PREFIX,
+} from "@/lib/phoneRu";
 import { getVinValidationError } from "@/lib/vin";
 import { toast } from "sonner";
 import { cn } from "src/lib/utils";
@@ -34,6 +43,8 @@ export default function AdminClientCardPage() {
   const isNew = params.id === "new";
   const [vinError, setVinError] = useState<string | null>(null);
   const [visits, setVisits] = useState<CrmClientVisit[]>([]);
+  const [vehicles, setVehicles] = useState<ClientVehicle[]>([]);
+  const [filterVehicleId, setFilterVehicleId] = useState<number | null>(null);
   const [meta, setMeta] = useState<{
     phoneVerified: boolean;
     blocked: boolean;
@@ -55,51 +66,51 @@ export default function AdminClientCardPage() {
     smsEnabled: true,
     notifyReminder: true,
   });
-  const { brands, cars, resolveCarId, resolveCarSegment } = useCarCatalog(form.brand);
+  const { brands, cars, resolveCarId, resolveCarSegment } = useCarCatalog(
+    form.brand,
+  );
 
-  const reloadClient = async () => {
-    if (isNew) return;
-    const { data } = await adminApi.get<CrmClient>(`/crm/clients/${params.id}`);
+  const applyClient = useCallback((data: CrmClient) => {
+    setForm((f) => ({
+      ...f,
+      phone: formatPhoneRuDisplay(data.phone),
+      lastName: data.lastName ?? "",
+      firstName: data.firstName ?? "",
+      patronymic: data.patronymic ?? "",
+      birthDate: data.birthDate?.toString().slice(0, 10) ?? "",
+      adminComment: data.adminComment ?? "",
+      blocked: data.blocked,
+      smsEnabled: data.notificationSettings?.smsEnabled ?? true,
+      notifyReminder: data.notificationSettings?.notifyReminder ?? true,
+    }));
+    setVehicles(data.vehicles ?? []);
     setVisits(data.visits ?? []);
     setMeta({
       phoneVerified: data.phoneVerified,
       blocked: data.blocked,
       createdAt: data.createdAt,
     });
-  };
+  }, []);
+
+  const reloadClient = useCallback(async () => {
+    if (isNew) return;
+    const qs =
+      filterVehicleId != null ? `?vehicleId=${filterVehicleId}` : "";
+    const { data } = await adminApi.get<CrmClient>(
+      `/crm/clients/${params.id}${qs}`,
+    );
+    applyClient(data);
+  }, [applyClient, filterVehicleId, isNew, params.id]);
 
   useEffect(() => {
     if (isNew) return;
-    void adminApi.get<CrmClient>(`/crm/clients/${params.id}`).then(({ data }) => {
-      const hasCustom = Boolean(data.customCar?.trim());
-      setForm({
-        phone: formatPhoneRuDisplay(data.phone),
-        lastName: data.lastName ?? "",
-        firstName: data.firstName ?? "",
-        patronymic: data.patronymic ?? "",
-        birthDate: data.birthDate?.toString().slice(0, 10) ?? "",
-        brand: hasCustom ? "" : (data.carBrand ?? ""),
-        model: hasCustom ? "" : (data.carModelName ?? ""),
-        customCar: data.customCar ?? "",
-        isNotInCatalog: hasCustom,
-        vin: data.vin ?? "",
-        adminComment: data.adminComment ?? "",
-        blocked: data.blocked,
-        smsEnabled: data.notificationSettings?.smsEnabled ?? true,
-        notifyReminder: data.notificationSettings?.notifyReminder ?? true,
-      });
-      setVisits(data.visits ?? []);
-      setMeta({
-        phoneVerified: data.phoneVerified,
-        blocked: data.blocked,
-        createdAt: data.createdAt,
-      });
-    });
-  }, [isNew, params.id]);
+    void reloadClient().catch(() => toast.error("Не удалось загрузить клиента"));
+  }, [isNew, reloadClient]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (form.vin.trim()) {
+
+    if (isNew && form.vin.trim()) {
       const err = getVinValidationError(form.vin);
       if (err) {
         setVinError(err);
@@ -111,29 +122,28 @@ export default function AdminClientCardPage() {
     let carId: number | null | undefined;
     let customCar: string | null | undefined;
 
-    if (form.isNotInCatalog) {
-      const text = form.customCar.trim();
-      if (!text) {
-        toast.error("Укажите автомобиль или выберите из каталога");
-        return;
+    if (isNew) {
+      if (form.isNotInCatalog) {
+        const text = form.customCar.trim();
+        if (!text) {
+          toast.error("Укажите автомобиль или выберите из каталога");
+          return;
+        }
+        customCar = text;
+        carId = null;
+      } else if (form.brand || form.model) {
+        if (!form.brand || !form.model) {
+          toast.error("Выберите марку и модель из каталога");
+          return;
+        }
+        const id = resolveCarId(form.model);
+        if (!id) {
+          toast.error("Модель не найдена в каталоге. Добавьте её в админке.");
+          return;
+        }
+        carId = id;
+        customCar = null;
       }
-      customCar = text;
-      carId = null;
-    } else if (form.brand || form.model) {
-      if (!form.brand || !form.model) {
-        toast.error("Выберите марку и модель из каталога");
-        return;
-      }
-      const id = resolveCarId(form.model);
-      if (!id) {
-        toast.error("Модель не найдена в каталоге. Добавьте её в админке.");
-        return;
-      }
-      carId = id;
-      customCar = null;
-    } else if (!isNew) {
-      carId = null;
-      customCar = null;
     }
 
     setVinError(null);
@@ -143,13 +153,15 @@ export default function AdminClientCardPage() {
         firstName: form.firstName,
         patronymic: form.patronymic,
         birthDate: form.birthDate || null,
-        vin: form.vin,
         adminComment: form.adminComment,
         blocked: form.blocked,
         smsEnabled: form.smsEnabled,
         notifyReminder: form.notifyReminder,
-        ...(carId !== undefined && { carId }),
-        ...(customCar !== undefined && { customCar }),
+        ...(isNew && {
+          vin: form.vin,
+          ...(carId !== undefined && { carId }),
+          ...(customCar !== undefined && { customCar }),
+        }),
       };
 
       if (isNew) {
@@ -165,7 +177,9 @@ export default function AdminClientCardPage() {
         setMeta((m) => (m ? { ...m, blocked: form.blocked } : m));
       }
     } catch {
-      toast.error("Ошибка сохранения. Проверьте мобильный номер (+7 9XX…) и VIN (17 символов, если указан).");
+      toast.error(
+        "Ошибка сохранения. Проверьте мобильный номер (+7 9XX…) и VIN (17 символов, если указан).",
+      );
     }
   };
 
@@ -174,8 +188,9 @@ export default function AdminClientCardPage() {
       await adminApi.post(`/crm/clients/${params.id}/send-review-sms`);
       toast.success("SMS отправлено");
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string | string[] } } })
-        ?.response?.data?.message;
+      const msg = (
+        e as { response?: { data?: { message?: string | string[] } } }
+      )?.response?.data?.message;
       toast.error(
         Array.isArray(msg)
           ? msg.join(", ")
@@ -227,7 +242,9 @@ export default function AdminClientCardPage() {
               className={fieldClass}
               value={form.phone}
               disabled={!isNew}
-              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, phone: e.target.value }))
+              }
               required
             />
           </div>
@@ -237,7 +254,9 @@ export default function AdminClientCardPage() {
               type="date"
               className={fieldClass}
               value={form.birthDate}
-              onChange={(e) => setForm((f) => ({ ...f, birthDate: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, birthDate: e.target.value }))
+              }
             />
           </div>
           <div className="space-y-2">
@@ -245,7 +264,9 @@ export default function AdminClientCardPage() {
             <Input
               className={fieldClass}
               value={form.lastName}
-              onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, lastName: e.target.value }))
+              }
             />
           </div>
           <div className="space-y-2">
@@ -253,7 +274,9 @@ export default function AdminClientCardPage() {
             <Input
               className={fieldClass}
               value={form.firstName}
-              onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, firstName: e.target.value }))
+              }
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
@@ -261,70 +284,82 @@ export default function AdminClientCardPage() {
             <Input
               className={fieldClass}
               value={form.patronymic}
-              onChange={(e) => setForm((f) => ({ ...f, patronymic: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, patronymic: e.target.value }))
+              }
             />
           </div>
 
-          <div className="space-y-3 sm:col-span-2">
-            <label className="flex cursor-pointer items-center gap-2">
-              <Checkbox
-                checked={form.isNotInCatalog}
-                onCheckedChange={(v) => {
-                  const on = v === true;
-                  setForm((f) => ({
-                    ...f,
-                    isNotInCatalog: on,
-                    ...(on ? { brand: "", model: "" } : { customCar: "" }),
-                  }));
-                }}
-                className="border-white/20 data-[state=checked]:bg-emerald-600"
-              />
-              <span className="text-slate-200">Авто нет в каталоге</span>
-            </label>
-            {form.isNotInCatalog ? (
-              <Input
-                placeholder="Марка и модель"
-                className={fieldClass}
-                value={form.customCar}
-                onChange={(e) => setForm((f) => ({ ...f, customCar: e.target.value }))}
-              />
-            ) : (
-              <>
-                <CarCatalogFields
-                  brand={form.brand}
-                  model={form.model}
-                  brands={brands}
-                  cars={cars}
-                  onBrandChange={(brand) => setForm((f) => ({ ...f, brand, model: "" }))}
-                  onModelChange={(model) => setForm((f) => ({ ...f, model }))}
-                  inputClassName={fieldClass}
-                />
-                {form.model && (
-                  <SegmentPricePreview
-                    segment={resolveCarSegment(form.model)}
-                    brand={form.brand}
-                    model={form.model}
+          {isNew ? (
+            <>
+              <div className="space-y-3 sm:col-span-2">
+                <label className="flex cursor-pointer items-center gap-2">
+                  <Checkbox
+                    checked={form.isNotInCatalog}
+                    onCheckedChange={(v) => {
+                      const on = v === true;
+                      setForm((f) => ({
+                        ...f,
+                        isNotInCatalog: on,
+                        ...(on ? { brand: "", model: "" } : { customCar: "" }),
+                      }));
+                    }}
+                    className="border-white/20 data-[state=checked]:bg-emerald-600"
                   />
+                  <span className="text-slate-200">Авто нет в каталоге</span>
+                </label>
+                {form.isNotInCatalog ? (
+                  <Input
+                    placeholder="Марка и модель"
+                    className={fieldClass}
+                    value={form.customCar}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, customCar: e.target.value }))
+                    }
+                  />
+                ) : (
+                  <>
+                    <CarCatalogFields
+                      brand={form.brand}
+                      model={form.model}
+                      brands={brands}
+                      cars={cars}
+                      onBrandChange={(brand) =>
+                        setForm((f) => ({ ...f, brand, model: "" }))
+                      }
+                      onModelChange={(model) =>
+                        setForm((f) => ({ ...f, model }))
+                      }
+                      inputClassName={fieldClass}
+                    />
+                    {form.model && (
+                      <SegmentPricePreview
+                        segment={resolveCarSegment(form.model)}
+                        brand={form.brand}
+                        model={form.model}
+                      />
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </div>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label className="text-slate-200">VIN</Label>
+                <Input
+                  className={`${fieldClass} font-mono`}
+                  value={form.vin}
+                  maxLength={17}
+                  placeholder="17 символов, без I/O/Q"
+                  onChange={(e) => {
+                    const v = e.target.value.toUpperCase();
+                    setForm((f) => ({ ...f, vin: v }));
+                    setVinError(v.trim() ? getVinValidationError(v) : null);
+                  }}
+                />
+                {vinError && <p className="text-xs text-red-400">{vinError}</p>}
+              </div>
+            </>
+          ) : null}
 
-          <div className="space-y-2 sm:col-span-2">
-            <Label className="text-slate-200">VIN</Label>
-            <Input
-              className={`${fieldClass} font-mono`}
-              value={form.vin}
-              maxLength={17}
-              placeholder="17 символов, без I/O/Q"
-              onChange={(e) => {
-                const v = e.target.value.toUpperCase();
-                setForm((f) => ({ ...f, vin: v }));
-                setVinError(v.trim() ? getVinValidationError(v) : null);
-              }}
-            />
-            {vinError && <p className="text-xs text-red-400">{vinError}</p>}
-          </div>
           <div className="space-y-2 sm:col-span-2">
             <Label className="text-slate-200">Комментарий</Label>
             <Textarea
@@ -338,6 +373,16 @@ export default function AdminClientCardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {!isNew && (
+        <ClientVehiclesSection
+          clientId={Number(params.id)}
+          vehicles={vehicles}
+          onChange={reloadClient}
+          selectedVehicleId={filterVehicleId}
+          onSelectVehicle={setFilterVehicleId}
+        />
+      )}
 
       {!isNew && (
         <Card className="border-white/10 bg-slate-950/50">
@@ -357,7 +402,9 @@ export default function AdminClientCardPage() {
               <Label className="text-slate-200">SMS-уведомления</Label>
               <Switch
                 checked={form.smsEnabled}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, smsEnabled: v }))}
+                onCheckedChange={(v) =>
+                  setForm((f) => ({ ...f, smsEnabled: v }))
+                }
                 className="data-[state=checked]:bg-emerald-600"
               />
             </div>
@@ -365,7 +412,9 @@ export default function AdminClientCardPage() {
               <Label className="text-slate-200">Напоминания</Label>
               <Switch
                 checked={form.notifyReminder}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, notifyReminder: v }))}
+                onCheckedChange={(v) =>
+                  setForm((f) => ({ ...f, notifyReminder: v }))
+                }
                 className="data-[state=checked]:bg-emerald-600"
               />
             </div>
@@ -377,6 +426,7 @@ export default function AdminClientCardPage() {
         <ClientVisitsSection
           clientId={Number(params.id)}
           visits={visits}
+          vehicles={vehicles}
           onVisitsChange={reloadClient}
         />
       )}
@@ -384,7 +434,11 @@ export default function AdminClientCardPage() {
       <div className="flex flex-wrap gap-2">
         <Button type="submit">Сохранить</Button>
         {!isNew && (
-          <Button type="button" variant="secondary" onClick={() => void sendReview()}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => void sendReview()}
+          >
             Отправить отзыв сейчас
           </Button>
         )}

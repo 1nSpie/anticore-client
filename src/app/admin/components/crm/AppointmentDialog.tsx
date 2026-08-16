@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/shadcn/select";
 import { adminApi } from "../../_lib/api";
-import type { CrmAppointment, CrmClient, ServiceType } from "../../_lib/crmTypes";
+import type { CrmAppointment, CrmClient, ClientVehicle, ServiceType } from "../../_lib/crmTypes";
 import {
   CRM_LOCATIONS,
   CRM_LOCATION_LABELS,
@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { ClientQuickCreate } from "./ClientQuickCreate";
 import { ClientSearchAutocomplete } from "./ClientSearchAutocomplete";
 import { DocumentActions } from "./DocumentActions";
+import { DayCapacityHint } from "./DayCapacityHint";
 import { getVinValidationError } from "@/lib/vin";
 
 const dialogClass =
@@ -101,8 +102,11 @@ export function AppointmentDialog({
   const [clientSearchQuery, setClientSearchQuery] = useState("");
   const [vin, setVin] = useState("");
   const [vinError, setVinError] = useState<string | null>(null);
+  const [vehicleId, setVehicleId] = useState<string>("");
   const [reviewSmsSentAt, setReviewSmsSentAt] = useState<string | null>(null);
   const [sendingReview, setSendingReview] = useState(false);
+
+  const clientVehicles: ClientVehicle[] = selectedClient?.vehicles ?? [];
 
   useEffect(() => {
     if (!open) {
@@ -111,6 +115,7 @@ export function AppointmentDialog({
       setClientSearchQuery("");
       setVin("");
       setVinError(null);
+      setVehicleId("");
       setReviewSmsSentAt(null);
       setSendingReview(false);
       return;
@@ -127,6 +132,9 @@ export function AppointmentDialog({
       setManagerName(appointment.managerName ?? "");
       setLocation(appointment.location ?? defaultLocation);
       setReviewSmsSentAt(appointment.reviewSmsSentAt ?? null);
+      setVehicleId(
+        appointment.vehicleId ? String(appointment.vehicleId) : "",
+      );
 
       void adminApi
         .get<CrmClient>(`/crm/clients/${appointment.clientId}`)
@@ -143,14 +151,35 @@ export function AppointmentDialog({
       setManagerName("");
       setLocation(defaultLocation);
       setReviewSmsSentAt(null);
+      setVehicleId("");
     }
   }, [open, appointment, slot, serviceTypes, defaultLocation]);
 
   useEffect(() => {
-    if (!appointment || !selectedClient) return;
-    setVin(selectedClient.vin ?? "");
+    if (!selectedClient) return;
+    const list = selectedClient.vehicles ?? [];
+    if (appointment?.vehicleId) {
+      setVehicleId(String(appointment.vehicleId));
+      const v = list.find((x) => x.id === appointment.vehicleId);
+      setVin(v?.vin ?? selectedClient.vin ?? "");
+      return;
+    }
+    if (!vehicleId || !list.some((v) => String(v.id) === vehicleId)) {
+      const primary = list.find((v) => v.isPrimary) ?? list[0];
+      setVehicleId(primary ? String(primary.id) : "");
+      setVin(primary?.vin ?? selectedClient.vin ?? "");
+    }
     setVinError(null);
-  }, [appointment, selectedClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync when client changes
+  }, [selectedClient?.id, appointment?.vehicleId]);
+
+  useEffect(() => {
+    if (!selectedClient || !vehicleId) return;
+    const v = (selectedClient.vehicles ?? []).find(
+      (x) => String(x.id) === vehicleId,
+    );
+    if (v) setVin(v.vin ?? "");
+  }, [vehicleId, selectedClient]);
 
   const save = async () => {
     if (loading) return;
@@ -158,7 +187,11 @@ export function AppointmentDialog({
       toast.error("Выберите клиента");
       return;
     }
-    if (appointment && vin.trim()) {
+    if (clientVehicles.length > 0 && !vehicleId) {
+      toast.error("Выберите автомобиль клиента");
+      return;
+    }
+    if (vin.trim()) {
       const err = getVinValidationError(vin);
       if (err) {
         setVinError(err);
@@ -170,6 +203,7 @@ export function AppointmentDialog({
     try {
       const body = {
         clientId: selectedClient.id,
+        vehicleId: vehicleId ? Number(vehicleId) : undefined,
         startsAt: new Date(startsAt).toISOString(),
         endsAt: new Date(endsAt).toISOString(),
         serviceType,
@@ -186,14 +220,20 @@ export function AppointmentDialog({
           body,
         );
 
-        const nextVin = vin.trim().toUpperCase() || null;
-        const prevVin = selectedClient.vin?.trim().toUpperCase() || null;
-        if (nextVin !== prevVin) {
-          const { data: updatedClient } = await adminApi.patch<CrmClient>(
-            `/crm/clients/${selectedClient.id}`,
-            { vin: nextVin },
-          );
-          setSelectedClient(updatedClient);
+        if (vehicleId) {
+          const nextVin = vin.trim().toUpperCase() || null;
+          const current = clientVehicles.find((v) => String(v.id) === vehicleId);
+          const prevVin = current?.vin?.trim().toUpperCase() || null;
+          if (nextVin !== prevVin) {
+            await adminApi.patch(
+              `/crm/clients/${selectedClient.id}/vehicles/${vehicleId}`,
+              { vin: nextVin },
+            );
+            const { data: updatedClient } = await adminApi.get<CrmClient>(
+              `/crm/clients/${selectedClient.id}`,
+            );
+            setSelectedClient(updatedClient);
+          }
         }
 
         toast.success("Запись обновлена");
@@ -303,6 +343,37 @@ export function AppointmentDialog({
               )}
             </div>
 
+            {selectedClient ? (
+              <div className="space-y-2">
+                <Label>Автомобиль</Label>
+                {clientVehicles.length === 0 ? (
+                  <p className="text-sm text-slate-400">
+                    У клиента нет автомобилей —{" "}
+                    <Link
+                      href={`/admin/clients/${selectedClient.id}`}
+                      className="text-emerald-300 hover:underline"
+                    >
+                      добавить в карточке
+                    </Link>
+                  </p>
+                ) : (
+                  <Select value={vehicleId} onValueChange={setVehicleId}>
+                    <SelectTrigger className="w-full border-white/20 bg-slate-800">
+                      <SelectValue placeholder="Выберите авто" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientVehicles.map((v) => (
+                        <SelectItem key={v.id} value={String(v.id)}>
+                          {v.label || `Авто #${v.id}`}
+                          {v.isPrimary ? " · основное" : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            ) : null}
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Начало</Label>
@@ -323,7 +394,6 @@ export function AppointmentDialog({
                 />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label>Филиал</Label>
               <Select
@@ -342,6 +412,11 @@ export function AppointmentDialog({
                 </SelectContent>
               </Select>
             </div>
+            <DayCapacityHint
+              startsAt={startsAt}
+              location={location}
+              excludeAppointmentId={appointment?.id}
+            />
 
             <div className="space-y-2">
               <Label>Услуга</Label>
@@ -395,9 +470,9 @@ export function AppointmentDialog({
               </div>
             </div>
 
-            {appointment && (
+            {selectedClient && vehicleId ? (
               <div className="space-y-2">
-                <Label>VIN</Label>
+                <Label>VIN автомобиля</Label>
                 <Input
                   className="border-white/20 bg-slate-800 font-mono uppercase"
                   value={vin}
@@ -411,12 +486,29 @@ export function AppointmentDialog({
                 />
                 {vinError && <p className="text-xs text-red-400">{vinError}</p>}
               </div>
-            )}
+            ) : null}
 
             {appointment && selectedClient && (
               <DocumentActions
                 client={selectedClient}
-                appointment={appointment}
+                appointment={{
+                  ...appointment,
+                  vehicleId: vehicleId ? Number(vehicleId) : null,
+                  vehicle: (() => {
+                    const v = clientVehicles.find(
+                      (x) => String(x.id) === vehicleId,
+                    );
+                    if (!v) return appointment.vehicle;
+                    return {
+                      id: v.id,
+                      label: v.label,
+                      vin: vin || v.vin,
+                      customLabel: v.customLabel,
+                      carBrand: v.carBrand,
+                      carModelName: v.carModelName,
+                    };
+                  })(),
+                }}
                 vin={vin}
                 startsAt={startsAt ? new Date(startsAt).toISOString() : null}
                 endsAt={endsAt ? new Date(endsAt).toISOString() : null}

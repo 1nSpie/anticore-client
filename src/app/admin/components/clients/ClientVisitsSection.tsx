@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import { adminApi } from "../../_lib/api";
-import type { CrmClientVisit, ServiceType } from "../../_lib/crmTypes";
+import type { ClientVehicle, CrmClientVisit, ServiceType } from "../../_lib/crmTypes";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
@@ -33,6 +33,7 @@ import { toast } from "sonner";
 type Props = {
   clientId: number;
   visits: CrmClientVisit[];
+  vehicles?: ClientVehicle[];
   onVisitsChange: () => void | Promise<void>;
 };
 
@@ -76,10 +77,16 @@ function visitToForm(v: CrmClientVisit) {
     priceRub: String(v.priceRub ?? 0),
     managerName: v.managerName ?? "",
     diskLink: v.diskLink ?? "",
+    vehicleId: v.vehicleId ? String(v.vehicleId) : "",
   };
 }
 
-export function ClientVisitsSection({ clientId, visits, onVisitsChange }: Props) {
+export function ClientVisitsSection({
+  clientId,
+  visits,
+  vehicles = [],
+  onVisitsChange,
+}: Props) {
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [editing, setEditing] = useState<CrmClientVisit | null>(null);
   const [saving, setSaving] = useState(false);
@@ -91,6 +98,7 @@ export function ClientVisitsSection({ clientId, visits, onVisitsChange }: Props)
     priceRub: "0",
     managerName: "",
     diskLink: "",
+    vehicleId: "",
   });
 
   useEffect(() => {
@@ -134,6 +142,7 @@ export function ClientVisitsSection({ clientId, visits, onVisitsChange }: Props)
         priceRub: Number(form.priceRub) || 0,
         managerName: form.managerName.trim() || null,
         diskLink: form.diskLink.trim() || null,
+        vehicleId: form.vehicleId ? Number(form.vehicleId) : null,
       });
       toast.success("Визит обновлён");
       setEditing(null);
@@ -180,6 +189,9 @@ export function ClientVisitsSection({ clientId, visits, onVisitsChange }: Props)
                     <span className="text-white">{formatVisitWhen(v)}</span>
                     {" — "}
                     {v.serviceType}
+                    {v.vehicleLabel ? (
+                      <span className="ml-2 text-slate-400">· {v.vehicleLabel}</span>
+                    ) : null}
                     {v.priceRub != null && v.priceRub > 0 && (
                       <span className="ml-2 text-slate-400">{v.priceRub} ₽</span>
                     )}
@@ -251,6 +263,31 @@ export function ClientVisitsSection({ clientId, visits, onVisitsChange }: Props)
                   onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))}
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Автомобиль</Label>
+              <Select
+                value={form.vehicleId || "none"}
+                onValueChange={(v) =>
+                  setForm((f) => ({
+                    ...f,
+                    vehicleId: v === "none" ? "" : v,
+                  }))
+                }
+              >
+                <SelectTrigger className="w-full border-white/20 bg-slate-800">
+                  <SelectValue placeholder="Не указан" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Не указан</SelectItem>
+                  {vehicles.map((v) => (
+                    <SelectItem key={v.id} value={String(v.id)}>
+                      {v.label || `Авто #${v.id}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

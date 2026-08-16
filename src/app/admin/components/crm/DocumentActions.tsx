@@ -5,10 +5,12 @@ import { pdf } from "@react-pdf/renderer";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/button";
 import type { CrmAppointment, CrmClient } from "../../_lib/crmTypes";
-import { downloadBlob } from "./contract/fillContractDocx";
+import {
+  downloadBlob,
+  fillContractDocx,
+} from "./contract/fillContractDocx";
 import { AcceptanceActPdf } from "./pdf/AcceptanceActPdf";
 import { CompletedWorksActPdf } from "./pdf/CompletedWorksActPdf";
-import { ContractPdf } from "./pdf/ContractPdf";
 import type { ActDocInput } from "./pdf/actShared";
 
 type DocKind = "contract" | "acceptance" | "works";
@@ -26,12 +28,21 @@ type Props = {
   serviceType?: string | null;
 };
 
+function formatFioContract(client: CrmClient): string {
+  const parts = [client.lastName, client.firstName, client.patronymic]
+    .map((p) => p?.trim())
+    .filter((p): p is string => Boolean(p));
+  if (parts.length) return parts.join(" ");
+  return client.fio.trim() || "________________";
+}
+
 function buildActInput(
   client: CrmClient,
   appointment: CrmAppointment,
   overrides?: Pick<Props, "vin" | "startsAt" | "endsAt" | "priceRub" | "serviceType">,
 ): ActDocInput {
   const car =
+    appointment.vehicle?.label?.trim() ||
     client.carModel?.trim() ||
     client.customCar?.trim() ||
     [client.carBrand, client.carModelName].filter(Boolean).join(" ").trim() ||
@@ -44,7 +55,10 @@ function buildActInput(
     patronymic: client.patronymic,
     fioFallback: client.fio,
     carModel: car,
-    vin: overrides?.vin?.trim() || client.vin,
+    vin:
+      overrides?.vin?.trim() ||
+      appointment.vehicle?.vin ||
+      client.vin,
     plate: null,
     year: null,
     startsAt: overrides?.startsAt || appointment.startsAt,
@@ -81,15 +95,21 @@ export function DocumentActions({
     setBusy("contract");
     try {
       const act = buildActInput(client, appointment, overrides);
-      const blob = await pdf(
-        <ContractPdf
-          {...act}
-          phone={client.phone}
-          birthDate={client.birthDate}
-        />,
-      ).toBlob();
-      downloadBlob(blob, `dogovor-${appointment.id}.pdf`);
-      openPdfForPrint(blob);
+      const blob = await fillContractDocx({
+        contractNumber: act.contractNumber,
+        fio: formatFioContract(client),
+        phone: client.phone,
+        birthDate: client.birthDate,
+        carModel: act.carModel ?? "",
+        vin: act.vin,
+        plate: act.plate,
+        year: act.year,
+        startsAt: act.startsAt,
+        endsAt: act.endsAt,
+        priceRub: act.priceRub ?? 0,
+        serviceType: act.serviceType,
+      });
+      downloadBlob(blob, `dogovor-${appointment.id}.docx`);
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Не удалось сформировать договор",

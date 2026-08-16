@@ -1,3 +1,19 @@
+export type ClientVehicle = {
+  id: number;
+  userId: number;
+  carId: number | null;
+  customLabel: string | null;
+  vin: string | null;
+  isPrimary: boolean;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  carBrand: string | null;
+  carModelName: string | null;
+  carSegment: number | null;
+  label: string;
+};
+
 export type CrmClient = {
   id: number;
   phone: string;
@@ -12,6 +28,7 @@ export type CrmClient = {
   carModel: string;
   customCar: string | null;
   vin: string | null;
+  vehicles?: ClientVehicle[];
   adminComment: string | null;
   blocked: boolean;
   phoneVerified: boolean;
@@ -34,6 +51,9 @@ export type CrmClientVisit = {
   diskLink: string | null;
   managerName: string | null;
   priceRub: number | null;
+  vehicleId?: number | null;
+  vehicleLabel?: string | null;
+  vehicleVin?: string | null;
 };
 
 export type CrmClientListResponse = {
@@ -53,6 +73,15 @@ export type ClientListFilter =
 export type CrmAppointment = {
   id: number;
   clientId: number;
+  vehicleId?: number | null;
+  vehicle?: {
+    id: number;
+    label: string | null;
+    vin: string | null;
+    customLabel: string | null;
+    carBrand: string | null;
+    carModelName: string | null;
+  } | null;
   startsAt: string;
   endsAt: string;
   serviceType: string;
@@ -71,6 +100,10 @@ export type CrmAppointment = {
     patronymic: string | null;
     customCar: string | null;
     vin: string | null;
+    car?: {
+      model: string;
+      brand?: { name: string } | null;
+    } | null;
   };
 };
 

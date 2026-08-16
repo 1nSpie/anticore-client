@@ -194,6 +194,52 @@
   font-weight: 600;
 }
 
+.crm-fc-day-header-cap {
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.crm-fc-day-header-cap.is-open {
+  color: #6ee7b7;
+}
+
+.crm-fc-day-header-cap.is-full {
+  color: #fbbf24;
+}
+
+.crm-fc-day-header-cap.is-empty {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.crm-fc-month-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 4px 6px 0;
+}
+
+.crm-fc-month-num {
+  font-size: 0.8rem;
+}
+
+.crm-fc-month-cap {
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.crm-fc-month-cap.is-open {
+  color: #6ee7b7;
+}
+
+.crm-fc-month-cap.is-full {
+  color: #fbbf24;
+}
+
 .crm-fc-event {
   overflow: hidden;
   padding: 3px 5px;
@@ -226,6 +272,16 @@
 .crm-fc-event-time {
   font-weight: 500;
   opacity: 0.9;
+}
+
+.crm-fc-event--month .crm-fc-event-car {
+  flex-shrink: 1;
+  min-width: 0;
+  font-size: 0.65rem;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 1023px) {

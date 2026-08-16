@@ -13,9 +13,9 @@ import {
   requiresAdminNoteOnStatusChange,
   type LeadFilterStatus,
 } from "../../_lib/leadStatus";
-import { AppointmentDialog } from "../crm/AppointmentDialog";
 import { LeadDayLimitsPanel } from "./LeadDayLimitsPanel";
 import { LeadEditDialog } from "./LeadEditDialog";
+import { LeadScheduleDialog } from "./LeadScheduleDialog";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
@@ -28,24 +28,33 @@ import {
 } from "@/shadcn/dialog";
 import { toast } from "sonner";
 import { cn } from "src/lib/utils";
-import { CRM_LOCATION_LABELS, DEFAULT_CRM_LOCATION } from "../../_lib/crmLocations";
+import { CRM_LOCATION_LABELS } from "../../_lib/crmLocations";
 
 const KIND_LABELS = {
   CALLBACK: "Обратный звонок",
   PRICE_REQUEST: "Расчёт цены",
 } as const;
 
+function phoneTelHref(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("7")) return `tel:+${digits}`;
+  if (digits.length === 11 && digits.startsWith("8")) {
+    return `tel:+7${digits.slice(1)}`;
+  }
+  return `tel:${phone}`;
+}
+
 export default function LeadsManager() {
   const [leads, setLeads] = useState<SiteLead[]>([]);
   const [filter, setFilter] = useState<LeadFilterStatus>("ALL");
   const [scheduleLead, setScheduleLead] = useState<SiteLead | null>(null);
+  const [scheduleMode, setScheduleMode] = useState<"take" | "edit">("take");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [completeLead, setCompleteLead] = useState<SiteLead | null>(null);
   const [completeLink, setCompleteLink] = useState("");
   const [completing, setCompleting] = useState(false);
   const [workLead, setWorkLead] = useState<SiteLead | null>(null);
-  const [workMode, setWorkMode] = useState<"edit" | "take">("edit");
 
   const load = useCallback(async () => {
     const { data } = await adminApi.get<SiteLead[]>("/crm/leads", {
@@ -61,27 +70,21 @@ export default function LeadsManager() {
       .then(({ data }) => setServiceTypes(data.filter((t) => t.active)));
   }, [load]);
 
-  const openWork = (lead: SiteLead, mode: "edit" | "take") => {
-    setWorkMode(mode);
-    setWorkLead(lead);
-  };
+  /** Ещё можно записать в календарь — открываем единое окно заявки+клиента+записи. */
+  const canBookLead = (lead: SiteLead) =>
+    !lead.visitId &&
+    lead.status !== "SCHEDULED" &&
+    lead.status !== "REJECTED" &&
+    lead.status !== "COMPLETED";
 
-  const openSchedule = (lead: SiteLead) => {
-    if (lead.visitId || lead.status === "SCHEDULED") {
-      toast.error("Эта заявка уже записана в календарь");
+  const openWork = (lead: SiteLead, mode: "edit" | "take") => {
+    if (canBookLead(lead)) {
+      setScheduleMode(mode === "take" ? "take" : "edit");
+      setScheduleLead(lead);
+      setDialogOpen(true);
       return;
     }
-    if (
-      requiresAdminNoteOnStatusChange(lead.status, "SCHEDULED") &&
-      !hasAdminNote(lead.adminNote)
-    ) {
-      toast.error(
-        "Укажите комментарий администратора перед записью в календарь",
-      );
-      return;
-    }
-    setScheduleLead(lead);
-    setDialogOpen(true);
+    setWorkLead(lead);
   };
 
   const rejectLead = async (lead: SiteLead) => {
@@ -155,166 +158,175 @@ export default function LeadsManager() {
     <>
       <LeadDayLimitsPanel />
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        {FILTER_STATUSES.map((s) => (
-          <Button
-            key={s}
-            size="sm"
-            variant={filter === s ? "default" : "outline"}
-            className={filter !== s ? "border-white/20" : ""}
-            onClick={() => setFilter(s)}
-          >
-            {s === "ALL" ? "Все" : STATUS_LABELS[s]}
-          </Button>
-        ))}
+      <div className="-mx-1 mb-4 overflow-x-auto pb-1">
+        <div className="flex w-max gap-2 px-1">
+          {FILTER_STATUSES.map((s) => (
+            <Button
+              key={s}
+              size="sm"
+              variant={filter === s ? "default" : "outline"}
+              className={cn(
+                "shrink-0",
+                filter !== s ? "border-white/20" : "",
+              )}
+              onClick={() => setFilter(s)}
+            >
+              {s === "ALL" ? "Все" : STATUS_LABELS[s]}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-3">
         {filtered.length === 0 && (
           <p className="text-sm text-slate-400">Заявок пока нет</p>
         )}
-        {filtered.map((lead) => (
-          <article
-            key={lead.id}
-            className="rounded-xl border border-white/10 bg-slate-900/50 p-4"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-semibold text-white">{lead.name}</h3>
+        {filtered.map((lead) => {
+          const primaryLabel =
+            lead.status === "NEW" || lead.status === "NEEDS_CLARIFICATION"
+              ? "Взять в работу"
+              : canTake(lead)
+                ? "Продолжить"
+                : "Открыть";
+          const canReject =
+            lead.status !== "REJECTED" &&
+            lead.status !== "SCHEDULED" &&
+            lead.status !== "COMPLETED";
+
+          return (
+            <article
+              key={lead.id}
+              className="overflow-hidden rounded-xl border border-white/10 bg-slate-900/50"
+            >
+              <div className="space-y-3 p-3 sm:p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="min-w-0 text-base font-semibold leading-snug break-words text-white">
+                    {lead.name}
+                  </h3>
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 text-xs",
+                      "shrink-0 rounded-full px-2 py-0.5 text-xs leading-5",
                       STATUS_CLASS[lead.status],
                     )}
                   >
                     {STATUS_LABELS[lead.status]}
                   </span>
-                  <span className="text-xs text-slate-500">
-                    {KIND_LABELS[lead.kind]}
-                  </span>
-                  {lead.location && (
-                    <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-xs text-sky-300">
-                      {CRM_LOCATION_LABELS[lead.location]}
-                    </span>
-                  )}
-                  {lead.followUpAt && (
-                    <span className="text-xs text-orange-400">
-                      Повторная связь:{" "}
-                      {new Date(lead.followUpAt).toLocaleDateString("ru-RU")}
-                    </span>
-                  )}
                 </div>
-                <p className="mt-1 text-sm text-slate-300">
+
+                <a
+                  href={phoneTelHref(lead.phone)}
+                  className="block text-base font-medium text-emerald-300"
+                >
                   {formatPhoneRuDisplay(lead.phone)}
+                </a>
+
+                <p className="text-xs leading-5 text-slate-400">
+                  {KIND_LABELS[lead.kind]}
+                  {lead.location
+                    ? ` · ${CRM_LOCATION_LABELS[lead.location]}`
+                    : ""}
+                  {" · "}
+                  {new Date(lead.createdAt).toLocaleString("ru-RU", {
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </p>
-                <p className="text-xs text-slate-500">
-                  {new Date(lead.createdAt).toLocaleString("ru-RU")}
-                </p>
-                {(lead.carDescription || lead.message) && (
-                  <div className="mt-2 space-y-1 text-sm text-slate-300">
-                    {lead.carDescription && (
-                      <p>
-                        <span className="text-slate-500">Авто: </span>
-                        {lead.carDescription}
-                      </p>
-                    )}
-                    {lead.message && (
-                      <p className="line-clamp-2">
-                        <span className="text-slate-500">Сообщение: </span>
-                        {lead.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-                {lead.adminNote && (
-                  <p className="mt-2 text-xs text-slate-400">
+
+                {lead.followUpAt ? (
+                  <p className="text-xs text-orange-400">
+                    Повторная связь:{" "}
+                    {new Date(lead.followUpAt).toLocaleDateString("ru-RU")}
+                  </p>
+                ) : null}
+
+                {lead.carDescription ? (
+                  <p className="text-sm leading-5 break-words text-slate-200">
+                    <span className="text-slate-500">Авто: </span>
+                    {lead.carDescription}
+                  </p>
+                ) : null}
+                {lead.message ? (
+                  <p className="text-sm leading-5 break-words text-slate-200">
+                    <span className="text-slate-500">Сообщение: </span>
+                    {lead.message}
+                  </p>
+                ) : null}
+                {lead.adminNote ? (
+                  <p className="text-sm leading-5 break-words text-slate-400">
                     <span className="text-slate-500">Комментарий: </span>
                     {lead.adminNote}
                   </p>
-                )}
+                ) : null}
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {canTake(lead) && (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      openWork(
-                        lead,
-                        lead.status === "NEW" ||
-                          lead.status === "NEEDS_CLARIFICATION"
-                          ? "take"
-                          : "edit",
-                      )
-                    }
-                  >
-                    {lead.status === "NEW" ||
-                    lead.status === "NEEDS_CLARIFICATION"
-                      ? "Взять в работу"
-                      : "Продолжить"}
-                  </Button>
-                )}
-                {!canTake(lead) && (
+              <div className="grid grid-cols-2 gap-2 border-t border-white/10 bg-slate-950/40 p-3 sm:flex sm:flex-wrap sm:justify-end">
+                <Button
+                  size="sm"
+                  className="col-span-2 h-10 sm:col-auto sm:min-w-36"
+                  variant={canTake(lead) ? "default" : "outline"}
+                  onClick={() =>
+                    openWork(
+                      lead,
+                      lead.status === "NEW" ||
+                        lead.status === "NEEDS_CLARIFICATION"
+                        ? "take"
+                        : "edit",
+                    )
+                  }
+                >
+                  {primaryLabel}
+                </Button>
+                {lead.visitId ? (
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-white/20"
-                    onClick={() => openWork(lead, "edit")}
-                  >
-                    Открыть
-                  </Button>
-                )}
-                {lead.visitId && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-white/20"
+                    className="h-10 border-white/20"
                     asChild
                   >
                     <Link href="/admin/calendar">Календарь</Link>
                   </Button>
-                )}
-                {canComplete(lead.status) && (
+                ) : null}
+                {canComplete(lead.status) ? (
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-teal-500/40 text-teal-300"
+                    className="h-10 border-teal-500/40 text-teal-300"
                     onClick={() => openComplete(lead)}
                   >
                     Выполнена
                   </Button>
-                )}
-                {lead.status !== "REJECTED" &&
-                  lead.status !== "SCHEDULED" &&
-                  lead.status !== "COMPLETED" && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-slate-400 hover:bg-red-600/20 hover:text-red-400"
-                      onClick={() => void rejectLead(lead)}
-                    >
-                      Отклонить
-                    </Button>
-                  )}
+                ) : null}
+                {canReject ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className={cn(
+                      "h-10 text-slate-400 hover:bg-red-600/20 hover:text-red-400",
+                      !canComplete(lead.status) &&
+                        !lead.visitId &&
+                        "col-span-2 sm:col-auto",
+                    )}
+                    onClick={() => void rejectLead(lead)}
+                  >
+                    Отклонить
+                  </Button>
+                ) : null}
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
       <LeadEditDialog
         lead={workLead}
         open={workLead !== null}
-        mode={workMode}
+        mode="edit"
         onOpenChange={(open) => {
           if (!open) setWorkLead(null);
         }}
         onSaved={load}
-        onSchedule={(lead) => {
-          setWorkLead(null);
-          openSchedule(lead);
-        }}
       />
 
       <Dialog
@@ -366,18 +378,15 @@ export default function LeadsManager() {
         </DialogContent>
       </Dialog>
 
-      <AppointmentDialog
+      <LeadScheduleDialog
         open={dialogOpen}
         onOpenChange={(v) => {
           setDialogOpen(v);
           if (!v) setScheduleLead(null);
         }}
-        appointment={null}
-        slot={null}
+        lead={scheduleLead}
+        mode={scheduleMode}
         serviceTypes={serviceTypes}
-        leadId={scheduleLead?.id ?? null}
-        initialClientQuery={scheduleLead ? scheduleLead.phone : undefined}
-        defaultLocation={scheduleLead?.location ?? DEFAULT_CRM_LOCATION}
         onSaved={async () => {
           await load();
           setScheduleLead(null);

@@ -7,6 +7,13 @@ import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "src/lib/utils";
+import {
+  CRM_LOCATIONS,
+  CRM_LOCATION_LABELS,
+  DEFAULT_CRM_LOCATION,
+  type CrmLocationCode,
+} from "../../_lib/crmLocations";
 
 type DayLimit = {
   date: string;
@@ -38,12 +45,13 @@ export function LeadDayLimitsPanel() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
+  const [location, setLocation] = useState<CrmLocationCode>(DEFAULT_CRM_LOCATION);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await adminApi.get<DayLimit[]>("/crm/settings/day-limits", {
-        params: { year, month },
+        params: { year, month, location },
       });
       const map: Record<string, string> = {};
       for (const row of data) {
@@ -55,7 +63,7 @@ export function LeadDayLimitsPanel() {
     } finally {
       setLoading(false);
     }
-  }, [year, month]);
+  }, [year, month, location]);
 
   useEffect(() => {
     if (open) void load();
@@ -88,7 +96,7 @@ export function LeadDayLimitsPanel() {
 
     setSaving(true);
     try {
-      await adminApi.put("/crm/settings/day-limits", { items });
+      await adminApi.put("/crm/settings/day-limits", { location, items });
       toast.success("Лимиты сохранены");
       await load();
     } catch (e: unknown) {
@@ -102,7 +110,9 @@ export function LeadDayLimitsPanel() {
 
   const clearDay = async (date: string) => {
     try {
-      await adminApi.delete(`/crm/settings/day-limits/${date}`);
+      await adminApi.delete(`/crm/settings/day-limits/${date}`, {
+        params: { location },
+      });
       setLimits((prev) => {
         const next = { ...prev };
         delete next[date];
@@ -127,8 +137,8 @@ export function LeadDayLimitsPanel() {
             Лимиты записей по дням
           </h2>
           <p className="mt-1 text-xs text-slate-400">
-            Укажите максимум записей в календарь на день (0 — день закрыт). Дни
-            без значения без ограничения.
+            Максимум записей на день для выбранного филиала (0 — день закрыт).
+            Дни без значения без ограничения.
           </p>
         </div>
         <Button
@@ -143,6 +153,23 @@ export function LeadDayLimitsPanel() {
 
       {open && (
         <div className="mt-4 space-y-4">
+          <div className="flex flex-wrap gap-1">
+            {CRM_LOCATIONS.map((code) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLocation(code)}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  location === code
+                    ? "bg-emerald-500/20 text-emerald-200"
+                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200",
+                )}
+              >
+                {CRM_LOCATION_LABELS[code]}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center justify-between gap-2">
             <Button
               size="sm"

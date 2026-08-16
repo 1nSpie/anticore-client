@@ -1,12 +1,18 @@
 "use client";
 
 import { cn } from "src/lib/utils";
+import {
+  capacityRemainingLabel,
+  dayCapacity,
+} from "../../_lib/dayCapacity";
 
 type Props = {
   selected: Date;
   onSelect: (date: Date) => void;
   /** Даты, на которых есть хотя бы одна запись (локальный календарный день). */
   markedDates?: Set<string>;
+  limits?: Record<string, number>;
+  bookedByDay?: Record<string, number>;
 };
 
 function startOfWeekMonday(date: Date): Date {
@@ -27,7 +33,13 @@ function isSameDay(a: Date, b: Date): boolean {
 }
 
 /** Горизонтальная полоска дней текущей недели (Пн–Вс). */
-export function WeekDayStrip({ selected, onSelect, markedDates }: Props) {
+export function WeekDayStrip({
+  selected,
+  onSelect,
+  markedDates,
+  limits = {},
+  bookedByDay = {},
+}: Props) {
   const weekStart = startOfWeekMonday(selected);
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -46,6 +58,7 @@ export function WeekDayStrip({ selected, onSelect, markedDates }: Props) {
         const selectedDay = isSameDay(d, selected);
         const isToday = isSameDay(d, today);
         const hasEvents = markedDates?.has(dayKey(d)) ?? false;
+        const cap = dayCapacity(d, limits, bookedByDay);
         const weekday = d
           .toLocaleDateString("ru-RU", { weekday: "short" })
           .replace(".", "");
@@ -93,6 +106,19 @@ export function WeekDayStrip({ selected, onSelect, markedDates }: Props) {
               )}
               aria-hidden
             />
+            {cap ? (
+              <span
+                className={cn(
+                  "text-[9px] font-semibold leading-none",
+                  cap.remaining === 0 ? "text-amber-400" : "text-emerald-400",
+                  selectedDay && cap.remaining !== 0 && "text-emerald-200",
+                )}
+              >
+                {capacityRemainingLabel(cap)}
+              </span>
+            ) : (
+              <span className="h-2.5" />
+            )}
           </button>
         );
       })}

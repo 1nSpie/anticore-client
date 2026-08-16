@@ -3,22 +3,6 @@ import { rublesInWordsRu } from "./rublesInWordsRu";
 
 const TEMPLATE_URL = "/templates/dogovor-client.docx";
 
-/** Sample values from the Word template (Dogovor_Strazhnikov_klienty.docx). */
-const SAMPLE = {
-  contractNo: "6874",
-  fio: "Юрцев Сергей Андреевич",
-  phone: "89166256925",
-  carModel: "MITSUBISHI OUTLANDER",
-  vin: "LL66HAB00NB031973",
-  plate: "O348BH250",
-  year: "2022г",
-  startWork: "06.06.2026г",
-  endWork: "07.06.2026г",
-  price: "41500р",
-  priceWords: "Сорок одна тысяча пятьсот рублей 00 копеек",
-  cityDate: "г. Жуковский   8  июня  2026 г",
-} as const;
-
 const MONTHS_GENITIVE = [
   "января",
   "февраля",
@@ -41,9 +25,7 @@ export type ContractDocxInput = {
   birthDate: string | null;
   carModel: string;
   vin: string | null;
-  /** Гос. номер — в CRM пока нет, оставляем пустым. */
   plate?: string | null;
-  /** Год выпуска — в CRM пока нет. */
   year?: string | null;
   startsAt: string | Date;
   endsAt: string | Date;
@@ -58,6 +40,15 @@ function escapeXml(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
+function parseDate(value: string | Date): Date {
+  if (value instanceof Date) return value;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [y, m, d] = value.split("-").map(Number);
+    return new Date(y!, m! - 1, d);
+  }
+  return new Date(value);
+}
+
 function formatPhone8(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   if (digits.length === 11 && digits.startsWith("7")) {
@@ -70,7 +61,7 @@ function formatPhone8(phone: string): string {
 
 function formatBirthDate(value: string | null): string {
   if (!value) return "";
-  const d = new Date(value);
+  const d = parseDate(value);
   if (Number.isNaN(d.getTime())) return "";
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -78,7 +69,7 @@ function formatBirthDate(value: string | null): string {
 }
 
 function formatWorkDate(value: string | Date): string {
-  const d = value instanceof Date ? value : new Date(value);
+  const d = parseDate(value);
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   return `${dd}.${mm}.${d.getFullYear()}г`;
@@ -86,10 +77,9 @@ function formatWorkDate(value: string | Date): string {
 
 /** Как в шаблоне: «г. Жуковский   8  июня  2026 г» */
 function formatCityDate(value: string | Date): string {
-  const d = value instanceof Date ? value : new Date(value);
-  const day = d.getDate();
+  const d = parseDate(value);
   const month = MONTHS_GENITIVE[d.getMonth()]!;
-  return `г. Жуковский   ${day}  ${month}  ${d.getFullYear()} г`;
+  return `г. Жуковский   ${d.getDate()}  ${month}  ${d.getFullYear()} г`;
 }
 
 type ServiceFlags = {
@@ -120,44 +110,34 @@ function check(label: string, on: boolean): string {
 }
 
 function applyReplacements(xml: string, input: ContractDocxInput): string {
-  const no = String(input.contractNumber);
-  const fio = escapeXml(input.fio.trim() || "________________");
-  const phone = escapeXml(formatPhone8(input.phone));
-  const birth = escapeXml(formatBirthDate(input.birthDate));
-  const car = escapeXml(input.carModel.trim() || "—");
-  const vin = escapeXml((input.vin ?? "").trim() || "—");
-  const plate = escapeXml((input.plate ?? "").trim());
-  const yearRaw = (input.year ?? "").trim();
-  const year = escapeXml(yearRaw ? (yearRaw.endsWith("г") ? yearRaw : `${yearRaw}г`) : "");
-  const start = escapeXml(formatWorkDate(input.startsAt));
-  const end = escapeXml(formatWorkDate(input.endsAt));
-  const price = escapeXml(`${Math.round(input.priceRub)}р`);
-  const priceWords = escapeXml(rublesInWordsRu(input.priceRub));
-  const cityDate = escapeXml(formatCityDate(input.startsAt));
   const flags = serviceFlags(input.serviceType);
+  const yearRaw = (input.year ?? "").trim();
+  const values: Record<string, string> = {
+    "{{CONTRACT_NO}}": String(input.contractNumber),
+    "{{FIO}}": input.fio.trim() || "________________",
+    "{{PHONE}}": formatPhone8(input.phone),
+    "{{BIRTH}}": formatBirthDate(input.birthDate),
+    "{{CAR}}": input.carModel.trim() || "______________",
+    "{{VIN}}": (input.vin ?? "").trim() || "_________________",
+    "{{PLATE}}": (input.plate ?? "").trim(),
+    "{{YEAR}}": yearRaw
+      ? yearRaw.endsWith("г")
+        ? yearRaw
+        : `${yearRaw}г`
+      : "",
+    "{{START}}": formatWorkDate(input.startsAt),
+    "{{END}}": formatWorkDate(input.endsAt),
+    "{{PRICE}}": `${Math.round(input.priceRub || 0)}р`,
+    "{{PRICE_WORDS}}": rublesInWordsRu(input.priceRub || 0),
+    "{{CITY_DATE}}": formatCityDate(input.startsAt),
+    "{{SERVICE_NOTE}}": input.serviceType.trim(),
+  };
 
   let out = xml;
+  for (const [token, value] of Object.entries(values)) {
+    out = out.split(token).join(escapeXml(value));
+  }
 
-  out = out.split(SAMPLE.fio).join(fio);
-  out = out.split(SAMPLE.phone).join(phone);
-  out = out.split(SAMPLE.carModel).join(car);
-  out = out.split(SAMPLE.vin).join(vin);
-  out = out.split(SAMPLE.plate).join(plate);
-  out = out.split(`Год выпуска: ${SAMPLE.year}`).join(`Год выпуска: ${year}`);
-  out = out.split(SAMPLE.startWork).join(start);
-  out = out.split(SAMPLE.endWork).join(end);
-  out = out.split(SAMPLE.price).join(price);
-  out = out.split(`(${SAMPLE.priceWords})`).join(`(${priceWords})`);
-  out = out.split(SAMPLE.cityDate).join(cityDate);
-
-  // Contract number variants in header / page markers
-  out = out.split(`Договор №${SAMPLE.contractNo}`).join(`Договор №${no}`);
-  out = out.split(`Договор № ${SAMPLE.contractNo}`).join(`Договор № ${no}`);
-
-  // Birth date is empty in the template: «Дата рождения: »
-  out = out.split("Дата рождения: ").join(`Дата рождения: ${birth}`);
-
-  // Service checkboxes
   out = out
     .split("☐ Антикоррозийная обработка")
     .join(check("Антикоррозийная обработка", flags.anticor));

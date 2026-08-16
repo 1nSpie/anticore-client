@@ -1,10 +1,12 @@
 "use client";
 
 import type { CrmAppointment } from "../../_lib/crmTypes";
+import { formatAppointmentCar } from "../../_lib/formatCar";
 import { formatPhoneRuDisplaySafe } from "@/lib/phoneRu";
 import { getEventColor } from "./calendarColors";
 import { cn } from "src/lib/utils";
 import { Plus } from "lucide-react";
+import type { DayCapacity } from "../../_lib/dayCapacity";
 
 type Props = {
   date: Date;
@@ -14,6 +16,7 @@ type Props = {
   className?: string;
   /** Крупные карточки без ограничения высоты — для мобильной agenda. */
   variant?: "sidebar" | "agenda";
+  capacity?: DayCapacity | null;
 };
 
 function formatTime(iso: string): string {
@@ -36,6 +39,7 @@ export function DayAppointmentsList({
   onCreate,
   className,
   variant = "sidebar",
+  capacity = null,
 }: Props) {
   const isAgenda = variant === "agenda";
   const dateLabel = date.toLocaleDateString("ru-RU", {
@@ -65,6 +69,20 @@ export function DayAppointmentsList({
         </h3>
         <span className="text-xs text-slate-500">{sorted.length}</span>
       </div>
+      {capacity ? (
+        <p
+          className={cn(
+            "text-xs",
+            capacity.remaining === 0 ? "text-amber-300" : "text-emerald-300",
+          )}
+        >
+          {capacity.limit === 0
+            ? "День закрыт (лимит 0)"
+            : capacity.remaining === 0
+              ? `Мест нет: уже ${capacity.booked} из ${capacity.limit}`
+              : `Можно записать ещё ${capacity.remaining} (занято ${capacity.booked} из ${capacity.limit})`}
+        </p>
+      ) : null}
 
       {sorted.length === 0 ? (
         <div
@@ -97,6 +115,7 @@ export function DayAppointmentsList({
         >
           {sorted.map((a) => {
             const color = getEventColor(a.serviceTypeId ?? a.id);
+            const carLabel = formatAppointmentCar(a);
             return (
               <li key={a.id}>
                 <button
@@ -132,6 +151,16 @@ export function DayAppointmentsList({
                     >
                       {clientLabel(a)}
                     </span>
+                    {carLabel ? (
+                      <span
+                        className={cn(
+                          "mt-0.5 block truncate text-slate-300",
+                          isAgenda ? "text-sm" : "text-xs",
+                        )}
+                      >
+                        {carLabel}
+                      </span>
+                    ) : null}
                     <span
                       className={cn(
                         "mt-0.5 block truncate text-slate-400",

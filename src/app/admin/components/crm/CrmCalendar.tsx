@@ -39,8 +39,17 @@ import {
   SheetTitle,
 } from "@/shadcn/sheet";
 import { formatPhoneRuDisplaySafe } from "@/lib/phoneRu";
+import { formatAppointmentCar } from "../../_lib/formatCar";
 import { toast } from "sonner";
 import "./crm-calendar.css";
+import {
+  bookedByDateMap,
+  capacityRemainingLabel,
+  capacityShort,
+  dayCapacity,
+  monthsOverlapping,
+  type DayCapacity,
+} from "../../_lib/dayCapacity";
 
 function scrollTimeNow(): string {
   const d = new Date();
@@ -136,12 +145,16 @@ function weekRangeIso(focus: Date): { from: string; to: string } {
   return { from: start.toISOString(), to: end.toISOString() };
 }
 
-function renderDayHeader(arg: { date: Date; isToday: boolean }) {
+function renderDayHeader(
+  arg: { date: Date; isToday: boolean },
+  cap: DayCapacity | null,
+) {
   const weekday = arg.date
     .toLocaleDateString("ru-RU", { weekday: "short" })
     .replace(".", "")
     .toUpperCase();
   const dayNum = arg.date.getDate();
+  const full = cap != null && cap.remaining === 0;
 
   return (
     <div className="crm-fc-day-header">
@@ -151,6 +164,13 @@ function renderDayHeader(arg: { date: Date; isToday: boolean }) {
       >
         {dayNum}
       </span>
+      {cap ? (
+        <span
+          className={`crm-fc-day-header-cap${full ? " is-full" : " is-open"}`}
+        >
+          {capacityRemainingLabel(cap)}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -162,6 +182,7 @@ function renderEventContent(arg: EventContentArg) {
     | undefined
     | null;
   const phone = arg.event.extendedProps.phone as string | undefined;
+  const carLabel = arg.event.extendedProps.carLabel as string | undefined;
   const isMonth = arg.view.type === "dayGridMonth";
   const isDay = arg.view.type === "timeGridDay";
   const start = arg.event.start;
@@ -176,6 +197,9 @@ function renderEventContent(arg: EventContentArg) {
       <div className="crm-fc-event crm-fc-event--month">
         <span className="crm-fc-event-time">{timeLabel}</span>
         <span className="crm-fc-event-title">{arg.event.title}</span>
+        {carLabel ? (
+          <span className="crm-fc-event-car"> · {carLabel}</span>
+        ) : null}
       </div>
     );
   }
@@ -183,6 +207,9 @@ function renderEventContent(arg: EventContentArg) {
   return (
     <div className="crm-fc-event">
       <div className="crm-fc-event-title">{arg.event.title}</div>
+      {carLabel && (
+        <div className="crm-fc-event-sub crm-fc-event-car">{carLabel}</div>
+      )}
       {!isShort && serviceType && (
         <div className="crm-fc-event-sub">{serviceType}</div>
       )}
@@ -225,7 +252,8 @@ function ServiceLegend({ serviceTypes }: { serviceTypes: ServiceType[] }) {
 
 export function CrmCalendar() {
   const calendarRef = useRef<FullCalendar>(null);
-  const [events, setEvents] = useState<CrmAppointment[]>([]);
+  const [allEvents, setAllEvents] = useState<CrmAppointment[]>([]);
+  const [dayLimits, setDayLimits] = useState<Record<string, number>>({});
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<CrmAppointment | null>(null);
@@ -238,6 +266,10 @@ export function CrmCalendar() {
   );
   const [mobileCalOpen, setMobileCalOpen] = useState(false);
   const rangeRef = useRef<{ from: string; to: string } | null>(null);
+  const events = useMemo(
+    () => allEvents.filter((e) => e.location === location),
+    [allEvents, location],
+  );
   const eventsRef = useRef<CrmAppointment[]>([]);
   eventsRef.current = events;
 
@@ -266,18 +298,45 @@ export function CrmCalendar() {
     return set;
   }, [events]);
 
-  const loadEvents = useCallback(
-    async (from?: string, to?: string, loc: CrmLocationCode = location) => {
-      const { data } = await adminApi.get<CrmAppointment[]>(
-        "/crm/appointments",
-        {
-          params: { from, to, location: loc },
-        },
+  const bookedByDay = useMemo(() => bookedByDateMap(events), [events]);
+
+  const focusCapacity = useMemo(
+    () => dayCapacity(focusDate, dayLimits, bookedByDay),
+    [focusDate, dayLimits, bookedByDay],
+  );
+
+  const loadLimits = useCallback(
+    async (from: string, to: string, loc: CrmLocationCode = location) => {
+      const months = monthsOverlapping(from, to);
+      const rows = await Promise.all(
+        months.map(({ year, month }) =>
+          adminApi.get<Array<{ date: string; maxAppointments: number }>>(
+            "/crm/settings/day-limits",
+            { params: { year, month, location: loc } },
+          ),
+        ),
       );
-      setEvents(data);
+      const map: Record<string, number> = {};
+      for (const { data } of rows) {
+        for (const row of data) {
+          map[row.date] = row.maxAppointments;
+        }
+      }
+      setDayLimits((prev) => ({ ...prev, ...map }));
     },
     [location],
   );
+
+  const loadEvents = useCallback(async (from?: string, to?: string) => {
+    const { data } = await adminApi.get<CrmAppointment[]>(
+      "/crm/appointments",
+      { params: { from, to } },
+    );
+    setAllEvents(data);
+    if (from && to) {
+      void loadLimits(from, to);
+    }
+  }, [loadLimits]);
 
   const loadMeta = useCallback(async () => {
     const { data } = await adminApi.get<ServiceType[]>(
@@ -308,14 +367,14 @@ export function CrmCalendar() {
     if (!isMobile) return;
     const next = weekRangeIso(focusDate);
     rangeRef.current = next;
-    void loadEvents(next.from, next.to, location);
-  }, [isMobile, focusDate, location, loadEvents]);
+    void loadEvents(next.from, next.to);
+  }, [isMobile, focusDate, loadEvents]);
 
-  /** Смена филиала на десктопе — перезагрузить текущий диапазон. */
   useEffect(() => {
-    if (!isDesktop || !rangeRef.current) return;
-    void loadEvents(rangeRef.current.from, rangeRef.current.to, location);
-  }, [location, isDesktop, loadEvents]);
+    if (!rangeRef.current) return;
+    setDayLimits({});
+    void loadLimits(rangeRef.current.from, rangeRef.current.to, location);
+  }, [location, loadLimits]);
 
   const api = () => calendarRef.current?.getApi();
 
@@ -419,6 +478,7 @@ export function CrmCalendar() {
         const clientName =
           [e.client.lastName, e.client.firstName].filter(Boolean).join(" ") ||
           formatPhoneRuDisplaySafe(e.client.phone);
+        const carLabel = formatAppointmentCar(e);
         const color = getEventColor(e.serviceTypeId ?? e.id);
         return {
           id: String(e.id),
@@ -432,6 +492,7 @@ export function CrmCalendar() {
             serviceType: e.serviceType,
             managerName: e.managerName,
             phone: e.client.phone,
+            carLabel: carLabel || undefined,
           },
         };
       }),
@@ -517,6 +578,8 @@ export function CrmCalendar() {
               selected={focusDate}
               onSelect={goToDate}
               markedDates={markedDates}
+              limits={dayLimits}
+              bookedByDay={bookedByDay}
             />
             <DayAppointmentsList
               date={focusDate}
@@ -524,6 +587,7 @@ export function CrmCalendar() {
               onOpen={openAppointment}
               onCreate={handleCreate}
               variant="agenda"
+              capacity={focusCapacity}
             />
           </div>
         ) : null}
@@ -531,12 +595,23 @@ export function CrmCalendar() {
         {isDesktop ? (
           <div className="flex flex-col lg:flex-row">
             <aside className="hidden w-[280px] shrink-0 space-y-5 border-r border-white/10 p-4 lg:block">
-              <CrmMiniCalendar selected={focusDate} onSelect={goToDate} />
+              <CrmMiniCalendar
+                selected={focusDate}
+                onSelect={goToDate}
+                limits={dayLimits}
+                bookedByDay={bookedByDay}
+                onMonthChange={(date) => {
+                  const from = new Date(date.getFullYear(), date.getMonth(), 1);
+                  const to = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+                  void loadLimits(from.toISOString(), to.toISOString());
+                }}
+              />
               <DayAppointmentsList
                 date={focusDate}
                 appointments={dayAppointments}
                 onOpen={openAppointment}
                 onCreate={handleCreate}
+                capacity={focusCapacity}
               />
               <ServiceLegend serviceTypes={serviceTypes} />
             </aside>
@@ -570,7 +645,29 @@ export function CrmCalendar() {
                 eventDrop={onEventDrop}
                 eventResize={onEventResize}
                 datesSet={onDatesSet}
-                dayHeaderContent={renderDayHeader}
+                dayHeaderContent={(arg) =>
+                  renderDayHeader(
+                    arg,
+                    dayCapacity(arg.date, dayLimits, bookedByDay),
+                  )
+                }
+                dayCellContent={(arg) => {
+                  if (arg.view.type !== "dayGridMonth") return;
+                  const cap = dayCapacity(arg.date, dayLimits, bookedByDay);
+                  const full = cap != null && cap.remaining === 0;
+                  return (
+                    <div className="crm-fc-month-cell">
+                      <span className="crm-fc-month-num">{arg.dayNumberText}</span>
+                      {cap ? (
+                        <span
+                          className={`crm-fc-month-cap${full ? " is-full" : " is-open"}`}
+                        >
+                          {capacityShort(cap)}
+                        </span>
+                      ) : null}
+                    </div>
+                  );
+                }}
                 eventContent={renderEventContent}
                 height="100%"
                 expandRows
@@ -595,6 +692,8 @@ export function CrmCalendar() {
                 goToDate(date);
                 setMobileCalOpen(false);
               }}
+              limits={dayLimits}
+              bookedByDay={bookedByDay}
             />
           </div>
           <SheetFooter>
