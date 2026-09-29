@@ -1,5 +1,6 @@
 "use client";
 
+import ImageUpload, { apiError } from "../media/ImageUpload";
 import { useState, useEffect } from "react";
 import { Button } from "@/shadcn/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/card";
@@ -57,6 +58,7 @@ export default function BlogManager() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [formData, setFormData] = useState<BlogPostFormData>(emptyFormData);
   const [tagsInput, setTagsInput] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -67,8 +69,10 @@ export default function BlogManager() {
   const loadPosts = async () => {
     try {
       setLoading(true);
-      const response = await adminApi.get(`${API_BASE_URL}/blog/posts`);
-      setPosts(response.data.posts || response.data);
+      const response = await adminApi.get(`${API_BASE_URL}/blog/admin/posts`);
+      setPosts(response.data.map((post: Omit<BlogPost, "tags"> & { tags: (string | { name: string })[] }) => ({
+        ...post, tags: post.tags.map(tag => typeof tag === "string" ? tag : tag.name),
+      })));
     } catch (error) {
       toast.error("Ошибка загрузки постов");
     } finally {
@@ -124,6 +128,7 @@ export default function BlogManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving || uploading) return;
 
     if (!formData.title || !formData.excerpt || !formData.categoryId) {
       toast.error("Заполните обязательные поля");
@@ -164,7 +169,7 @@ export default function BlogManager() {
       setIsFormOpen(false);
       loadPosts();
     } catch (error) {
-      toast.error("Ошибка сохранения");
+      toast.error(apiError(error, "Ошибка сохранения"));
       console.error(error);
     } finally {
       setSaving(false);
@@ -356,6 +361,7 @@ export default function BlogManager() {
               <Button
                 variant="ghost"
                 size="sm"
+                disabled={saving || uploading}
                 onClick={() => setIsFormOpen(false)}
                 className="text-slate-400 hover:text-slate-200 hover:bg-white/5"
               >
@@ -367,6 +373,7 @@ export default function BlogManager() {
               onSubmit={handleSubmit}
               className="p-6 space-y-6 overflow-y-auto flex-1"
             >
+              <fieldset disabled={saving || uploading} className="space-y-6">
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
@@ -464,24 +471,9 @@ export default function BlogManager() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="image" className="text-slate-300">
-                    Изображение (путь)
-                  </Label>
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image: e.target.value })
-                    }
-                    placeholder="blog/image.jpg"
-                    className="bg-slate-800/50 border-white/10 text-slate-50 focus:ring-2 focus:ring-emerald-500/50 mt-1"
-                  />
-                  <p className="mt-1 text-xs text-slate-400">
-                    Ключ файла в хранилище: файл <code>blog/image.jpg</code> должен
-                    лежать в бакете как <code>image/blog/image.jpg</code>.
-                  </p>
-                </div>
+                <ImageUpload label="Обложка статьи" folder="blog" value={formData.image}
+                  onChange={image => setFormData(previous => ({ ...previous, image }))}
+                  onBusyChange={setUploading} />
 
                 <div>
                   <Label htmlFor="author" className="text-slate-300">
@@ -650,14 +642,15 @@ export default function BlogManager() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsFormOpen(false)}
+                  disabled={saving || uploading}
+                onClick={() => setIsFormOpen(false)}
                   className="border-white/20 text-slate-300 hover:bg-white/5"
                 >
                   Отмена
                 </Button>
                 <Button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || uploading}
                   className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-200 hover:scale-105"
                 >
                   {saving ? (
@@ -672,6 +665,7 @@ export default function BlogManager() {
                   )}
                 </Button>
               </div>
+              </fieldset>
             </form>
           </div>
         </div>

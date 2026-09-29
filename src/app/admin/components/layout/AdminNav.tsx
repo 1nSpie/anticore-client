@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  FileText,
   Calendar,
   Car,
   DollarSign,
@@ -13,6 +14,8 @@ import {
 import { cn } from "src/lib/utils";
 
 const links = [
+  { href: "/admin/blog", label: "Блог", icon: FileText },
+  { href: "/admin/works", label: "Примеры работ", icon: FileText },
   { href: "/admin/prices", label: "Цены", icon: DollarSign },
   { href: "/admin/auto", label: "Автомобили", icon: Car },
   { href: "/admin/leads", label: "Заявки", icon: Inbox },
