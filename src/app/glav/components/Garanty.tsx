@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDownIcon, ShieldCheckIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
+import { siteImageUrl } from "@/lib/media";
 
 type Props = {
   id: string;
@@ -35,7 +36,7 @@ export default function Garanty({ id }: Props) {
       id={id}
       className="relative py-16 lg:py-20 overflow-hidden min-h-[600px]"
       style={{
-        backgroundImage: "url(/videocarouselbg.png)",
+        backgroundImage: `url(${siteImageUrl("bg/videocarouselbg.png")})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

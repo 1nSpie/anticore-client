@@ -11,7 +11,7 @@ import {
 import ReactPlayer from "react-player";
 import Autoplay from "embla-carousel-autoplay";
 import { PlayCircle, PauseCircle } from "lucide-react";
-import heroImg from "public/heroImg.jpg"
+import { siteImageUrl } from "@/lib/media";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
@@ -97,7 +97,7 @@ export default function VideoCarousel({ id }: { id: string }) {
   }
 
   return (
-    <section className="py-12 lg:py-20 bg-[url(public/videocarouselbg.png)] bg-cover bg-center" id={id}>
+    <section className="py-12 lg:py-20 bg-cover bg-center" style={{ backgroundImage: `url(${siteImageUrl("bg/videocarouselbg.png")})` }} id={id}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">

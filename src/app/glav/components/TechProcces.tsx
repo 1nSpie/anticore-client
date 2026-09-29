@@ -2,13 +2,15 @@
 
 import React from "react";
 import StepCard from "src/app/glav/components/ui/StepsTechProccesCard";
-import clear from "public/techprocces/clear.svg";
-import diag from "public/techprocces/diag.svg";
-import garanty from "public/techprocces/garanty.svg";
-import mask from "public/techprocces/mask.svg";
-import razb from "public/techprocces/razb.svg";
-import sushka from "public/techprocces/sushka.svg";
-import wash from "public/techprocces/wash.svg";
+import { siteImageUrl } from "@/lib/media";
+
+const clear = siteImageUrl("techprocces/clear.svg");
+const diag = siteImageUrl("techprocces/diag.svg");
+const garanty = siteImageUrl("techprocces/garanty.svg");
+const mask = siteImageUrl("techprocces/mask.svg");
+const razb = siteImageUrl("techprocces/razb.svg");
+const sushka = siteImageUrl("techprocces/sushka.svg");
+const wash = siteImageUrl("techprocces/wash.svg");
 
 export interface Step {
   title: string;
@@ -78,7 +80,11 @@ export const stepsData: Step[] = [
 
 export default function TechProcces({ id }: Props) {
   return (
-    <section id={id} className="relative py-16 lg:py-20 overflow-hidden bg-[url(public/bgfon.png)]">
+    <section
+      id={id}
+      className="relative py-16 lg:py-20 overflow-hidden"
+      style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}
+    >
 
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 section-surface rounded-3xl">
         {/* Enhanced title section */}

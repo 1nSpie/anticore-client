@@ -1,16 +1,10 @@
 import axios from 'axios';
+import { contentImageUrl } from '@/lib/media';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:4444/api';
 
 const blogApi = axios.create({
   baseURL: `${API_BASE_URL}/blog`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const imageApi = axios.create({
-  baseURL: `${API_BASE_URL}/image`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -146,28 +140,13 @@ export const blogApiClient = {
   },
 
   // Images
-  async getBlogImages(): Promise<BlogImageResponse> {
-    const response = await imageApi.get('/blog');
-    return response.data;
-  },
-
+  // Картинки блога лежат в Selectel S3 (image/blog/*), не на бэке
   getBlogImageUrl(filename: string): string {
-    return `${API_BASE_URL}/image/blog/${filename}`;
+    return contentImageUrl(`blog/${filename}`);
   },
 
   getImageUrl(filename: string): string {
-    return `${API_BASE_URL}/image/${filename}`;
-  },
-
-  // Helper function to get optimized image URL
-  getOptimizedImageUrl(filename: string, width?: number, height?: number): string {
-    const baseUrl = `${API_BASE_URL}/image/blog/${filename}`;
-    const params = new URLSearchParams();
-    
-    if (width) params.append('w', width.toString());
-    if (height) params.append('h', height.toString());
-    
-    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+    return contentImageUrl(filename);
   },
 
 };

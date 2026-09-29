@@ -12,6 +12,7 @@ import { PhoneIcon, ClockIcon, HomeIcon, MapPinIcon } from "@heroicons/react/24/
 import { YandexMapWidget } from "./YandexMapWidget";
 import Link from "next/link";
 import FeedbackLine from "@/app/ui/ui/FeedbackLine";
+import { siteImageUrl } from "@/lib/media";
 
 type Props = {
   id: string;
@@ -30,7 +31,7 @@ export default function YandexMap({ id }: Props) {
     <section
       id={id}
       className="pt-20 "
-      style={{ backgroundImage: "url(/bgfon.png)" }}
+      style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}
     >
     
       <div className="max-w-[85rem] mx-auto relative">

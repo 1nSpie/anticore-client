@@ -4,6 +4,7 @@ import { Button } from "@/shadcn/button";
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import { CallbackModal } from "src/app/ui/ui/CallbackModal";
+import { siteImageUrl } from "@/lib/media";
 
 const BENEFITS = [
   "Профессиональные кузовные работы",
@@ -29,7 +30,7 @@ export default function MainVideoPlayer({ id }: { id: string }) {
     return (
       <section
         className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: "url(/bgfon.png)" }}
+        style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}
       >
         <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-8">
           <div className="rounded-xl bg-white/10 backdrop-blur p-8 text-center">
@@ -54,7 +55,7 @@ export default function MainVideoPlayer({ id }: { id: string }) {
   return (
     <section
       className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: "url(/bgfon.png)" }}
+      style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}
       id={id}
     >
       <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-8">

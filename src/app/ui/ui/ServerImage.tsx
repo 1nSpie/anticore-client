@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { apiClient } from "src/lib/api";
+import { contentImageUrl } from "@/lib/media";
 
 interface ServerImageProps {
   filePath: string;
@@ -34,9 +34,8 @@ export const ServerImage: React.FC<ServerImageProps> = ({
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const folderFile = filePath.split("/");
-
-  const imageUrl = apiClient.getImageUrl(folderFile[0], folderFile[1]);
+  // filePath — ключ из БД (`blog/blog2.jpg`, `works/honda-1.jpg`) → S3: image/<ключ>
+  const imageUrl = contentImageUrl(filePath);
 
   const handleLoad = () => {
     setIsLoading(false);

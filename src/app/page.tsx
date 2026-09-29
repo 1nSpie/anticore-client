@@ -13,6 +13,7 @@ import TechProcces from "./glav/components/TechProcces";
 import Marquee from "react-fast-marquee";
 import AntiCorrosionSection from "./glav/components/AntiCorrosionSection";
 import NewStart from "./glav/components/NewStart";
+import { siteImageUrl } from "@/lib/media";
 
 export default function GlavPage() {
   return (
@@ -24,7 +25,7 @@ export default function GlavPage() {
         <main className="flex-1 relative z-10">
           {/* <AwesomeServices id="hero" /> */}
           <NewStart />
-          <div className="bg-[url(public/bgfon.png)]">
+          <div style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}>
             <AntiCorrosionSection />
             <AutoPrice id="auto-price" />
           </div>

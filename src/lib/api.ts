@@ -1,11 +1,7 @@
 // API Configuration
 export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:4444';
 export const API_ENDPOINTS = {
-  // Static files
-  static: {
-    images: (folder: string) => `${API_BASE_URL}/static/images/${folder}`,
-    image: (folder: string, filename: string) => `${API_BASE_URL}/static/images/${folder}/${filename}`,
-  },
+  // Картинки и видео — в Selectel S3, см. src/lib/media.ts (бэк файлов не отдаёт)
   // Other API endpoints
   blog: `${API_BASE_URL}/api/blog`,
   works: `${API_BASE_URL}/api/works`,
@@ -34,11 +30,4 @@ export const apiClient = {
     }
     return response.json();
   },
-
-  async getImagesList(folder: string): Promise<ImagesListResponse> {
-    return this.get<ImagesListResponse>(API_ENDPOINTS.static.images(folder));
-  },
-
-  getImageUrl: (folder: string, filename: string) => 
-    API_ENDPOINTS.static.image(folder, filename),
 };
