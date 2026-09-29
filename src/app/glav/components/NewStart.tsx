@@ -3,14 +3,16 @@
 
 import { Shield, Star, MoveRight, PlayIcon, CheckCircle, Phone, Clock } from "lucide-react";
 import Image from "next/image";
-import car from './imgs/car.png';
-import plakat2obr from './imgs/plakat2obr.png';
-import garanty from './imgs/garanty.png';
-import yandex from './imgs/yandex.png';
 import { CallbackModal } from "@/app/ui/ui/CallbackModal";
+import { siteImageUrl } from "@/lib/media";
 import logo from 'public/favicon.svg'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
+
+const car = siteImageUrl("newstart/car.png");
+const plakat2obr = siteImageUrl("newstart/plakat2obr.png");
+const garanty = siteImageUrl("newstart/garanty.png");
+const yandex = siteImageUrl("newstart/yandex.png");
 
 export default function NewStart() {
     return (
@@ -190,12 +192,16 @@ export default function NewStart() {
                                 <Image
                                     alt='plakat2obr'
                                     src={plakat2obr}
+                                    width={1024}
+                                    height={781}
                                     className="w-[282px] object-cover opacity-95"
                                 />
                             </div>
                             <Image
                                 alt='garanty'
                                 src={garanty}
+                                width={1024}
+                                height={1536}
                                 className="hidden lg:block absolute top-0 right-0 w-auto h-full object-contain opacity-95"
                             />
                         </div>
@@ -215,6 +221,8 @@ export default function NewStart() {
                             <Image
                                 alt='yandex'
                                 src={yandex}
+                                width={580}
+                                height={743}
                                 className="absolute top-0 right-0 h-full w-auto object-contain opacity-95"
                             />
                         </div>

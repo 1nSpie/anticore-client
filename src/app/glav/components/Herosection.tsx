@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
-import heroImg from "../../../../public/heroImg.jpg";
+import { siteImageUrl } from "@/lib/media";
 import { Button } from "src/shadcn/button";
 import {
   Phone,
@@ -14,6 +14,8 @@ import {
   Users,
 } from "lucide-react";
 import { CallbackModal } from "src/app/ui/ui/CallbackModal";
+
+const heroImg = siteImageUrl("hero/heroImg.jpg");
 
 export default function Herosection({ id }: { id: string }) {
   const scrollToAutoPrice = () => {

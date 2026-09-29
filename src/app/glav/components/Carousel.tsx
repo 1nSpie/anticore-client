@@ -1,20 +1,5 @@
 "use client";
 
-import carousel1 from "public/carousel/carousel1-Photoroom.png";
-import carousel2 from "public/carousel/carousel2.png";
-import carousel3 from "public/carousel/carousel3.png";
-import carousel4 from "public/carousel/carousel4.png";
-import carousel5 from "public/carousel/carousel5.png";
-import carousel6 from "public/carousel/carousel6.png";
-import carousel7 from "public/carousel/carousel7.png";
-import carousel8 from "public/carousel/carousel8.png";
-import carousel9 from "public/carousel/carousel9.png";
-import carousel10 from "public/carousel/carousel10.png";
-import carousel11 from "public/carousel/carousel11.png";
-import about1 from "public/carousel/about1.svg";
-import about2 from "public/carousel/about2.svg";
-import about3 from "public/carousel/about3.svg";
-import about4 from "public/carousel/about4.svg";
 import {
   Carousel,
   CarouselContent,
@@ -25,6 +10,23 @@ import {
 import Image from "next/image";
 import { useRef } from "react";
 import Autoplay from "embla-carousel-autoplay";
+import { siteImageUrl } from "@/lib/media";
+
+const carousel1 = siteImageUrl("carousel/carousel1-Photoroom.png");
+const carousel2 = siteImageUrl("carousel/carousel2.png");
+const carousel3 = siteImageUrl("carousel/carousel3.png");
+const carousel4 = siteImageUrl("carousel/carousel4.png");
+const carousel5 = siteImageUrl("carousel/carousel5.png");
+const carousel6 = siteImageUrl("carousel/carousel6.png");
+const carousel7 = siteImageUrl("carousel/carousel7.png");
+const carousel8 = siteImageUrl("carousel/carousel8.png");
+const carousel9 = siteImageUrl("carousel/carousel9.png");
+const carousel10 = siteImageUrl("carousel/carousel10.png");
+const carousel11 = siteImageUrl("carousel/carousel11.png");
+const about1 = siteImageUrl("carousel/about1.svg");
+const about2 = siteImageUrl("carousel/about2.svg");
+const about3 = siteImageUrl("carousel/about3.svg");
+const about4 = siteImageUrl("carousel/about4.svg");
 
 const slides = [
   {
@@ -146,7 +148,8 @@ export default function CarouselSection({ id }: Props) {
   return (
     <section
       id={id}
-      className="relative py-16 lg:py-20 overflow-hidden bg-[url(public/bgfon.png)]"
+      className="relative py-16 lg:py-20 overflow-hidden"
+      style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}
     >
       <div className="max-w-[85rem] mx-auto h-auto px-6 sm:px-6 lg:px-12">
         {/* Заголовок */}

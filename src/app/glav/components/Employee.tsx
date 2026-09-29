@@ -3,7 +3,9 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import carousel1 from "../../../../public/carousel1-Photoroom.png";
+import { siteImageUrl } from "@/lib/media";
+
+const carousel1 = siteImageUrl("carousel/carousel1-Photoroom.png");
 
 const employee = Array.from({ length: 15 }, (_, i) => ({
   id: i + 1,
@@ -57,7 +59,7 @@ export default function Employee() {
                   width={80}
                   height={80}
                   className="rounded-full size-20"
-                  src={emp.img.src} // Исправлено для работы с импортированными изображениями
+                  src={emp.img} // Исправлено для работы с импортированными изображениями
                   alt="Avatar"
                 />
                 <div className="grow">
@@ -104,7 +106,7 @@ export default function Employee() {
                           width={80}
                           height={80}
                           className="rounded-full size-20"
-                          src={emp.img.src} // Исправлено для работы с импортированными изображениями
+                          src={emp.img} // Исправлено для работы с импортированными изображениями
                           alt="Avatar"
                         />
                         <div className="grow">

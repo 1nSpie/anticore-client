@@ -477,6 +477,10 @@ export default function BlogManager() {
                     placeholder="blog/image.jpg"
                     className="bg-slate-800/50 border-white/10 text-slate-50 focus:ring-2 focus:ring-emerald-500/50 mt-1"
                   />
+                  <p className="mt-1 text-xs text-slate-400">
+                    Ключ файла в хранилище: файл <code>blog/image.jpg</code> должен
+                    лежать в бакете как <code>image/blog/image.jpg</code>.
+                  </p>
                 </div>
 
                 <div>

@@ -3,12 +3,14 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import car1 from "../../../../public/Auto_A_Class.png";
-import car2 from "../../../../public/Auto_B_Class.png";
-import car3 from "../../../../public/Auto_C_Class.png";
-import car4 from "../../../../public/Auto_D_Class.png";
-import car5 from "../../../../public/Auto_E_Class.png";
-import car6 from "../../../../public/Auto_F_Class.png";
+import { siteImageUrl } from "@/lib/media";
+
+const car1 = siteImageUrl("auto/Auto_A_Class.png");
+const car2 = siteImageUrl("auto/Auto_B_Class.png");
+const car3 = siteImageUrl("auto/Auto_C_Class.png");
+const car4 = siteImageUrl("auto/Auto_D_Class.png");
+const car5 = siteImageUrl("auto/Auto_E_Class.png");
+const car6 = siteImageUrl("auto/Auto_F_Class.png");
 
 const API_BASE =
   process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:4444";
@@ -35,7 +37,7 @@ const SEGMENT_EXAMPLES: Record<number, string> = {
 
 const SEGMENT_META: Record<
   number,
-  { imageSrc: typeof car1; imageAlt: string }
+  { imageSrc: string; imageAlt: string }
 > = {
   1: {
     imageSrc: car1,
@@ -103,7 +105,7 @@ export default function PriceCardList({ id }: Props) {
       <section
         id={id}
         className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: "url(/videocarouselbg.png)" }}
+        style={{ backgroundImage: `url(${siteImageUrl("bg/videocarouselbg.png")})` }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center py-12">
           <p className="text-gray-600">Загрузка прайс-листа...</p>
@@ -120,7 +122,7 @@ export default function PriceCardList({ id }: Props) {
     <section
       id={id}
       className="relative py-16 sm:py-24 overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: "url(/videocarouselbg.png)" }}
+      style={{ backgroundImage: `url(${siteImageUrl("bg/videocarouselbg.png")})` }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
