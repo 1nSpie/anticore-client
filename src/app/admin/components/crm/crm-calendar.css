@@ -322,3 +322,65 @@
     min-height: unset;
   }
 }
+
+/* Закрытая запись: приглушённая, с бирюзовой полосой слева */
+.fc .crm-fc-event--done {
+  opacity: 0.75;
+  border-left-width: 3px !important;
+}
+
+/* Spacious calendar surface; navigation and the day overview live outside the grid. */
+.crm-calendar {
+  --fc-border-color: #ffffff0b;
+  --fc-today-bg-color: #34d39905;
+  --fc-now-indicator-color: #fb7185;
+  background: #111a27;
+  border-radius: 16px;
+}
+.crm-calendar .fc { --fc-border-color: #ffffff0b; }
+.crm-calendar .fc-theme-standard td,
+.crm-calendar .fc-theme-standard th { border-color: #ffffff0b; }
+.crm-calendar .fc-col-header-cell { background: #141e2d; padding: 12px 0; }
+.crm-calendar .fc-timegrid-slot { height: 44px; }
+.crm-calendar .fc-timegrid-slot-label { background: #111a27; width: 62px; }
+.crm-calendar .fc-timegrid-slot-label-cushion { font-size: 11px; font-variant-numeric: tabular-nums; padding: 0 12px; color: #7c8da5; }
+.crm-calendar .fc-timegrid-slot-minor { border-top-color: #ffffff04; }
+.crm-calendar .fc-event { border-radius: 8px; box-shadow: none; margin: 2px 4px; font-size: 12px; }
+.crm-calendar .fc-timegrid-event { border-left-width: 3px !important; }
+.crm-calendar .fc-event:hover { filter: brightness(1.15); }
+.crm-calendar .fc-timegrid-event .fc-event-main { padding: 0; }
+.crm-calendar .crm-fc-event { padding: 6px 8px; }
+.crm-calendar .crm-fc-event-title { font-size: 12px; font-weight: 600; line-height: 1.5; }
+.crm-calendar .crm-fc-event-time { font-size: 11px; font-weight: 600; letter-spacing: .02em; margin-bottom: 3px; }
+.crm-calendar .crm-fc-event-sub { font-size: 11px; line-height: 1.5; opacity: .75; }
+.crm-calendar .crm-fc-day-header { gap: 6px; padding: 0; }
+.crm-calendar .crm-fc-day-header-weekday { color: #7c8da5; font-size: 10px; letter-spacing: .08em; }
+.crm-calendar .crm-fc-day-header-num { width: 32px; height: 32px; border-radius: 10px; font-size: 18px; font-weight: 500; }
+.crm-calendar .crm-fc-day-header-cap { font-size: 10px; font-weight: 400; }
+.crm-calendar .fc-daygrid-event { margin: 3px 5px; padding: 3px 2px; }
+.crm-calendar .crm-fc-event--month { padding: 2px 4px; }
+.crm-calendar .crm-fc-event--month .crm-fc-event-time { margin: 0; }
+.crm-calendar .fc-popover { background: #182232; border: 1px solid #ffffff1a; border-radius: 12px; }
+.crm-calendar .fc-scroller::-webkit-scrollbar { width: 6px; height: 6px; }
+.crm-calendar .fc-scroller::-webkit-scrollbar-thumb { background: #334155; border-radius: 9px; }
+.crm-calendar .fc-timegrid-event:focus-visible { outline: 2px solid #6ee7b7; outline-offset: 2px; }
+
+/* Keep the time and client visible even for a half-hour appointment. */
+.crm-calendar .crm-fc-event--short { padding: 2px 6px; }
+.crm-calendar .crm-fc-event--short .crm-fc-event-time { margin-bottom: 0; line-height: 14px; }
+.crm-calendar .crm-fc-event--short .crm-fc-event-title { line-height: 16px; }
+.crm-calendar .crm-fc-event--month .crm-fc-event-time { flex-shrink: 0; }
+
+.crm-calendar .crm-fc-event-comment {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 16px;
+  opacity: .85;
+}
+.crm-calendar .crm-fc-event--month { display: block; min-width: 0; width: 100%; }
+.crm-calendar .crm-fc-event-month-heading,
+.crm-calendar .crm-fc-event--short .crm-fc-event-heading { display: flex; align-items: baseline; gap: 4px; min-width: 0; }
+.crm-calendar .crm-fc-event--short .crm-fc-event-time { flex-shrink: 0; }

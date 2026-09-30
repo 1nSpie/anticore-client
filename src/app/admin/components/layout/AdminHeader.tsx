@@ -1,7 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Button } from "@/shadcn/button";
-import { ShieldCheck, RefreshCw, LogOut } from "lucide-react";
+import { RefreshCw, LogOut, ArrowUpRight } from "lucide-react";
+import { adminSection } from "./adminSections";
 
 interface AdminHeaderProps {
   onRefresh: () => void;
@@ -10,50 +12,18 @@ interface AdminHeaderProps {
   showRefresh?: boolean;
 }
 
-export function AdminHeader({
-  onRefresh,
-  onLogout,
-  loading,
-  showRefresh = true,
-}: AdminHeaderProps) {
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-      <div className="flex items-center gap-3">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/30">
-          <ShieldCheck className="w-5 h-5" />
-        </span>
-        <div className="flex flex-col">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">
-            Админ-панель ANTICORE
-          </h1>
-          <p className="text-sm text-slate-300/80">
-            Цены, автомобили, заявки, календарь и клиенты
-          </p>
-        </div>
-      </div>
-      <div className="flex gap-2">
-        {showRefresh && (
-          <Button
-            variant="outline"
-            onClick={onRefresh}
-            disabled={loading}
-            className="border-white/20 text-slate-100 hover:bg-white/5 transition-all duration-200 hover:scale-105"
-          >
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
-            />
-            Обновить
-          </Button>
-        )}
-        <Button
-          variant="outline"
-          onClick={onLogout}
-          className="border-white/20 text-slate-100 hover:bg-white/5 transition-all duration-200 hover:scale-105"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Выйти
-        </Button>
-      </div>
+export function AdminHeader({ onRefresh, onLogout, loading, showRefresh = true }: AdminHeaderProps) {
+  const section = adminSection(usePathname());
+  return <header className="mb-7 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p className="mb-2 text-xs font-medium text-emerald-400">{section?.group ?? "Рабочее пространство"}</p>
+      <h1 className="mb-2 text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">{section?.label ?? "Админка АванКор"}</h1>
+      <p className="mb-0 max-w-xl text-sm leading-relaxed text-slate-400">{section?.description ?? "Всё для ежедневной работы сервиса в одном месте."}</p>
     </div>
-  );
+    <div className="flex flex-wrap items-center gap-2">
+      <Button variant="outline" asChild className="border-white/10 bg-transparent text-slate-300"><a href="/" target="_blank" rel="noopener noreferrer">Открыть сайт<ArrowUpRight className="h-4 w-4" /></a></Button>
+      {showRefresh && <Button variant="outline" onClick={onRefresh} disabled={loading}><RefreshCw className={loading ? "animate-spin" : ""} />Обновить</Button>}
+      <Button variant="ghost" onClick={onLogout} className="text-slate-400 hover:text-slate-50"><LogOut className="h-4 w-4" />Выйти</Button>
+    </div>
+  </header>;
 }

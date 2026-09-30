@@ -1,89 +1,49 @@
 "use client";
 
+import { useRef, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/card";
-import { Lock } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, ArrowLeft, Loader2 } from "lucide-react";
 
 interface LoginFormProps {
   loginData: { login: string; password: string };
   loading: boolean;
   onLoginDataChange: (data: { login: string; password: string }) => void;
-  onLogin: () => void;
-  onKeyPress: (e: React.KeyboardEvent) => void;
+  onLogin: () => void | Promise<void>;
 }
 
-export function LoginForm({
-  loginData,
-  loading,
-  onLoginDataChange,
-  onLogin,
-  onKeyPress,
-}: LoginFormProps) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-admin relative overflow-hidden">
-      {/* Анимированный фон */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+export function LoginForm({ loginData, loading, onLoginDataChange, onLogin }: LoginFormProps) {
+  const [visible, setVisible] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const pending = useRef(false);
+  const busy = loading || submitting;
+  return <main className="admin-workspace flex min-h-screen items-center justify-center bg-[#0c111b] px-5 py-12 text-slate-100">
+    <div className="w-full max-w-md">
+      <Link href="/" className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-100"><ArrowLeft className="h-4 w-4" />На сайт АванКор</Link>
+      <div className="rounded-2xl border border-white/10 bg-[#131c2a] p-7 sm:p-9">
+        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-300"><ShieldCheck className="h-7 w-7" /></div>
+        <h1 className="mb-2 text-2xl font-semibold tracking-tight">Добро пожаловать</h1>
+        <p className="mb-7 text-sm leading-relaxed text-slate-400">Войдите, чтобы работать с клиентами и управлять сайтом.</p>
+        <form className="space-y-5" onSubmit={async event => {
+          event.preventDefault(); if (pending.current || loading) return;
+          pending.current = true; setSubmitting(true);
+          try { await onLogin(); } finally { pending.current = false; setSubmitting(false); }
+        }}>
+          <div className="space-y-2"><label htmlFor="admin-login" className="text-sm font-medium">Логин</label>
+            <Input id="admin-login" name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} required disabled={busy}
+              value={loginData.login} onChange={e => onLoginDataChange({ ...loginData, login: e.target.value })}
+              className="h-12 border-white/10 bg-slate-950/40 text-white" placeholder="Введите логин" /></div>
+          <div className="space-y-2"><label htmlFor="admin-password" className="text-sm font-medium">Пароль</label>
+            <div className="relative"><Input id="admin-password" name="password" type={visible ? "text" : "password"} autoComplete="current-password" required disabled={busy}
+              value={loginData.password} onChange={e => onLoginDataChange({ ...loginData, password: e.target.value })}
+              className="h-12 border-white/10 bg-slate-950/40 pr-12 text-white" placeholder="Введите пароль" />
+              <button type="button" disabled={busy} aria-label={visible ? "Скрыть пароль" : "Показать пароль"} aria-pressed={visible} onClick={() => setVisible(!visible)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-lg text-slate-400 hover:text-slate-100">{visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button>
+            </div></div>
+          <Button type="submit" disabled={busy} className="h-12 w-full bg-emerald-400 font-semibold text-slate-950 hover:bg-emerald-300">{busy ? <><Loader2 className="h-4 w-4 animate-spin" />Входим…</> : "Войти в рабочее пространство"}</Button>
+        </form>
       </div>
-
-      <Card className="w-full max-w-md bg-white/10 border-white/20 backdrop-blur-xl shadow-2xl relative z-10 transform transition-all duration-300 hover:scale-[1.02]">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-white">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/30">
-              <Lock className="w-5 h-5" />
-            </span>
-            <div className="flex flex-col gap-1">
-              <span className="text-lg font-semibold">Вход в админ-панель</span>
-              <span className="text-xs text-emerald-100/80">
-                Доступ только для сотрудников
-              </span>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              type="text"
-              placeholder="Логин"
-              value={loginData.login}
-              onChange={(e) =>
-                onLoginDataChange({ ...loginData, login: e.target.value })
-              }
-              className="bg-slate-900/60 border-white/10 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 transition-all"
-              disabled={loading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              type="password"
-              placeholder="Пароль"
-              value={loginData.password}
-              onChange={(e) =>
-                onLoginDataChange({ ...loginData, password: e.target.value })
-              }
-              onKeyPress={onKeyPress}
-              className="bg-slate-900/60 border-white/10 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 transition-all"
-              disabled={loading}
-            />
-          </div>
-          <Button
-            onClick={onLogin}
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-                Вход...
-              </span>
-            ) : (
-              "Войти"
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+      <p className="mt-6 text-center text-xs text-slate-500">Нет доступа? Обратитесь к администратору сервиса.</p>
     </div>
-  );
+  </main>;
 }

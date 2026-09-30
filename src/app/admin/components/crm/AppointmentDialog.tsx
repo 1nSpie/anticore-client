@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shadcn/dialog";
+import { cn } from "@/lib/utils";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
@@ -20,6 +21,11 @@ import {
   SelectValue,
 } from "@/shadcn/select";
 import { adminApi } from "../../_lib/api";
+import {
+  isEndNotAfterStart,
+  shiftEndWithStart,
+  toLocalInput,
+} from "../../_lib/appointmentTime";
 import type { CrmAppointment, CrmClient, ClientVehicle, ServiceType } from "../../_lib/crmTypes";
 import {
   CRM_LOCATIONS,
@@ -49,12 +55,6 @@ type Props = {
   /** Филиал по умолчанию для новой записи (из активного расписания). */
   defaultLocation?: CrmLocationCode;
 };
-
-function toLocalInput(iso: string) {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
 
 function defaultSlot() {
   const start = new Date();
@@ -96,6 +96,7 @@ export function AppointmentDialog({
   const [serviceTypeId, setServiceTypeId] = useState<string>("");
   const [priceRub, setPriceRub] = useState("0");
   const [managerName, setManagerName] = useState("");
+  const [masterComment, setMasterComment] = useState("");
   const [location, setLocation] = useState<CrmLocationCode>(defaultLocation);
   const [loading, setLoading] = useState(false);
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
@@ -105,19 +106,33 @@ export function AppointmentDialog({
   const [vehicleId, setVehicleId] = useState<string>("");
   const [reviewSmsSentAt, setReviewSmsSentAt] = useState<string | null>(null);
   const [sendingReview, setSendingReview] = useState(false);
+  const [completedAt, setCompletedAt] = useState<string | null>(null);
+  const [closeLink, setCloseLink] = useState("");
+  const [closing, setClosing] = useState(false);
 
   const clientVehicles: ClientVehicle[] = selectedClient?.vehicles ?? [];
+  const endInvalid = isEndNotAfterStart(startsAt, endsAt);
+
+  /** Окончание едет вместе с началом (длительность сохраняется). */
+  const changeStartsAt = (next: string) => {
+    setEndsAt((end) => shiftEndWithStart(startsAt, next, end));
+    setStartsAt(next);
+  };
 
   useEffect(() => {
     if (!open) {
       setSelectedClient(null);
       setManagerName("");
+      setMasterComment("");
       setClientSearchQuery("");
       setVin("");
       setVinError(null);
       setVehicleId("");
       setReviewSmsSentAt(null);
       setSendingReview(false);
+      setCompletedAt(null);
+      setCloseLink("");
+      setClosing(false);
       return;
     }
 
@@ -130,8 +145,11 @@ export function AppointmentDialog({
       );
       setPriceRub(String(appointment.priceRub));
       setManagerName(appointment.managerName ?? "");
+      setMasterComment(appointment.masterComment ?? "");
       setLocation(appointment.location ?? defaultLocation);
       setReviewSmsSentAt(appointment.reviewSmsSentAt ?? null);
+      setCompletedAt(appointment.completedAt ?? null);
+      setCloseLink(appointment.diskLink ?? "");
       setVehicleId(
         appointment.vehicleId ? String(appointment.vehicleId) : "",
       );
@@ -149,6 +167,7 @@ export function AppointmentDialog({
       setServiceTypeId(serviceTypes[0] ? String(serviceTypes[0].id) : "");
       setPriceRub("0");
       setManagerName("");
+      setMasterComment("");
       setLocation(defaultLocation);
       setReviewSmsSentAt(null);
       setVehicleId("");
@@ -191,6 +210,10 @@ export function AppointmentDialog({
       toast.error("Выберите автомобиль клиента");
       return;
     }
+    if (endInvalid) {
+      toast.error("Окончание должно быть позже начала");
+      return;
+    }
     if (vin.trim()) {
       const err = getVinValidationError(vin);
       if (err) {
@@ -210,6 +233,7 @@ export function AppointmentDialog({
         serviceTypeId: serviceTypeId ? Number(serviceTypeId) : undefined,
         priceRub: Number(priceRub) || 0,
         managerName: managerName.trim() || undefined,
+        masterComment: masterComment.trim() || null,
         location,
         ...(leadId && !appointment ? { leadId } : {}),
       };
@@ -272,6 +296,62 @@ export function AppointmentDialog({
     toast.success("Удалено");
     await onSaved();
     onOpenChange(false);
+  };
+
+  const apiErrorText = (e: unknown, fallback: string) => {
+    const msg = (e as { response?: { data?: { message?: string | string[] } } })
+      ?.response?.data?.message;
+    return Array.isArray(msg)
+      ? msg.join(", ")
+      : typeof msg === "string"
+        ? msg
+        : fallback;
+  };
+
+  /** Закрыть запись: работы выполнены → связанная заявка становится «Выполнена». */
+  const completeAppointment = async () => {
+    if (!appointment || completedAt) return;
+    const link = closeLink.trim();
+    if (!link) {
+      toast.error("Укажите ссылку на Яндекс.Диск — клиент увидит её в личном кабинете");
+      return;
+    }
+    setClosing(true);
+    try {
+      const { data } = await adminApi.post<CrmAppointment>(
+        `/crm/appointments/${appointment.id}/complete`,
+        { diskLink: link },
+      );
+      setCompletedAt(data.completedAt ?? new Date().toISOString());
+      toast.success(
+        appointment.lead
+          ? `Запись закрыта, заявка #${appointment.lead.id} — «Выполнена»`
+          : "Запись закрыта",
+      );
+      await onSaved();
+    } catch (e: unknown) {
+      toast.error(apiErrorText(e, "Не удалось закрыть запись"));
+    } finally {
+      setClosing(false);
+    }
+  };
+
+  const reopenAppointment = async () => {
+    if (!appointment || !completedAt) return;
+    if (!confirm("Вернуть запись в работу? Заявка снова станет незакрытой.")) return;
+    setClosing(true);
+    try {
+      await adminApi.post<CrmAppointment>(
+        `/crm/appointments/${appointment.id}/reopen`,
+      );
+      setCompletedAt(null);
+      toast.success("Запись возвращена в работу");
+      await onSaved();
+    } catch (e: unknown) {
+      toast.error(apiErrorText(e, "Не удалось вернуть запись"));
+    } finally {
+      setClosing(false);
+    }
   };
 
   const sendReviewSms = async () => {
@@ -381,17 +461,26 @@ export function AppointmentDialog({
                   type="datetime-local"
                   className="border-white/20 bg-slate-800"
                   value={startsAt}
-                  onChange={(e) => setStartsAt(e.target.value)}
+                  onChange={(e) => changeStartsAt(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Окончание</Label>
                 <Input
                   type="datetime-local"
-                  className="border-white/20 bg-slate-800"
+                  className={cn(
+                    "border-white/20 bg-slate-800",
+                    endInvalid && "border-red-500/70",
+                  )}
+                  min={startsAt || undefined}
                   value={endsAt}
                   onChange={(e) => setEndsAt(e.target.value)}
                 />
+                {endInvalid ? (
+                  <p className="text-xs text-red-400">
+                    Окончание должно быть позже начала
+                  </p>
+                ) : null}
               </div>
             </div>
             <div className="space-y-2">
@@ -470,6 +559,25 @@ export function AppointmentDialog({
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="appointment-master-comment">Комментарий мастера</Label>
+              <textarea
+                id="appointment-master-comment"
+                value={masterComment}
+                onChange={(event) => setMasterComment(event.target.value)}
+                maxLength={2000}
+                rows={4}
+                disabled={loading || closing}
+                aria-describedby="appointment-master-comment-hint"
+                placeholder="Что обнаружили, что сделали и на что обратить внимание…"
+                className="w-full min-h-28 resize-y rounded-lg border border-white/20 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 disabled:opacity-50"
+              />
+              <div id="appointment-master-comment-hint" className="flex justify-between gap-3 text-xs text-slate-400">
+                <span>Внутренняя заметка. Сохраняется кнопкой «Сохранить».</span>
+                <span className="shrink-0 tabular-nums">{masterComment.length}/2000</span>
+              </div>
+            </div>
+
             {selectedClient && vehicleId ? (
               <div className="space-y-2">
                 <Label>VIN автомобиля</Label>
@@ -515,6 +623,79 @@ export function AppointmentDialog({
                 priceRub={Number(priceRub) || 0}
                 serviceType={serviceType}
               />
+            )}
+
+            {appointment && (
+              <div
+                className={
+                  completedAt
+                    ? "space-y-2 rounded-lg border border-teal-500/30 bg-teal-950/30 p-3"
+                    : "space-y-2 rounded-lg border border-emerald-500/30 bg-slate-950/50 p-3"
+                }
+              >
+                {completedAt ? (
+                  <>
+                    <p className="text-sm font-medium text-teal-300">
+                      ✓ Выполнено{" "}
+                      {new Date(completedAt).toLocaleString("ru-RU", {
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      {appointment.lead ? ` · заявка #${appointment.lead.id}` : ""}
+                    </p>
+                    {closeLink ? (
+                      <a
+                        href={closeLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block truncate text-sm text-emerald-300 underline"
+                      >
+                        {closeLink}
+                      </a>
+                    ) : null}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 hover:text-white"
+                      disabled={closing}
+                      onClick={() => void reopenAppointment()}
+                    >
+                      Вернуть в работу
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Label htmlFor="apt-close-link">Закрыть запись</Label>
+                    <p className="text-xs text-slate-400">
+                      Работы выполнены.
+                      {appointment.lead
+                        ? ` Заявка #${appointment.lead.id} автоматически станет «Выполнена».`
+                        : ""}{" "}
+                      Ссылка на фотоотчёт обязательна — клиент увидит её в личном
+                      кабинете.
+                    </p>
+                    <Input
+                      id="apt-close-link"
+                      value={closeLink}
+                      onChange={(e) => setCloseLink(e.target.value)}
+                      placeholder="https://disk.yandex.ru/..."
+                      className="border-white/15 bg-slate-900"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="bg-teal-600 hover:bg-teal-500"
+                      disabled={closing}
+                      onClick={() => void completeAppointment()}
+                    >
+                      {closing ? "Сохранение…" : "Выполнено"}
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
 
             {appointment && (

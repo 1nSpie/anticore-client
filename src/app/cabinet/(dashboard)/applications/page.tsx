@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 
 type LeadStatus =
   | "NEW"
+  | "PROCESSING"
+  | "NEEDS_CLARIFICATION"
   | "IN_PROGRESS"
   | "SCHEDULED"
   | "REJECTED"
@@ -37,7 +39,9 @@ type Lead = {
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
   NEW: "Принята",
-  IN_PROGRESS: "В работе",
+  PROCESSING: "В обработке",
+  NEEDS_CLARIFICATION: "В обработке",
+  IN_PROGRESS: "Автомобиль в работе",
   SCHEDULED: "Запланирован визит",
   REJECTED: "Отклонена",
   COMPLETED: "Выполнена",
@@ -45,6 +49,8 @@ const STATUS_LABELS: Record<LeadStatus, string> = {
 
 const STATUS_CLASS: Record<LeadStatus, string> = {
   NEW: "bg-blue-500/15 text-blue-300 border-blue-500/25",
+  PROCESSING: "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  NEEDS_CLARIFICATION: "bg-violet-500/15 text-violet-300 border-violet-500/25",
   IN_PROGRESS: "bg-amber-500/15 text-amber-300 border-amber-500/25",
   SCHEDULED: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   REJECTED: "bg-slate-500/15 text-slate-400 border-slate-500/25",

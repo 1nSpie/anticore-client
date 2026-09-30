@@ -18,7 +18,6 @@ const PRICE_RANGE = "Цены";
 
 export default function Navigation() {
   const pathname = usePathname();
-  if (pathname.startsWith("/crm")) return null;
   const [showAddresses, setShowAddresses] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -33,6 +32,8 @@ export default function Navigation() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (pathname.startsWith("/crm") || pathname === "/admin" || pathname.startsWith("/admin/")) return null;
 
   return (
     <header

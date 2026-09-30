@@ -29,7 +29,7 @@ import {
   calendarDayKey,
   startOfWeekMonday,
 } from "./WeekDayStrip";
-import { getEventColor } from "./calendarColors";
+import { COMPLETED_EVENT_COLOR, getEventColor } from "./calendarColors";
 import { Button } from "@/shadcn/button";
 import {
   Sheet,
@@ -176,6 +176,7 @@ function renderDayHeader(
 }
 
 function renderEventContent(arg: EventContentArg) {
+  const masterComment = arg.event.extendedProps.masterComment as string | undefined;
   const serviceType = arg.event.extendedProps.serviceType as string | undefined;
   const managerName = arg.event.extendedProps.managerName as
     | string
@@ -195,18 +196,25 @@ function renderEventContent(arg: EventContentArg) {
   if (isMonth) {
     return (
       <div className="crm-fc-event crm-fc-event--month">
+        <div className="crm-fc-event-month-heading">
         <span className="crm-fc-event-time">{timeLabel}</span>
         <span className="crm-fc-event-title">{arg.event.title}</span>
         {carLabel ? (
           <span className="crm-fc-event-car"> · {carLabel}</span>
         ) : null}
+        </div>
+        {masterComment && <div className="crm-fc-event-comment" title={masterComment}>{masterComment}</div>}
       </div>
     );
   }
 
   return (
-    <div className="crm-fc-event">
+    <div className={`crm-fc-event${isShort ? " crm-fc-event--short" : ""}`}>
+      <div className="crm-fc-event-heading">
+      {timeLabel && <div className="crm-fc-event-time">{timeLabel}</div>}
       <div className="crm-fc-event-title">{arg.event.title}</div>
+      </div>
+      {masterComment && <div className="crm-fc-event-comment" title={masterComment}>{masterComment}</div>}
       {carLabel && (
         <div className="crm-fc-event-sub crm-fc-event-car">{carLabel}</div>
       )}
@@ -219,7 +227,6 @@ function renderEventContent(arg: EventContentArg) {
       {(isDay || !isShort) && managerName && (
         <div className="crm-fc-event-sub">Менеджер: {managerName}</div>
       )}
-      {timeLabel && <div className="crm-fc-event-time">{timeLabel}</div>}
     </div>
   );
 }
@@ -238,7 +245,7 @@ function ServiceLegend({ serviceTypes }: { serviceTypes: ServiceType[] }) {
             <li key={t.id} className="flex items-center gap-2 text-xs text-slate-300">
               <span
                 className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                style={{ backgroundColor: color.bg }}
+                style={{ backgroundColor: color.border }}
                 aria-hidden
               />
               <span className="truncate">{t.name}</span>
@@ -392,10 +399,13 @@ export function CrmCalendar() {
       const nextView = arg.view.type as CalendarViewType;
       setView((prev) => (prev === nextView ? prev : nextView));
 
-      const nextFocus = arg.view.currentStart;
-      setFocusDate((prev) =>
-        prev.toDateString() === nextFocus.toDateString() ? prev : nextFocus,
-      );
+      setFocusDate((prev) => {
+        if (prev >= arg.view.currentStart && prev < arg.view.currentEnd) return prev;
+        const today = new Date();
+        return today >= arg.view.currentStart && today < arg.view.currentEnd
+          ? today
+          : arg.view.currentStart;
+      });
 
       if (rangeChanged) {
         void loadEvents(nextRange.from, nextRange.to);
@@ -479,18 +489,23 @@ export function CrmCalendar() {
           [e.client.lastName, e.client.firstName].filter(Boolean).join(" ") ||
           formatPhoneRuDisplaySafe(e.client.phone);
         const carLabel = formatAppointmentCar(e);
-        const color = getEventColor(e.serviceTypeId ?? e.id);
+        const done = Boolean(e.completedAt);
+        const color = done
+          ? COMPLETED_EVENT_COLOR
+          : getEventColor(e.serviceTypeId ?? e.id);
         return {
           id: String(e.id),
-          title: clientName,
+          title: done ? `✓ ${clientName}` : clientName,
           start: e.startsAt,
           end: e.endsAt,
           backgroundColor: color.bg,
           borderColor: color.border,
           textColor: color.text,
+          classNames: done ? ["crm-fc-event--done"] : [],
           extendedProps: {
             serviceType: e.serviceType,
             managerName: e.managerName,
+            masterComment: e.masterComment,
             phone: e.client.phone,
             carLabel: carLabel || undefined,
           },
@@ -508,13 +523,8 @@ export function CrmCalendar() {
   }, []);
 
   const handleToday = useCallback(() => {
-    const today = new Date();
-    if (isMobile) {
-      goToDate(today);
-    } else {
-      api()?.today();
-    }
-  }, [goToDate, isMobile]);
+    goToDate(new Date());
+  }, [goToDate]);
 
   const handlePrev = useCallback(() => {
     if (isMobile) {
@@ -534,9 +544,9 @@ export function CrmCalendar() {
 
   const handleCreate = useCallback(() => {
     setEditing(null);
-    setSlot(defaultCreateSlot(isMobile ? focusDate : undefined));
+    setSlot(defaultCreateSlot(focusDate));
     setDialogOpen(true);
-  }, [focusDate, isMobile]);
+  }, [focusDate]);
 
   const handleSaved = useCallback(async () => {
     if (rangeRef.current) {
@@ -551,13 +561,13 @@ export function CrmCalendar() {
 
   if (layout === "unknown") {
     return (
-      <div className="crm-calendar min-h-[50vh] animate-pulse rounded-xl border border-white/10 bg-[#1a1d21]" />
+      <div className="crm-calendar min-h-[50vh] animate-pulse rounded-xl border border-white/10 bg-[#111a27]" />
     );
   }
 
   return (
     <>
-      <div className="crm-calendar overflow-hidden rounded-xl border border-white/10 bg-[#1a1d21] shadow-xl">
+      <div className="crm-calendar overflow-hidden rounded-xl border border-white/10 bg-[#111a27] shadow-none">
         <CrmCalendarToolbar
           title={title}
           view={view}
@@ -594,29 +604,7 @@ export function CrmCalendar() {
 
         {isDesktop ? (
           <div className="flex flex-col lg:flex-row">
-            <aside className="hidden w-[280px] shrink-0 space-y-5 border-r border-white/10 p-4 lg:block">
-              <CrmMiniCalendar
-                selected={focusDate}
-                onSelect={goToDate}
-                limits={dayLimits}
-                bookedByDay={bookedByDay}
-                onMonthChange={(date) => {
-                  const from = new Date(date.getFullYear(), date.getMonth(), 1);
-                  const to = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-                  void loadLimits(from.toISOString(), to.toISOString());
-                }}
-              />
-              <DayAppointmentsList
-                date={focusDate}
-                appointments={dayAppointments}
-                onOpen={openAppointment}
-                onCreate={handleCreate}
-                capacity={focusCapacity}
-              />
-              <ServiceLegend serviceTypes={serviceTypes} />
-            </aside>
-
-            <main className="crm-cal-main min-h-[65vh] min-w-0 flex-1 p-1 sm:p-3 lg:min-h-[calc(100vh-320px)]">
+            <div className="crm-cal-main min-w-0 flex-1">
               <FullCalendar
                 ref={calendarRef}
                 plugins={FC_PLUGINS}
@@ -646,7 +634,7 @@ export function CrmCalendar() {
                 eventResize={onEventResize}
                 datesSet={onDatesSet}
                 dayHeaderContent={(arg) =>
-                  renderDayHeader(
+                  arg.view.type === "dayGridMonth" ? <span className="crm-fc-day-header-weekday">{arg.text}</span> : renderDayHeader(
                     arg,
                     dayCapacity(arg.date, dayLimits, bookedByDay),
                   )
@@ -669,32 +657,43 @@ export function CrmCalendar() {
                   );
                 }}
                 eventContent={renderEventContent}
-                height="100%"
+                height="max(560px, calc(100vh - 330px))"
+                eventMinHeight={28}
+                slotEventOverlap={false}
                 expandRows
               />
-            </main>
+            </div>
           </div>
         ) : null}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-5 py-3 text-xs text-slate-500">
+          <span>{isMobile ? "Выберите запись, чтобы посмотреть подробности" : "Выделите время для новой записи · Перетащите карточку для переноса"}</span>
+          {!isMobile && view !== "dayGridMonth" && <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-rose-400" />Текущее время</span>}
+        </div>
       </div>
 
       <Sheet open={mobileCalOpen} onOpenChange={setMobileCalOpen}>
         <SheetContent
-          side="bottom"
-          className="border-white/10 bg-slate-950 text-white sm:max-w-none"
+          side={isMobile ? "bottom" : "right"}
+          aria-describedby={undefined}
+          className="max-h-[90dvh] overflow-y-auto border-white/10 bg-[#111a27] text-white sm:max-w-md lg:max-h-none"
         >
           <SheetHeader>
-            <SheetTitle className="text-white">Выбрать дату</SheetTitle>
+            <SheetTitle className="text-white">Обзор дня</SheetTitle>
           </SheetHeader>
-          <div className="px-1 pb-2">
+          <div className="px-4 pb-2">
             <CrmMiniCalendar
               selected={focusDate}
               onSelect={(date) => {
                 goToDate(date);
-                setMobileCalOpen(false);
+                if (isMobile) setMobileCalOpen(false);
               }}
               limits={dayLimits}
               bookedByDay={bookedByDay}
             />
+            {!isMobile && <div className="space-y-6 px-4 pt-5">
+              <DayAppointmentsList date={focusDate} appointments={dayAppointments} onOpen={(appointment) => { setMobileCalOpen(false); openAppointment(appointment); }} onCreate={() => { setMobileCalOpen(false); handleCreate(); }} capacity={focusCapacity} />
+              <ServiceLegend serviceTypes={serviceTypes} />
+            </div>}
           </div>
           <SheetFooter>
             <Button

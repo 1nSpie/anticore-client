@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/card";
 import { toast } from "sonner";
 import { adminApi } from "../../_lib/api";
 import { Work } from "../../_lib/types";
+import { ContentToolbar, PublicationFilter } from "../content/ContentToolbar";
 import ImageUpload, { apiError } from "../media/ImageUpload";
 
 type GalleryImage = { url: string; alt?: string; order?: number };
@@ -21,6 +22,9 @@ const emptyForm = (): WorkForm => ({
 const inputClass = "bg-slate-800 border-white/10 text-slate-50";
 
 export default function WorksManager() {
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<PublicationFilter>("all");
+  const [loadError, setLoadError] = useState(false);
   const [works, setWorks] = useState<WorkDetails[]>([]);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,13 +35,13 @@ export default function WorksManager() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   async function load() {
-    setLoading(true);
+    setLoading(true); setLoadError(false);
     try {
       const [worksResponse, categoriesResponse] = await Promise.all([
         adminApi.get<WorkDetails[]>("/works/admin/all"), adminApi.get("/works/categories/all"),
       ]);
       setWorks(worksResponse.data); setCategories(categoriesResponse.data);
-    } catch (error) { toast.error(apiError(error, "Ошибка загрузки работ")); }
+    } catch (error) { setLoadError(true); toast.error(apiError(error, "Ошибка загрузки работ")); }
     finally { setLoading(false); }
   }
   useEffect(() => { void load(); }, []);
@@ -90,14 +94,17 @@ export default function WorksManager() {
     finally { setDeletingId(null); }
   }
 
+  const visibleWorks = works.filter(work => `${work.title} ${work.carBrand} ${work.carModel}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()) && (filter === "all" || (filter === "published" ? work.published : !work.published)));
+
   return <>
     <Card className="bg-slate-900/60 border-white/10 text-slate-50">
       <CardHeader className="flex flex-row justify-between items-center gap-3">
-        <CardTitle>Примеры работ</CardTitle>
+        <CardTitle>Портфолио сервиса</CardTitle>
         <Button onClick={() => { setEditingId(null); setForm(emptyForm()); }}>Добавить работу</Button>
       </CardHeader>
       <CardContent className="space-y-3">
-        {loading ? <p role="status">Загрузка…</p> : works.length === 0 ? <p>Пока нет работ. Добавьте первую.</p> : works.map(work =>
+        <ContentToolbar query={query} onQuery={setQuery} filter={filter} onFilter={setFilter} total={works.length} published={works.filter(work => work.published).length} />
+        {loadError ? <div role="alert" className="p-6 text-center"><p>Не удалось загрузить работы.</p><Button variant="outline" onClick={() => void load()}>Попробовать снова</Button></div> : loading ? <p role="status">Загружаем работы…</p> : visibleWorks.length === 0 ? <div className="py-10 text-center text-slate-400"><p>{works.length === 0 ? "Добавьте первую работу — покажите клиентам результат." : "Ничего не найдено. Попробуйте другой запрос."}</p>{works.length > 0 && <Button variant="outline" onClick={() => { setQuery(""); setFilter("all"); }}>Сбросить фильтры</Button>}</div> : visibleWorks.map(work =>
           <div key={work.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 p-4">
             <div><h3 className="font-semibold">{work.title}</h3><p className="text-sm text-slate-400">{work.carBrand} {work.carModel} · {work.published ? "Опубликовано" : "Черновик"}</p></div>
             <div className="flex gap-2"><Button variant="outline" onClick={() => edit(work)}>Редактировать</Button>

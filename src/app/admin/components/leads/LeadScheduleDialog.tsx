@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shadcn/dialog";
+import { cn } from "@/lib/utils";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
@@ -23,6 +24,11 @@ import {
 } from "@/shadcn/select";
 import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { adminApi } from "../../_lib/api";
+import {
+  isEndNotAfterStart,
+  shiftEndWithStart,
+  toLocalInput,
+} from "../../_lib/appointmentTime";
 import type {
   ClientVehicle,
   CrmAppointment,
@@ -40,7 +46,9 @@ import {
 import {
   hasAdminNote,
   requiresAdminNoteOnStatusChange,
+  STATUS_HINTS,
   STATUS_LABELS,
+  VISIT_DRIVEN_STATUSES,
 } from "../../_lib/leadStatus";
 import { CarCatalogFields } from "../cars/CarCatalogFields";
 import { useCarCatalog } from "../cars/useCarCatalog";
@@ -81,6 +89,8 @@ type LeadForm = {
   adminNote: string;
   status: SiteLeadStatus;
   location: CrmLocationCode | "";
+  /** Дата возврата для «На уточнении» (YYYY-MM-DD). */
+  followUpAt: string;
 };
 
 type ClientMode = "loading" | "existing" | "create";
@@ -122,12 +132,6 @@ function buildCarDescription(form: LeadForm): string | null {
   return parts.length ? parts.join(" ") : null;
 }
 
-function toLocalInput(iso: string) {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
 function defaultSlot() {
   const start = new Date();
   start.setMinutes(0, 0, 0);
@@ -145,7 +149,7 @@ function leadToForm(lead: SiteLead, mode: "take" | "edit"): LeadForm {
   const takeStatus =
     mode === "take" &&
     (lead.status === "NEW" || lead.status === "NEEDS_CLARIFICATION")
-      ? "IN_PROGRESS"
+      ? "PROCESSING"
       : lead.status;
 
   return {
@@ -160,6 +164,7 @@ function leadToForm(lead: SiteLead, mode: "take" | "edit"): LeadForm {
     adminNote: lead.adminNote ?? "",
     status: takeStatus,
     location: lead.location ?? "",
+    followUpAt: lead.followUpAt?.slice(0, 10) ?? "",
   };
 }
 
@@ -186,6 +191,7 @@ export function LeadScheduleDialog({
 
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
+  const endInvalid = isEndNotAfterStart(startsAt, endsAt);
   const [serviceType, setServiceType] = useState("");
   const [serviceTypeId, setServiceTypeId] = useState("");
   const [priceRub, setPriceRub] = useState("0");
@@ -345,6 +351,10 @@ export function LeadScheduleDialog({
       toast.error("Выберите город (филиал)");
       return null;
     }
+    if (leadForm.status === "NEEDS_CLARIFICATION" && !leadForm.followUpAt) {
+      toast.error("Для «На уточнении» укажите день, когда вернуться к заявке");
+      return null;
+    }
 
     const { data } = await adminApi.patch<SiteLead>(`/crm/leads/${lead.id}`, {
       name: leadForm.name.trim(),
@@ -355,6 +365,9 @@ export function LeadScheduleDialog({
       adminNote: leadForm.adminNote.trim() || null,
       status: leadForm.status,
       location: leadForm.location,
+      ...(leadForm.status === "NEEDS_CLARIFICATION" && {
+        followUpAt: leadForm.followUpAt,
+      }),
     });
     return data;
   };
@@ -517,7 +530,7 @@ export function LeadScheduleDialog({
 
     setSaving(true);
     try {
-      // Статус IN_PROGRESS при взятии, запись выставит SCHEDULED через leadId
+      // Статус PROCESSING при взятии; запись выставит SCHEDULED / IN_PROGRESS через leadId
       const updated = await persistLead();
       if (!updated) return;
 
@@ -680,7 +693,7 @@ export function LeadScheduleDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.keys(STATUS_LABELS) as SiteLeadStatus[])
-                    .filter((s) => s !== "SCHEDULED")
+                    .filter((s) => !VISIT_DRIVEN_STATUSES.includes(s))
                     .map((s) => (
                       <SelectItem key={s} value={s}>
                         {STATUS_LABELS[s]}
@@ -688,6 +701,28 @@ export function LeadScheduleDialog({
                     ))}
                 </SelectContent>
               </Select>
+              {STATUS_HINTS[leadForm.status] ? (
+                <p className="text-xs text-slate-500">
+                  {STATUS_HINTS[leadForm.status]}
+                </p>
+              ) : null}
+              {leadForm.status === "NEEDS_CLARIFICATION" ? (
+                <div className="space-y-1 pt-1">
+                  <Label className="text-xs text-orange-300">
+                    Вернуться к заявке *
+                  </Label>
+                  <Input
+                    type="date"
+                    className={fieldClass}
+                    value={leadForm.followUpAt}
+                    onChange={(e) =>
+                      setLeadForm((f) =>
+                        f ? { ...f, followUpAt: e.target.value } : f,
+                      )
+                    }
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -915,17 +950,28 @@ export function LeadScheduleDialog({
                 type="datetime-local"
                 className={fieldClass}
                 value={startsAt}
-                onChange={(e) => setStartsAt(e.target.value)}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  // Окончание едет вместе с началом (длительность сохраняется)
+                  setEndsAt((end) => shiftEndWithStart(startsAt, next, end));
+                  setStartsAt(next);
+                }}
               />
             </div>
             <div className="space-y-2">
               <Label>Окончание *</Label>
               <Input
                 type="datetime-local"
-                className={fieldClass}
+                className={cn(fieldClass, endInvalid && "border-red-500/70")}
+                min={startsAt || undefined}
                 value={endsAt}
                 onChange={(e) => setEndsAt(e.target.value)}
               />
+              {endInvalid ? (
+                <p className="text-xs text-red-400">
+                Окончание должно быть позже начала
+                </p>
+              ) : null}
             </div>
           </div>
           <DayCapacityHint startsAt={startsAt} location={leadForm.location} />

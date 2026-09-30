@@ -2,23 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Все картинки — из Selectel S3 (NEXT_PUBLIC_S3_URL). Сменился домен бакета — обновить hostname.
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "4444",
-        pathname: "/static/images/**",
+        protocol: "https",
+        hostname: "93aa0dbd-5fad-472e-80c1-bb169b44d09c.selstorage.ru",
       },
-      {
-        protocol: 'https',
-        hostname: 'xn--80aaag6amsblus.xn--p1ai',
-        port: '',
-        pathname: '/static/images/**',
-      },
-      {
-        protocol: 'https',
-        hostname: "93aa0dbd-5fad-472e-80c1-bb169b44d09c.selstorage.ru"
-      }
     ],
   },
   env: {

@@ -2,6 +2,7 @@
 "use client";
 
 import { CallbackModal } from "@/app/ui/ui/CallbackModal";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useModal } from "@/lib/ModalContext";
 
@@ -9,9 +10,12 @@ const MODAL_SEEN_KEY = "lastModalSeenTime";
 const MODAL_ID = "delayed-modal";
 
 export function DelayedModal() {
+  const pathname = usePathname();
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/") || pathname.startsWith("/crm");
   const { openModal, closeModal, isModalOpen, canOpenModal } = useModal();
 
   useEffect(() => {
+    if (isAdmin) return;
     const lastSeen = localStorage.getItem(MODAL_SEEN_KEY);
     const now = Date.now();
 
@@ -25,7 +29,9 @@ export function DelayedModal() {
 
       return () => clearTimeout(timer);
     }
-  }, [canOpenModal, openModal]);
+  }, [canOpenModal, openModal, isAdmin]);
+
+  if (isAdmin) return null;
 
   return (
     <CallbackModal
