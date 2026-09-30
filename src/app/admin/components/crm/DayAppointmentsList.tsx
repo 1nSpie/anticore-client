@@ -3,7 +3,7 @@
 import type { CrmAppointment } from "../../_lib/crmTypes";
 import { formatAppointmentCar } from "../../_lib/formatCar";
 import { formatPhoneRuDisplaySafe } from "@/lib/phoneRu";
-import { getEventColor } from "./calendarColors";
+import { COMPLETED_EVENT_COLOR, getEventColor } from "./calendarColors";
 import { cn } from "src/lib/utils";
 import { Plus } from "lucide-react";
 import type { DayCapacity } from "../../_lib/dayCapacity";
@@ -114,7 +114,10 @@ export function DayAppointmentsList({
           )}
         >
           {sorted.map((a) => {
-            const color = getEventColor(a.serviceTypeId ?? a.id);
+            const done = Boolean(a.completedAt);
+            const color = done
+              ? COMPLETED_EVENT_COLOR
+              : getEventColor(a.serviceTypeId ?? a.id);
             const carLabel = formatAppointmentCar(a);
             return (
               <li key={a.id}>
@@ -124,6 +127,7 @@ export function DayAppointmentsList({
                   className={cn(
                     "flex w-full items-start gap-3 rounded-xl border border-white/10 bg-slate-900/60 text-left transition-colors active:bg-slate-800/90 hover:border-white/20 hover:bg-slate-800/80",
                     isAgenda ? "px-3.5 py-3.5" : "px-2.5 py-2",
+                    done && "opacity-70",
                   )}
                 >
                   <span
@@ -142,6 +146,11 @@ export function DayAppointmentsList({
                       )}
                     >
                       {formatTime(a.startsAt)}–{formatTime(a.endsAt)}
+                      {done ? (
+                        <span className="ml-2 rounded-full bg-teal-500/20 px-1.5 py-0.5 text-[11px] font-medium text-teal-300">
+                          ✓ Выполнено
+                        </span>
+                      ) : null}
                     </span>
                     <span
                       className={cn(
@@ -151,6 +160,11 @@ export function DayAppointmentsList({
                     >
                       {clientLabel(a)}
                     </span>
+                    {a.masterComment && (
+                      <span className="mt-1 block truncate text-xs text-slate-300" title={a.masterComment}>
+                        {a.masterComment}
+                      </span>
+                    )}
                     {carLabel ? (
                       <span
                         className={cn(

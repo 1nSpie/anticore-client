@@ -12,11 +12,12 @@ import { PhoneIcon } from "@heroicons/react/24/solid";
 export default function FloatingContactButton() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  if (pathname.startsWith("/crm")) return null;
 
   const toggleExpanded = () => {
     setIsOpen((prev)=> !prev);
   };
+
+  if (pathname.startsWith("/crm") || pathname === "/admin" || pathname.startsWith("/admin/")) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 md:block hidden">

@@ -15,5 +15,5 @@ export default function AdminPanelLayout({
 
   if (!ready) return <LoadingScreen />;
 
-  return <AdminShell onLogout={() => void handleLogout()}>{children}</AdminShell>;
+  return <AdminShell onLogout={handleLogout}>{children}</AdminShell>;
 }

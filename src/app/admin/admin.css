@@ -1,0 +1,27 @@
+.admin-workspace {
+  color-scheme: dark;
+  --primary: #34d399;
+  --primary-foreground: #052e24;
+  --background: #101722;
+  --foreground: #e2e8f0;
+  --card: #131c2a;
+  --card-foreground: #e2e8f0;
+  --muted: #1c2738;
+  --muted-foreground: #94a3b8;
+  --border: #ffffff14;
+  --input: #ffffff1c;
+  --ring: #34d399;
+}
+.admin-workspace :where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 3px;
+}
+.admin-workspace :where(input, textarea, select) { font-size: 16px; }
+.admin-workspace :where(button, a) { -webkit-tap-highlight-color: transparent; }
+.admin-workspace :where([data-slot="card"]) { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .admin-workspace *, .admin-workspace *::before, .admin-workspace *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

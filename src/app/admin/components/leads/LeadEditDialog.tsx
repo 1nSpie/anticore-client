@@ -26,7 +26,9 @@ import { SegmentPricePreview } from "../prices/SegmentPricePreview";
 import { adminApi } from "../../_lib/api";
 import type { SiteLead, SiteLeadStatus } from "../../_lib/crmTypes";
 import {
+  STATUS_HINTS,
   STATUS_LABELS,
+  selectableStatuses,
   hasAdminNote,
   requiresAdminNoteOnStatusChange,
 } from "../../_lib/leadStatus";
@@ -66,7 +68,7 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved: () => void | Promise<void>;
-  /** Режим «взять в работу»: статус по умолчанию IN_PROGRESS, другой заголовок. */
+  /** Режим «взять в работу»: статус по умолчанию PROCESSING («Обрабатывается»), другой заголовок. */
   mode?: "edit" | "take";
   /** После сохранения открыть запись в календарь. */
   onSchedule?: (lead: SiteLead) => void;
@@ -116,7 +118,7 @@ function leadToForm(lead: SiteLead, mode: "edit" | "take"): FormState {
   const takeStatus =
     mode === "take" &&
     (lead.status === "NEW" || lead.status === "NEEDS_CLARIFICATION")
-      ? "IN_PROGRESS"
+      ? "PROCESSING"
       : lead.status;
 
   return {
@@ -217,6 +219,13 @@ export function LeadEditDialog({
       toast.error("Укажите дату повторной связи");
       return null;
     }
+    if (
+      form.status === "NEEDS_CLARIFICATION" &&
+      !(form.followUpEnabled && form.followUpAt)
+    ) {
+      toast.error("Для «На уточнении» укажите день, когда вернуться к заявке");
+      return null;
+    }
     if (!form.location) {
       toast.error("Выберите город (филиал)");
       return null;
@@ -233,9 +242,8 @@ export function LeadEditDialog({
       status: form.status,
       location: form.location,
       followUpAt:
-        form.followUpEnabled && form.followUpAt
-          ? `${form.followUpAt}T09:00:00.000Z`
-          : null,
+        // Сервер переводит дату в 07:30 МСК этого дня
+        form.followUpEnabled && form.followUpAt ? form.followUpAt : null,
     });
     return data;
   };
@@ -307,20 +315,31 @@ export function LeadEditDialog({
             <Select
               value={form.status}
               onValueChange={(v) =>
-                setForm((f) => f && { ...f, status: v as SiteLeadStatus })
+                setForm(
+                  (f) =>
+                    f && {
+                      ...f,
+                      status: v as SiteLeadStatus,
+                      // «На уточнении» всегда с датой возврата
+                      ...(v === "NEEDS_CLARIFICATION" && { followUpEnabled: true }),
+                    },
+                )
               }
             >
               <SelectTrigger className={fieldClass}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(STATUS_LABELS) as SiteLeadStatus[]).map((s) => (
+                {(lead ? selectableStatuses(lead.status) : []).map((s) => (
                   <SelectItem key={s} value={s}>
                     {STATUS_LABELS[s]}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {STATUS_HINTS[form.status] ? (
+              <p className="text-xs text-slate-500">{STATUS_HINTS[form.status]}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -534,7 +553,7 @@ export function LeadEditDialog({
                   className="border-white/20 data-[state=checked]:bg-orange-600"
                 />
                 <span className="text-sm text-slate-200">
-                  Повторная связь (вернётся в «На уточнении» в выбранную дату)
+                  Повторная связь (в 07:30 выбранного дня заявка вернётся в «Новые»)
                 </span>
               </label>
               {form.followUpEnabled && (

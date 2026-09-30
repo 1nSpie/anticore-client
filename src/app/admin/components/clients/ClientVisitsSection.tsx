@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import { adminApi } from "../../_lib/api";
+import {
+  isEndNotAfterStart,
+  shiftEndWithStart,
+  toLocalInput,
+} from "../../_lib/appointmentTime";
 import type { ClientVehicle, CrmClientVisit, ServiceType } from "../../_lib/crmTypes";
+import { cn } from "@/lib/utils";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
@@ -38,12 +44,6 @@ type Props = {
 };
 
 const fieldClass = "border-white/20 bg-slate-800 text-white";
-
-function toLocalInput(iso: string) {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
 
 function visitStartIso(v: CrmClientVisit): string {
   if (v.startsAt) return v.startsAt;
@@ -113,6 +113,8 @@ export function ClientVisitsSection({
       setForm(visitToForm(editing));
     }
   }, [editing]);
+
+  const endInvalid = isEndNotAfterStart(form.startsAt, form.endsAt);
 
   const save = async () => {
     if (!editing) return;
@@ -251,17 +253,31 @@ export function ClientVisitsSection({
                   type="datetime-local"
                   className={fieldClass}
                   value={form.startsAt}
-                  onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    // Окончание едет вместе с началом (длительность сохраняется)
+                    setForm((f) => ({
+                      ...f,
+                      startsAt: next,
+                      endsAt: shiftEndWithStart(f.startsAt, next, f.endsAt),
+                    }));
+                  }}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Окончание</Label>
                 <Input
                   type="datetime-local"
-                  className={fieldClass}
+                  className={cn(fieldClass, endInvalid && "border-red-500/70")}
+                  min={form.startsAt || undefined}
                   value={form.endsAt}
                   onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))}
                 />
+                {endInvalid ? (
+                  <p className="text-xs text-red-400">
+                    Окончание должно быть позже начала
+                  </p>
+                ) : null}
               </div>
             </div>
 

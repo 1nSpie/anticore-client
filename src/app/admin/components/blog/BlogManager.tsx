@@ -1,5 +1,7 @@
 "use client";
 
+import { ContentToolbar, PublicationFilter } from "../content/ContentToolbar";
+import ImageUpload, { apiError } from "../media/ImageUpload";
 import { useState, useEffect } from "react";
 import { Button } from "@/shadcn/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/card";
@@ -50,6 +52,9 @@ const emptyFormData: BlogPostFormData = {
 };
 
 export default function BlogManager() {
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<PublicationFilter>("all");
+  const [loadError, setLoadError] = useState(false);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,6 +62,7 @@ export default function BlogManager() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [formData, setFormData] = useState<BlogPostFormData>(emptyFormData);
   const [tagsInput, setTagsInput] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -67,10 +73,14 @@ export default function BlogManager() {
   const loadPosts = async () => {
     try {
       setLoading(true);
-      const response = await adminApi.get(`${API_BASE_URL}/blog/posts`);
-      setPosts(response.data.posts || response.data);
+      setLoadError(false);
+      const response = await adminApi.get(`${API_BASE_URL}/blog/admin/posts`);
+      setPosts(response.data.map((post: Omit<BlogPost, "tags"> & { tags: (string | { name: string })[] }) => ({
+        ...post, tags: post.tags.map(tag => typeof tag === "string" ? tag : tag.name),
+      })));
     } catch (error) {
-      toast.error("Ошибка загрузки постов");
+      setLoadError(true);
+      toast.error("Ошибка загрузки статей");
     } finally {
       setLoading(false);
     }
@@ -124,6 +134,7 @@ export default function BlogManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving || uploading) return;
 
     if (!formData.title || !formData.excerpt || !formData.categoryId) {
       toast.error("Заполните обязательные поля");
@@ -164,7 +175,7 @@ export default function BlogManager() {
       setIsFormOpen(false);
       loadPosts();
     } catch (error) {
-      toast.error("Ошибка сохранения");
+      toast.error(apiError(error, "Ошибка сохранения"));
       console.error(error);
     } finally {
       setSaving(false);
@@ -253,6 +264,8 @@ export default function BlogManager() {
     setFormData({ ...formData, content: newContent });
   };
 
+  const visiblePosts = posts.filter(post => post.title.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()) && (filter === "all" || (filter === "published" ? post.published : !post.published)));
+
   return (
     <>
       <Card className="bg-slate-900/60 border border-white/10 shadow-xl">
@@ -263,7 +276,7 @@ export default function BlogManager() {
                 <FileText className="w-5 h-5" />
               </span>
               <div>
-                <CardTitle className="text-slate-50">Управление блогом</CardTitle>
+                <CardTitle className="text-slate-50">Статьи</CardTitle>
                 <p className="text-sm text-slate-400 mt-1">
                   {posts.length} {posts.length === 1 ? "пост" : "постов"}
                 </p>
@@ -271,27 +284,29 @@ export default function BlogManager() {
             </div>
             <Button
               onClick={handleCreate}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-200 hover:scale-105"
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-200 "
             >
               <Plus className="w-4 h-4 mr-2" />
-              Добавить пост
+              Новая статья
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          <ContentToolbar query={query} onQuery={setQuery} filter={filter} onFilter={setFilter} total={posts.length} published={posts.filter(post => post.published).length} />
+          {loadError ? <div role="alert" className="rounded-xl border border-red-400/20 p-6 text-center"><p className="text-slate-300">Не удалось загрузить статьи.</p><Button variant="outline" onClick={loadPosts}>Попробовать снова</Button></div> : loading ? (
             <div className="text-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-emerald-500 mx-auto mb-4" />
               <p className="text-slate-400">Загрузка...</p>
             </div>
-          ) : posts.length === 0 ? (
+          ) : visiblePosts.length === 0 ? (
             <div className="text-center py-12 text-slate-400">
               <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Нет постов. Создайте первый!</p>
+              <p>{posts.length === 0 ? "Пока нет статей. Расскажите клиентам о работе сервиса." : "По этим условиям статьи не найдены."}</p>
+            {posts.length === 0 ? <Button onClick={handleCreate}>Создать первую статью</Button> : <Button variant="outline" onClick={() => { setQuery(""); setFilter("all"); }}>Сбросить фильтры</Button>}
             </div>
           ) : (
             <div className="space-y-3">
-              {posts.map((post) => (
+              {visiblePosts.map((post) => (
                 <div
                   key={post.id}
                   className="border border-white/10 rounded-xl p-4 flex justify-between items-center hover:bg-slate-800/50 transition-all duration-200 group"
@@ -324,14 +339,16 @@ export default function BlogManager() {
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label={`Редактировать статью «${post.title}»`}
                       onClick={() => handleEdit(post)}
                       className="border-white/20 text-slate-300 hover:bg-white/5 hover:text-emerald-300 transition-all"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="w-4 h-4" /><span className="hidden sm:inline">Изменить</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label={`Удалить статью «${post.title}»`}
                       onClick={() => handleDelete(post.id)}
                       className="border-white/20 text-slate-300 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all"
                     >
@@ -351,11 +368,12 @@ export default function BlogManager() {
           <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
             <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-white/10 p-4 flex justify-between items-center z-10">
               <h2 className="text-xl font-bold text-slate-50">
-                {editingPost ? "Редактировать пост" : "Новый пост"}
+                {editingPost ? "Редактировать статью" : "Новая статья"}
               </h2>
               <Button
                 variant="ghost"
                 size="sm"
+                disabled={saving || uploading}
                 onClick={() => setIsFormOpen(false)}
                 className="text-slate-400 hover:text-slate-200 hover:bg-white/5"
               >
@@ -367,6 +385,7 @@ export default function BlogManager() {
               onSubmit={handleSubmit}
               className="p-6 space-y-6 overflow-y-auto flex-1"
             >
+              <fieldset disabled={saving || uploading} className="space-y-6">
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
@@ -464,24 +483,9 @@ export default function BlogManager() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="image" className="text-slate-300">
-                    Изображение (путь)
-                  </Label>
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image: e.target.value })
-                    }
-                    placeholder="blog/image.jpg"
-                    className="bg-slate-800/50 border-white/10 text-slate-50 focus:ring-2 focus:ring-emerald-500/50 mt-1"
-                  />
-                  <p className="mt-1 text-xs text-slate-400">
-                    Ключ файла в хранилище: файл <code>blog/image.jpg</code> должен
-                    лежать в бакете как <code>image/blog/image.jpg</code>.
-                  </p>
-                </div>
+                <ImageUpload label="Обложка статьи" folder="blog" value={formData.image}
+                  onChange={image => setFormData(previous => ({ ...previous, image }))}
+                  onBusyChange={setUploading} />
 
                 <div>
                   <Label htmlFor="author" className="text-slate-300">
@@ -650,15 +654,16 @@ export default function BlogManager() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsFormOpen(false)}
+                  disabled={saving || uploading}
+                onClick={() => setIsFormOpen(false)}
                   className="border-white/20 text-slate-300 hover:bg-white/5"
                 >
                   Отмена
                 </Button>
                 <Button
                   type="submit"
-                  disabled={saving}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-200 hover:scale-105"
+                  disabled={saving || uploading}
+                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-200 "
                 >
                   {saving ? (
                     <span className="flex items-center gap-2">
@@ -672,6 +677,7 @@ export default function BlogManager() {
                   )}
                 </Button>
               </div>
+              </fieldset>
             </form>
           </div>
         </div>

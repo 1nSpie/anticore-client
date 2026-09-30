@@ -10,7 +10,8 @@ import { PhoneIcon } from "@heroicons/react/24/outline";
 
 export default function Footer() {
   const pathname = usePathname();
-  if (pathname.startsWith("/crm")) return null;
+
+  if (pathname.startsWith("/crm") || pathname === "/admin" || pathname.startsWith("/admin/")) return null;
 
   return (
     <footer

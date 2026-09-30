@@ -88,10 +88,16 @@ export type CrmAppointment = {
   serviceTypeId: number | null;
   priceRub: number;
   managerName: string | null;
+  masterComment?: string | null;
   location: "ZHUKOVSKY" | "RAMENSKOYE" | "KOLOMNA";
   title: string;
   /** Когда отправлено SMS с запросом отзыва (один раз на запись). */
   reviewSmsSentAt: string | null;
+  /** Запись закрыта (работы выполнены). */
+  completedAt?: string | null;
+  diskLink?: string | null;
+  /** Заявка с сайта, из которой создана запись. */
+  lead?: { id: number; status: SiteLeadStatus } | null;
   client: {
     id: number;
     phone: string;
@@ -116,6 +122,7 @@ export type ServiceType = {
 
 export type SiteLeadStatus =
   | "NEW"
+  | "PROCESSING"
   | "IN_PROGRESS"
   | "NEEDS_CLARIFICATION"
   | "SCHEDULED"
@@ -136,6 +143,8 @@ export type SiteLead = {
   adminNote: string | null;
   diskLink: string | null;
   followUpAt: string | null;
+  /** Начало отсчёта 30 минут: создание заявки или возврат из «На уточнении». */
+  surfacedAt?: string | null;
   location: "ZHUKOVSKY" | "RAMENSKOYE" | "KOLOMNA" | null;
   visitId: number | null;
   processedAt: string | null;
@@ -146,5 +155,6 @@ export type SiteLead = {
     startsAt: string | null;
     endsAt: string | null;
     serviceType: string;
+    completedAt?: string | null;
   } | null;
 };

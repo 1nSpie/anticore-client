@@ -29,13 +29,7 @@ export default function AdminLoginPage() {
         const ok = await handleLogin();
         if (ok) router.replace("/admin/calendar");
       }}
-      onKeyPress={(e) => {
-        if (e.key === "Enter") {
-          void handleLogin().then((ok) => {
-            if (ok) router.replace("/admin/calendar");
-          });
-        }
-      }}
+
     />
   );
 }

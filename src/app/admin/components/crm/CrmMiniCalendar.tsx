@@ -28,30 +28,32 @@ export function CrmMiniCalendar({
       <Calendar
         mode="single"
         selected={selected}
+        defaultMonth={selected}
         onSelect={(d) => d && onSelect(d)}
         onMonthChange={onMonthChange}
-        className="p-0"
+        className="relative w-full p-0"
         classNames={{
           months: "flex flex-col",
-          month: "gap-3",
+          month: "w-full space-y-3",
           month_caption:
-            "flex justify-center relative items-center h-8 text-slate-200 capitalize",
+            "flex justify-center items-center h-11 text-slate-200 capitalize",
           caption_label: "text-sm font-medium",
           nav: "flex items-center gap-1",
           button_previous:
-            "absolute left-0 h-7 w-7 rounded-md border border-white/10 bg-transparent p-0 text-slate-300 hover:bg-white/5",
+            "absolute left-0 top-0 flex h-11 w-11 items-center justify-center rounded-lg bg-transparent p-0 text-slate-300 hover:bg-white/5",
           button_next:
-            "absolute right-0 h-7 w-7 rounded-md border border-white/10 bg-transparent p-0 text-slate-300 hover:bg-white/5",
-          weekdays: "flex",
-          weekday: "w-9 text-[0.65rem] font-medium uppercase text-slate-500",
-          week: "mt-1 flex w-full",
-          day: "p-0 text-center text-sm",
+            "absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-lg bg-transparent p-0 text-slate-300 hover:bg-white/5",
+          month_grid: "w-full table-fixed border-collapse",
+          weekdays: "",
+          weekday: "h-8 text-[0.65rem] font-medium uppercase text-slate-400",
+          week: "",
+          day: "p-0.5 text-center text-sm",
+          selected: "",
           day_button: cn(
-            "flex h-11 w-9 flex-col items-center justify-center rounded-md p-0 font-normal text-slate-300",
+            "flex h-11 w-full flex-col items-center justify-center rounded-lg p-0 font-normal text-slate-300",
             "hover:bg-white/10 hover:text-white",
-            "aria-selected:bg-[#8ab4f8] aria-selected:text-[#202124] aria-selected:hover:bg-[#8ab4f8]",
           ),
-          today: "bg-white/10 text-white font-semibold",
+          today: "font-semibold",
           outside: "text-slate-600 opacity-60",
           disabled: "text-slate-600 opacity-40",
         }}
@@ -62,7 +64,7 @@ export function CrmMiniCalendar({
             return (
               <button
                 {...props}
-                className={className}
+                className={cn(className, modifiers.today && "ring-1 ring-inset ring-emerald-400/40", modifiers.selected && "!bg-emerald-400 !text-slate-950 font-semibold")}
                 title={
                   cap
                     ? `Занято ${cap.booked} из ${cap.limit}`
