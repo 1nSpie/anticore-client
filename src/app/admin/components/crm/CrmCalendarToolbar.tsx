@@ -2,6 +2,8 @@
 import { CalendarDays, ChevronLeft, ChevronRight, Plus, MapPin } from "lucide-react";
 import { Button } from "@/shadcn/button";
 import { CRM_LOCATIONS, CRM_LOCATION_LABELS, type CrmLocationCode } from "../../_lib/crmLocations";
+import type { CrmAppointment } from "../../_lib/crmTypes";
+import { CalendarPhoneSearch } from "./CalendarPhoneSearch";
 
 export type CalendarViewType = "timeGridDay" | "timeGridWeek" | "dayGridMonth";
 const VIEWS: { id: CalendarViewType; label: string }[] = [
@@ -12,9 +14,11 @@ type Props = {
   onLocationChange: (location: CrmLocationCode) => void; mobile?: boolean;
   onToday: () => void; onPrev: () => void; onNext: () => void;
   onViewChange: (view: CalendarViewType) => void; onCreate: () => void; onPickDate?: () => void;
+  /** Выбрана запись в результатах поиска по телефону. */
+  onPickAppointment: (appointment: CrmAppointment) => void;
 };
 
-export function CrmCalendarToolbar({ title, view, location, onLocationChange, mobile = false, onToday, onPrev, onNext, onViewChange, onCreate, onPickDate }: Props) {
+export function CrmCalendarToolbar({ title, view, location, onLocationChange, mobile = false, onToday, onPrev, onNext, onViewChange, onCreate, onPickDate, onPickAppointment }: Props) {
   return <div className="crm-cal-toolbar space-y-4 border-b border-white/[0.07] p-4 sm:p-5">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <label className="flex items-center gap-2 text-sm text-slate-400"><MapPin className="h-4 w-4 text-emerald-400" />
@@ -22,6 +26,7 @@ export function CrmCalendarToolbar({ title, view, location, onLocationChange, mo
           {CRM_LOCATIONS.map(code => <option key={code} value={code}>{CRM_LOCATION_LABELS[code]}</option>)}
         </select>
       </label>
+      <CalendarPhoneSearch onPick={onPickAppointment} className="order-last w-full sm:order-none sm:max-w-sm sm:flex-1" />
       <Button onClick={onCreate} className="h-10 rounded-xl bg-emerald-400 px-4 font-semibold text-slate-950 hover:bg-emerald-300"><Plus className="h-4 w-4" />Новая запись</Button>
     </div>
     <div className="flex flex-wrap items-center justify-between gap-3">
