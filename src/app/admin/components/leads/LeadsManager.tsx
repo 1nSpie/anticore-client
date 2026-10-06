@@ -90,7 +90,7 @@ export default function LeadsManager() {
     setLeads(data);
   }, [filter, phoneSearch]);
 
-  // Статусы меняются и на сервере (возврат из «На уточнении», «В работе» по дню записи)
+  // Статусы меняются и на сервере (возврат из «На уточнении», «На подъёмнике» по дню записи)
   useEffect(() => {
     const t = window.setInterval(() => void load(), 60_000);
     return () => window.clearInterval(t);
@@ -140,6 +140,30 @@ export default function LeadsManager() {
     }
   };
 
+  /** Заявки, привязанные к календарю или выполненные, убрать нельзя. */
+  const canDismiss = (status: SiteLeadStatus) =>
+    status !== "SCHEDULED" && status !== "IN_PROGRESS" && status !== "COMPLETED";
+
+  /** Крестик: заявка исчезает из списка, профиль клиента в общей базе остаётся. */
+  const dismissLead = async (lead: SiteLead) => {
+    if (
+      !confirm(
+        `Убрать заявку «${lead.name}» из списка?\n\nПрофиль клиента в общей базе останется, убирается только заявка.`,
+      )
+    ) {
+      return;
+    }
+    try {
+      await adminApi.delete(`/crm/leads/${lead.id}`);
+      toast.success("Заявка убрана из списка");
+      await load();
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string } } })?.response
+        ?.data?.message;
+      toast.error(msg || "Не удалось убрать заявку");
+    }
+  };
+
   const openComplete = (lead: SiteLead) => {
     setCompleteLead(lead);
     setCompleteLink(lead.diskLink ?? "");
@@ -176,17 +200,11 @@ export default function LeadsManager() {
     }
   };
 
-  const filtered = useMemo(() => {
-    const list =
-      filter === "ALL" ? leads : leads.filter((l) => l.status === filter);
-    // Просроченные «Новые» — наверх, самые старые первыми
-    return [...list].sort((a, b) => {
-      const oa = leadOverdueMs(a, now);
-      const ob = leadOverdueMs(b, now);
-      if (oa > 0 || ob > 0) return ob - oa;
-      return 0;
-    });
-  }, [leads, filter, now]);
+  // Порядок отдаёт сервер: новые сверху, дальше по убыванию даты. Просрочка только подсвечивается красным.
+  const filtered = useMemo(
+    () => (filter === "ALL" ? leads : leads.filter((l) => l.status === filter)),
+    [leads, filter],
+  );
 
   const overdueCount = useMemo(
     () => leads.filter((l) => leadOverdueMs(l, now) > 0).length,
@@ -303,14 +321,27 @@ export default function LeadsManager() {
                   <h3 className="min-w-0 text-base font-semibold leading-snug break-words text-white">
                     {lead.name}
                   </h3>
-                  <span
-                    className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-xs leading-5",
-                      STATUS_CLASS[lead.status],
-                    )}
-                  >
-                    {STATUS_LABELS[lead.status]}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 text-xs leading-5",
+                        STATUS_CLASS[lead.status],
+                      )}
+                    >
+                      {STATUS_LABELS[lead.status]}
+                    </span>
+                    {canDismiss(lead.status) ? (
+                      <button
+                        type="button"
+                        onClick={() => void dismissLead(lead)}
+                        title="Убрать из списка (профиль клиента останется в базе)"
+                        aria-label="Убрать заявку из списка"
+                        className="rounded-md p-1 text-slate-500 hover:bg-red-600/20 hover:text-red-400"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
 
                 <a

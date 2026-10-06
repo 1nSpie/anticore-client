@@ -3,7 +3,7 @@ import type { SiteLeadStatus } from "./crmTypes";
 export const STATUS_LABELS: Record<SiteLeadStatus, string> = {
   NEW: "Новая",
   PROCESSING: "Обрабатывается",
-  IN_PROGRESS: "В работе",
+  IN_PROGRESS: "На подъёмнике",
   NEEDS_CLARIFICATION: "На уточнении",
   SCHEDULED: "В календаре",
   REJECTED: "Отклонена",
@@ -49,7 +49,7 @@ export const VISIT_DRIVEN_STATUSES: readonly SiteLeadStatus[] = [
 
 /**
  * Статусы для выпадающего списка в карточке заявки.
- * «В календаре» / «В работе» показываем только если заявка уже в них (выбрать вручную нельзя).
+ * «В календаре» / «На подъёмнике» показываем только если заявка уже в них (выбрать вручную нельзя).
  */
 export function selectableStatuses(current: SiteLeadStatus): SiteLeadStatus[] {
   return (Object.keys(STATUS_LABELS) as SiteLeadStatus[]).filter(
