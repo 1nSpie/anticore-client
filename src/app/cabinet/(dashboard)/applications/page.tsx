@@ -41,7 +41,7 @@ const STATUS_LABELS: Record<LeadStatus, string> = {
   NEW: "Принята",
   PROCESSING: "В обработке",
   NEEDS_CLARIFICATION: "В обработке",
-  IN_PROGRESS: "Автомобиль в работе",
+  IN_PROGRESS: "Автомобиль на подъёмнике",
   SCHEDULED: "Запланирован визит",
   REJECTED: "Отклонена",
   COMPLETED: "Выполнена",
