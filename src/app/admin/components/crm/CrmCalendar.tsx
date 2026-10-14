@@ -23,6 +23,7 @@ import {
   SheetTitle,
 } from "@/shadcn/sheet";
 import { toast } from "sonner";
+import { withDayLimitOverride, withIgnoreFlag } from "../../_lib/dayLimitOverride";
 import "./crm-calendar.css";
 import {
   addDays,
@@ -273,10 +274,16 @@ export function CrmCalendar() {
         targetDay,
       );
       try {
-        await adminApi.patch(`/crm/appointments/${appointment.id}`, {
-          startsAt: start.toISOString(),
-          endsAt: end.toISOString(),
-        });
+        const moved = await withDayLimitOverride((ignore) =>
+          adminApi.patch(
+            `/crm/appointments/${appointment.id}`,
+            withIgnoreFlag(
+              { startsAt: start.toISOString(), endsAt: end.toISOString() },
+              ignore,
+            ),
+          ),
+        );
+        if (moved === null) return; // отказался переносить сверх лимита
         toast.success(
           `Запись перенесена на ${targetDay.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}`,
         );

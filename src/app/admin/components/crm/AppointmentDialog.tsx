@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/shadcn/select";
 import { adminApi } from "../../_lib/api";
+import { withDayLimitOverride, withIgnoreFlag } from "../../_lib/dayLimitOverride";
 import {
   isEndNotAfterStart,
   shiftEndWithStart,
@@ -239,10 +240,13 @@ export function AppointmentDialog({
       };
 
       if (appointment) {
-        await adminApi.patch<CrmAppointment>(
-          `/crm/appointments/${appointment.id}`,
-          body,
+        const patched = await withDayLimitOverride((ignore) =>
+          adminApi.patch<CrmAppointment>(
+            `/crm/appointments/${appointment.id}`,
+            withIgnoreFlag(body, ignore),
+          ),
         );
+        if (patched === null) return; // отказался записывать сверх лимита
 
         if (vehicleId) {
           const nextVin = vin.trim().toUpperCase() || null;
@@ -262,9 +266,14 @@ export function AppointmentDialog({
 
         toast.success("Запись обновлена");
       } else {
-        const { data } = await adminApi.post<
-          CrmAppointment & { smsError?: string | null }
-        >("/crm/appointments", body);
+        const created = await withDayLimitOverride((ignore) =>
+          adminApi.post<CrmAppointment & { smsError?: string | null }>(
+            "/crm/appointments",
+            withIgnoreFlag(body, ignore),
+          ),
+        );
+        if (created === null) return; // отказался записывать сверх лимита
+        const { data } = created;
         toast.success(
           leadId ? "Заявка записана в календарь" : "Запись создана",
         );

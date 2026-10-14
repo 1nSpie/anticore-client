@@ -24,6 +24,7 @@ import {
 } from "@/shadcn/select";
 import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { adminApi } from "../../_lib/api";
+import { withDayLimitOverride, withIgnoreFlag } from "../../_lib/dayLimitOverride";
 import {
   isEndNotAfterStart,
   shiftEndWithStart,
@@ -540,9 +541,7 @@ export function LeadScheduleDialog({
       const bookLocation =
         (leadForm.location as CrmLocationCode) || location;
 
-      const { data } = await adminApi.post<
-        CrmAppointment & { smsError?: string | null }
-      >("/crm/appointments", {
+      const appointmentBody = {
         clientId,
         ...(resolvedVehicleId ? { vehicleId: resolvedVehicleId } : {}),
         startsAt: start.toISOString(),
@@ -553,7 +552,15 @@ export function LeadScheduleDialog({
         managerName: managerName.trim() || undefined,
         location: bookLocation,
         leadId: lead.id,
-      });
+      };
+      const created = await withDayLimitOverride((ignore) =>
+        adminApi.post<CrmAppointment & { smsError?: string | null }>(
+          "/crm/appointments",
+          withIgnoreFlag(appointmentBody, ignore),
+        ),
+      );
+      if (created === null) return; // отказался записывать сверх лимита
+      const { data } = created;
 
       toast.success("Клиент и запись созданы");
       if (data.smsError) toast.error(data.smsError);
