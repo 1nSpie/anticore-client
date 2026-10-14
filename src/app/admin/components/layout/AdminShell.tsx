@@ -23,7 +23,7 @@ export function AdminShell({ children, onLogout, onRefresh, loading = false }: P
   async function logout() { await onLogout(); router.replace("/admin"); }
   return <div className="admin-workspace min-h-screen bg-[#0c111b] text-slate-200">
     <a href="#admin-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-emerald-400 focus:p-3 focus:text-slate-950">Перейти к содержимому</a>
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-white/[0.06] bg-[#101722] px-4 py-7 lg:flex">
+    <aside className="admin-sidebar fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-y-auto overscroll-contain border-r border-white/[0.06] bg-[#101722] px-4 py-7 lg:flex">
       <Brand /><AdminNav />
       <div className="mt-auto px-3 pt-8 text-xs leading-relaxed text-slate-500">АванКор · Панель управления</div>
     </aside>

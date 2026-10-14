@@ -61,6 +61,7 @@
     "react-player": "^3.2.0",
     "react-transition-group": "^4.4.5",
     "react-tsparticles": "^2.12.2",
+    "socket.io-client": "^4.8.4",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.2.0",
     "tsparticles-engine": "^2.12.0",

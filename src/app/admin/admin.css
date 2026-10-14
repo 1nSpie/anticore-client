@@ -25,3 +25,19 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Боковое меню: прокручивается, когда разделы не помещаются по высоте экрана. Скроллбар тонкий и тёмный. */
+.admin-sidebar,
+.admin-workspace [role="dialog"] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.28) transparent;
+}
+.admin-sidebar::-webkit-scrollbar,
+.admin-workspace [role="dialog"]::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-sidebar::-webkit-scrollbar-thumb,
+.admin-workspace [role="dialog"]::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+}

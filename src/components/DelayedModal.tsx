@@ -11,7 +11,7 @@ const MODAL_ID = "delayed-modal";
 
 export function DelayedModal() {
   const pathname = usePathname();
-  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/") || pathname.startsWith("/crm");
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/") || pathname.startsWith("/crm") || pathname.startsWith("/staff");
   const { openModal, closeModal, isModalOpen, canOpenModal } = useModal();
 
   useEffect(() => {

@@ -34,7 +34,7 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (pathname.startsWith("/crm") || pathname === "/admin" || pathname.startsWith("/admin/")) return null;
+  if (pathname.startsWith("/crm") || pathname === "/admin" || pathname.startsWith("/admin/") || pathname.startsWith("/staff")) return null;
 
   return (
     <header
