@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import { adminApi } from "../../_lib/api";
+import { withDayLimitOverride, withIgnoreFlag } from "../../_lib/dayLimitOverride";
 import {
   isEndNotAfterStart,
   shiftEndWithStart,
@@ -135,7 +136,7 @@ export function ClientVisitsSection({
 
     setSaving(true);
     try {
-      await adminApi.patch(`/crm/appointments/${editing.id}`, {
+      const visitBody = {
         clientId,
         startsAt: start.toISOString(),
         endsAt: end.toISOString(),
@@ -145,7 +146,14 @@ export function ClientVisitsSection({
         managerName: form.managerName.trim() || null,
         diskLink: form.diskLink.trim() || null,
         vehicleId: form.vehicleId ? Number(form.vehicleId) : null,
-      });
+      };
+      const saved = await withDayLimitOverride((ignore) =>
+        adminApi.patch(
+          `/crm/appointments/${editing.id}`,
+          withIgnoreFlag(visitBody, ignore),
+        ),
+      );
+      if (saved === null) return; // отказался записывать сверх лимита
       toast.success("Визит обновлён");
       setEditing(null);
       await onVisitsChange();
