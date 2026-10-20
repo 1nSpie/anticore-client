@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Docker: самодостаточная сборка в .next/standalone (без полного node_modules в образе)
+  output: "standalone",
   images: {
     // Все картинки — из Selectel S3 (NEXT_PUBLIC_S3_URL). Сменился домен бакета — обновить hostname.
     remotePatterns: [

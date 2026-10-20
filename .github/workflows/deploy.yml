@@ -1,0 +1,168 @@
+name: Build & deploy client
+
+# push в master        → проверки + сборка образа для прода (само не выкатывается,
+#                        если не включена переменная репозитория AUTO_DEPLOY_PRODUCTION=true)
+# ручной запуск (Run workflow) → выбираешь ветку и куда выкатить: stand / production / none (только собрать)
+#
+# NEXT_PUBLIC_* вшиваются в JS при сборке, поэтому образ для стенда собирается отдельно (тег <sha>-stand)
+# со своими переменными STAND_* (Settings → Secrets and variables → Actions → Variables).
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Куда выкатить (none — только собрать образ для прода)"
+        type: choice
+        options: [none, stand, production]
+        default: none
+      pull_only:
+        description: "Только скачать образ на сервер, не перезапускать (первое переключение с pm2)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: client-${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'push' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  target:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.t.outputs.environment }}
+      deploy: ${{ steps.t.outputs.deploy }}
+    steps:
+      - id: t
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT: ${{ inputs.environment }}
+          AUTO: ${{ vars.AUTO_DEPLOY_PRODUCTION }}
+        run: |
+          environment=production
+          deploy=false
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            if [ "$INPUT" != "none" ]; then environment="$INPUT"; deploy=true; fi
+          elif [ "$AUTO" = "true" ]; then
+            deploy=true
+          fi
+          echo "environment=$environment" >> "$GITHUB_OUTPUT"
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+          echo "Цель: $environment, выкатывать: $deploy"
+
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  build:
+    needs: [target, checks]
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tags.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Для стенда адрес API и адрес сайта обязаны быть свои: иначе стенд молча пойдёт в боевой API
+      - name: Проверить переменные стенда
+        if: needs.target.outputs.environment == 'stand'
+        env:
+          API: ${{ vars.STAND_NEXT_PUBLIC_BACKEND_API_URL }}
+          SITE: ${{ vars.STAND_SITE_LINK }}
+        run: |
+          [ -n "$API" ] || { echo "::error::Задай переменную STAND_NEXT_PUBLIC_BACKEND_API_URL"; exit 1; }
+          [ -n "$SITE" ] || { echo "::error::Задай переменную STAND_SITE_LINK"; exit 1; }
+
+      - id: tags
+        env:
+          ENVIRONMENT: ${{ needs.target.outputs.environment }}
+        run: |
+          name="ghcr.io/${GITHUB_REPOSITORY,,}"
+          suffix=""
+          [ "$ENVIRONMENT" = "stand" ] && suffix="-stand"
+          tag="${GITHUB_SHA}${suffix}"
+          list="${name}:${tag}"
+          # latest — только боевая сборка из master
+          if [ "$GITHUB_REF" = "refs/heads/master" ] && [ "$ENVIRONMENT" = "production" ]; then
+            list="${list}"$'\n'"${name}:latest"
+          fi
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          { echo "list<<EOF"; echo "$list"; echo "EOF"; } >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Для стенда берутся STAND_<имя>, а если такой нет — общая переменная <имя>.
+      # (Адрес API и SITE_LINK для стенда проверены выше и отдельно не имеют общего запасного значения.)
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tags.outputs.list }}
+          build-args: |
+            NEXT_PUBLIC_BACKEND_API_URL=${{ needs.target.outputs.environment == 'stand' && vars.STAND_NEXT_PUBLIC_BACKEND_API_URL || vars.NEXT_PUBLIC_BACKEND_API_URL }}
+            NEXT_PUBLIC_SMARTCAPTCHA_CLIENT_KEY=${{ needs.target.outputs.environment == 'stand' && vars.STAND_NEXT_PUBLIC_SMARTCAPTCHA_CLIENT_KEY || vars.NEXT_PUBLIC_SMARTCAPTCHA_CLIENT_KEY }}
+            NEXT_PUBLIC_S3_URL=${{ needs.target.outputs.environment == 'stand' && vars.STAND_NEXT_PUBLIC_S3_URL || vars.NEXT_PUBLIC_S3_URL }}
+            NEXT_PUBLIC_REACT_APP_YMAP_KEY=${{ needs.target.outputs.environment == 'stand' && vars.STAND_NEXT_PUBLIC_REACT_APP_YMAP_KEY || vars.NEXT_PUBLIC_REACT_APP_YMAP_KEY }}
+            SITE_LINK=${{ needs.target.outputs.environment == 'stand' && vars.STAND_SITE_LINK || vars.SITE_LINK }}
+            USE_YANDEX_METRICS=${{ needs.target.outputs.environment == 'stand' && (vars.STAND_USE_YANDEX_METRICS || 'false') || vars.USE_YANDEX_METRICS }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: [target, build]
+    if: needs.target.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    # Секреты DEPLOY_* берутся из окружения (Settings → Environments → stand / production)
+    environment: ${{ needs.target.outputs.environment }}
+    steps:
+      - uses: appleboy/ssh-action@v1
+        env:
+          TAG: ${{ needs.build.outputs.tag }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/opt/anticore' }}
+          PULL_ONLY: ${{ inputs.pull_only }}
+          # Одноразовый токен задания: сервер логинится в GHCR на время выкладки, отдельный токен не нужен
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: TAG,DEPLOY_PATH,PULL_ONLY,GHCR_USER,GHCR_TOKEN
+          script: |
+            set -euo pipefail
+            cd "$DEPLOY_PATH"
+            C="docker compose --env-file .env.deploy"
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+            grep -q '^CLIENT_TAG=' .env.deploy || echo 'CLIENT_TAG=latest' >> .env.deploy
+            prev=$(grep '^CLIENT_TAG=' .env.deploy | cut -d= -f2)
+            sed -i "s/^CLIENT_TAG=.*/CLIENT_TAG=${TAG}/" .env.deploy
+            $C pull client
+            if [ "${PULL_ONLY:-false}" = "true" ]; then
+              echo "Образ ${TAG} скачан, тег записан в .env.deploy. Перезапуск не выполняется (pull_only)."
+              exit 0
+            fi
+            # --wait: ждём, пока контейнер станет healthy; не поднялся — откат на прошлый образ
+            if ! $C up -d --no-deps --wait --wait-timeout 90 client; then
+              echo "::error::Фронт не стал healthy, откатываю образ на ${prev}"
+              sed -i "s/^CLIENT_TAG=.*/CLIENT_TAG=${prev}/" .env.deploy
+              $C up -d --no-deps client
+              exit 1
+            fi
+            docker image prune -f
