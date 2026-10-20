@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const ADDRESSES = [
   { name: "Жуковский", address: "Речной проезд, 14", link: "/#map" },
   { name: "Коломна", address: "село Чанки, ул. Центральная 152", link: "/#map" },
+  { name: "Раменское", address: "Транспортный проезд, вл. 1", link: "/#map" },
 ];
 
 const PRICE_RANGE = "Цены";

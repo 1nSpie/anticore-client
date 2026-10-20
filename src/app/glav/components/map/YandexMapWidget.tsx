@@ -4,11 +4,13 @@ import Link from "next/link";
 const LOCATION_REVIEW_IDS: { [key: string]: string } = {
   "Жуковский": "211399234420", // ID для Жуковского
   "Коломна": "211399234420", // TODO: Заменить на реальный ID для Коломны
+  "Раменское": "211399234420", // TODO: Заменить на реальный ID для Раменского
 };
 
 const LOCATION_MAP_LINKS: { [key: string]: string } = {
   "Жуковский": "https://yandex.ru/maps/org/avankor/211399234420/",
   "Коломна": "https://yandex.ru/maps/org/avankor/211399234420/", // TODO: Заменить на реальную ссылку для Коломны
+  "Раменское": "https://yandex.ru/maps/org/avankor/211399234420/", // TODO: Заменить на реальную ссылку для Раменского
 };
 
 interface YandexMapWidgetProps {
