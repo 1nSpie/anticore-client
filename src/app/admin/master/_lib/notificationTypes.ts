@@ -19,5 +19,12 @@ export const STAFF_NOTIFICATION_EVENT = "staff:notification";
 export const fmtNotificationTime = (iso: string) =>
   new Date(iso).toLocaleString("ru-RU", { timeZone: "Europe/Moscow", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
-/** Внутренний путь кабинета мастера или null — защита от внешних/подставных ссылок. */
-export const safeStaffLink = (link: string | null): string | null => (link && /^\/staff(\/|$)/.test(link) ? link : null);
+/**
+ * Внутренний путь кабинета мастера или null — защита от внешних/подставных ссылок.
+ * Кабинет живёт в `/admin/master/*`; уведомления, созданные до переезда, ведут на `/staff…` — переписываем на новый адрес.
+ */
+export const safeStaffLink = (link: string | null): string | null => {
+  if (!link) return null;
+  const path = link.replace(/^\/staff(?=\/|$)/, "/admin/master");
+  return /^\/admin\/master(\/|$)/.test(path) ? path : null;
+};

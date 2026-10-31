@@ -24,7 +24,7 @@ export function LoginForm({ loginData, loading, onLoginDataChange, onLogin }: Lo
       <div className="rounded-2xl border border-white/10 bg-[#131c2a] p-7 sm:p-9">
         <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-300"><ShieldCheck className="h-7 w-7" /></div>
         <h1 className="mb-2 text-2xl font-semibold tracking-tight">Добро пожаловать</h1>
-        <p className="mb-7 text-sm leading-relaxed text-slate-400">Войдите, чтобы работать с клиентами и управлять сайтом.</p>
+        <p className="mb-7 text-sm leading-relaxed text-slate-400">Войдите, чтобы открыть своё рабочее пространство: админам — управление сервисом, мастерам — расписание и задачи.</p>
         <form className="space-y-5" onSubmit={async event => {
           event.preventDefault(); if (pending.current || loading) return;
           pending.current = true; setSubmitting(true);
@@ -40,7 +40,7 @@ export function LoginForm({ loginData, loading, onLoginDataChange, onLogin }: Lo
               className="h-12 border-white/10 bg-slate-950/40 pr-12 text-white" placeholder="Введите пароль" />
               <button type="button" disabled={busy} aria-label={visible ? "Скрыть пароль" : "Показать пароль"} aria-pressed={visible} onClick={() => setVisible(!visible)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-lg text-slate-400 hover:text-slate-100">{visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button>
             </div></div>
-          <Button type="submit" disabled={busy} className="h-12 w-full bg-emerald-400 font-semibold text-slate-950 hover:bg-emerald-300">{busy ? <><Loader2 className="h-4 w-4 animate-spin" />Входим…</> : "Войти в рабочее пространство"}</Button>
+          <Button type="submit" disabled={busy} className="h-12 w-full bg-emerald-400 font-semibold text-slate-950 hover:bg-emerald-300">{busy ? <><Loader2 className="h-4 w-4 animate-spin" />Входим…</> : "Войти"}</Button>
         </form>
       </div>
       <p className="mt-6 text-center text-xs text-slate-500">Нет доступа? Обратитесь к администратору сервиса.</p>

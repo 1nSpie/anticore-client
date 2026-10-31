@@ -100,7 +100,7 @@ export default function StaffRegulationPage() {
       await staffApi.post("/staff/regulation/ack", { version: status.version });
       toast.success("Спасибо, ознакомление зафиксировано");
       await loadStatus();
-      window.location.replace("/staff");
+      window.location.replace("/admin/master");
     } catch {
       toast.error("Не удалось сохранить. Обновите страницу — возможно, регламент изменился");
       setBusy(false);

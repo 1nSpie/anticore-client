@@ -4,7 +4,7 @@ import { RegisterServiceWorker } from "./_lib/RegisterServiceWorker";
 export const metadata: Metadata = {
   title: "Кабинет мастера | АванКор",
   robots: { index: false, follow: false },
-  manifest: "/staff.webmanifest",
+  manifest: "/staff.webmanifest", // start_url и scope внутри — /admin/master
   icons: { apple: "/staff-apple-touch-icon.png" },
   appleWebApp: { capable: true, title: "Мастер", statusBarStyle: "black-translucent" },
 };

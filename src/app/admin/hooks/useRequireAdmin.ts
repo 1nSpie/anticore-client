@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminApi, updateApiToken } from "../_lib/api";
 import { AUTH_TOKEN_KEY } from "../_lib/constants";
+import { MASTER_HOME, hasStaffToken } from "../_lib/session";
 
-/** Редирект на /admin, если нет валидной сессии админ-панели. */
+/**
+ * Гвард админ-панели. Нет сессии — на общий вход `/admin`; вошёл мастер — в его кабинет (`/admin/master`),
+ * админка ему закрыта (и на API тоже: токен мастера `/crm/*` не открывает).
+ */
 export function useRequireAdmin() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
@@ -14,7 +18,7 @@ export function useRequireAdmin() {
     const run = async () => {
       const token = localStorage.getItem(AUTH_TOKEN_KEY);
       if (!token) {
-        router.replace("/admin");
+        router.replace(hasStaffToken() ? MASTER_HOME : "/admin");
         return;
       }
       updateApiToken(token);

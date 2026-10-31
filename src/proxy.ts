@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Cookie с JWT сотрудника; ставится на клиенте после входа (`staff/_lib/staffSession.ts`). */
+/** Cookie с JWT мастера; ставится на клиенте после входа (`admin/master/_lib/staffSession.ts`). */
 export const STAFF_COOKIE = "staff_token";
 
 function isExpired(token: string): boolean {
@@ -15,24 +15,15 @@ function isExpired(token: string): boolean {
 }
 
 /**
- * Защита роутов ЛК мастера: без живого токена — на /staff/login.
- * Подпись здесь не проверяется (секрета на фронте нет) — это только UX-редирект;
+ * Защита роутов кабинета мастера (`/admin/master/*`): без живого токена мастера — на общий вход `/admin`.
+ * Админка (`/admin/*` кроме `master`) этим не затрагивается: её защищает клиентский гвард и API.
+ * Подпись здесь не проверяется (секрета на фронте нет) — это только UX-редирект без «мигания» страницы;
  * реальную проверку и блокировку делает API (`StaffJwtGuard`).
  */
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
   const token = request.cookies.get(STAFF_COOKIE)?.value;
-  const authed = !!token && !isExpired(token);
-
-  if (pathname === "/staff/login") {
-    return authed ? NextResponse.redirect(new URL("/staff", request.url)) : NextResponse.next();
-  }
-  if (!authed) {
-    const url = new URL("/staff/login", request.url);
-    url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
-  }
-  return NextResponse.next();
+  if (token && !isExpired(token)) return NextResponse.next();
+  return NextResponse.redirect(new URL("/admin", request.url));
 }
 
-export const config = { matcher: ["/staff", "/staff/:path*"] };
+export const config = { matcher: ["/admin/master", "/admin/master/:path*"] };

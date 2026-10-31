@@ -1,6 +1,11 @@
 import axios from "axios";
 import { API_BASE_URL } from "@/app/admin/_lib/constants";
 
+/** Вход единый — страница входа админки. По роли она сама ведёт мастера в кабинет. */
+export const LOGIN_PATH = "/admin";
+/** Корень кабинета мастера внутри админки. */
+export const MASTER_HOME = "/admin/master";
+
 const TOKEN_KEY = "staff_auth_token";
 const COOKIE = "staff_token";
 const MAX_AGE_SEC = 30 * 24 * 60 * 60; // D3: сессия 30 дней
@@ -27,7 +32,7 @@ staffApi.interceptors.response.use(
     // Токен отозван/заблокирован/истёк — сбрасываем сессию и уходим на вход
     if (error.response?.status === 401 && !String(error.config?.url).includes("/staff/auth/login")) {
       clearStaffSession();
-      if (typeof window !== "undefined") window.location.replace("/staff/login");
+      if (typeof window !== "undefined") window.location.replace(LOGIN_PATH);
     }
     // Регламент обновили: все разделы кабинета закрыты, пока мастер не ознакомится (D17)
     if (error.response?.status === 403 && error.response?.data?.code === "REGULATION_ACK_REQUIRED") {
