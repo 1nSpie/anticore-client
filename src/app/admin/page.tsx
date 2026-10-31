@@ -5,20 +5,18 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
 import { LoginForm } from "./components/auth/LoginForm";
 import { LoadingScreen } from "./components/auth/LoadingScreen";
+import { homeFor } from "./_lib/session";
 
+/** Единый вход: после авторизации роль решает, куда вести — админа в админку, мастера в его кабинет. */
 export default function AdminLoginPage() {
   const router = useRouter();
   const { authState, loginData, setLoginData, handleLogin } = useAuth();
 
   useEffect(() => {
-    if (!authState.isLoading && authState.isAuthenticated) {
-      router.replace("/admin/calendar");
-    }
-  }, [authState.isAuthenticated, authState.isLoading, router]);
+    if (!authState.isLoading && authState.role) router.replace(homeFor(authState.role));
+  }, [authState.isLoading, authState.role, router]);
 
-  if (authState.isLoading) return <LoadingScreen />;
-
-  if (authState.isAuthenticated) return <LoadingScreen />;
+  if (authState.isLoading || authState.isAuthenticated) return <LoadingScreen />;
 
   return (
     <LoginForm
@@ -26,10 +24,9 @@ export default function AdminLoginPage() {
       loading={false}
       onLoginDataChange={setLoginData}
       onLogin={async () => {
-        const ok = await handleLogin();
-        if (ok) router.replace("/admin/calendar");
+        const role = await handleLogin();
+        if (role) router.replace(homeFor(role));
       }}
-
     />
   );
 }

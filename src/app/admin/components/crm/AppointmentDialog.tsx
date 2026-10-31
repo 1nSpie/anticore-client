@@ -39,6 +39,7 @@ import { ClientQuickCreate } from "./ClientQuickCreate";
 import { ClientSearchAutocomplete } from "./ClientSearchAutocomplete";
 import { DocumentActions } from "./DocumentActions";
 import { DayCapacityHint } from "./DayCapacityHint";
+import { AssignMastersSection } from "./AssignMastersSection";
 import { getVinValidationError } from "@/lib/vin";
 
 const dialogClass =
@@ -604,6 +605,14 @@ export function AppointmentDialog({
                 {vinError && <p className="text-xs text-red-400">{vinError}</p>}
               </div>
             ) : null}
+
+            {appointment && (
+              <AssignMastersSection
+                appointmentId={appointment.id}
+                assigned={appointment.assignees ?? []}
+                onSaved={onSaved}
+              />
+            )}
 
             {appointment && selectedClient && (
               <DocumentActions

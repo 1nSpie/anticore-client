@@ -98,6 +98,8 @@ export type CrmAppointment = {
   diskLink?: string | null;
   /** Заявка с сайта, из которой создана запись. */
   lead?: { id: number; status: SiteLeadStatus } | null;
+  /** Назначенные мастера. */
+  assignees?: { id: number; fullName: string }[];
   client: {
     id: number;
     phone: string;

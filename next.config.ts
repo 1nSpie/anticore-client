@@ -49,6 +49,10 @@ const nextConfig: NextConfig = {
       },
       { source: "/admin/crm/settings", destination: "/admin/sms", permanent: false },
       { source: "/admin/crm/:path*", destination: "/admin/calendar", permanent: false },
+      // Кабинет мастера переехал в админку (единый вход): старые ссылки, закладки и установленное PWA продолжают работать
+      { source: "/staff/login", destination: "/admin", permanent: false },
+      { source: "/staff", destination: "/admin/master", permanent: false },
+      { source: "/staff/:path*", destination: "/admin/master/:path*", permanent: false },
       { source: "/glav", destination: "/", permanent: true },
     ];
   },
