@@ -5,9 +5,9 @@ import { Shield, Star, MoveRight, PlayIcon, CheckCircle, Phone, Clock } from "lu
 import Image from "next/image";
 import { CallbackModal } from "@/app/ui/ui/CallbackModal";
 import { siteImageUrl } from "@/lib/media";
+import HeroVideo from "./HeroVideo";
 import logo from 'public/favicon.svg'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_S3_URL;
 
 const car = siteImageUrl("newstart/car.png");
 const plakat2obr = siteImageUrl("newstart/plakat2obr.png");
@@ -17,17 +17,7 @@ const yandex = siteImageUrl("newstart/yandex.png");
 export default function NewStart() {
     return (
         <section className="relative mt-15 overflow-hidden text-white ">
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 object-cover w-full h-full z-0"
-                preload="auto"
-            >
-                <source src={`${API_BASE_URL}/video/videoStart.mp4`} type="video/mp4" />
-                Ваш браузер не поддерживает видео.
-            </video>
+            <HeroVideo className="absolute inset-0 object-cover w-full h-full z-0" />
             <div
                 className="absolute inset-0 z-10"
                 style={{

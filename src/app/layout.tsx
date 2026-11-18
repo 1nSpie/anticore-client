@@ -56,12 +56,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <script type="text/javascript">window._ab_id_=169081</script>
-        <script src="https://cdn.botfaqtor.ru/one.js"></script>
+        {/* botfaqtor: грузим асинхронно после загрузки страницы, чтобы сторонний CDN не блокировал рендер */}
+        <Script
+          id="botfaqtor"
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window._ab_id_ = 169081;
+              var s = document.createElement("script");
+              s.src = "https://cdn.botfaqtor.ru/one.js";
+              s.async = true;
+              document.head.appendChild(s);
+            `,
+          }}
+        />
 
          <Script
           id="top-mail-ru"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               var _tmr = window._tmr || (window._tmr = []);
