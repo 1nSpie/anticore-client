@@ -1,18 +1,16 @@
-"use client";
-
 import AutoPrice from "./glav/components/AutoPrice";
-import AwesomeServices from "./glav/components/AwesomeServices";
 import CarouselSection from "./glav/components/Carousel";
 import FloatingNavigation from "./glav/components/FloatingNavigation";
 import Garanty from "./glav/components/Garanty";
-import MainVideoPlayer from "./glav/components/MainVideoPlayer";
-import VideoCarousel from "./glav/components/VideoCarousel";
-import YandexMap from "./glav/components/map/Map";
 import PriceCardList from "./glav/components/PriceList";
 import TechProcces from "./glav/components/TechProcces";
-import Marquee from "react-fast-marquee";
 import AntiCorrosionSection from "./glav/components/AntiCorrosionSection";
 import NewStart from "./glav/components/NewStart";
+import {
+  LazyMainVideoPlayer,
+  LazyVideoCarousel,
+  LazyYandexMap,
+} from "./glav/components/LazySections";
 import { siteImageUrl } from "@/lib/media";
 
 export default function GlavPage() {
@@ -23,19 +21,18 @@ export default function GlavPage() {
       <div className="relative overflow-hidden">
         <FloatingNavigation />
         <main className="flex-1 relative z-10">
-          {/* <AwesomeServices id="hero" /> */}
           <NewStart />
           <div style={{ backgroundImage: `url(${siteImageUrl("bg/bgfon.png")})` }}>
             <AntiCorrosionSection />
             <AutoPrice id="auto-price" />
           </div>
-          <VideoCarousel id="video-carousel"/>
+          <LazyVideoCarousel id="video-carousel"/>
           <TechProcces id="tech-process" />
           <Garanty id="garanty" />
-          <MainVideoPlayer id="main-video"/>
+          <LazyMainVideoPlayer id="main-video"/>
           <CarouselSection id="reviews" />
           <PriceCardList id="prices" />
-          <YandexMap id="map" />
+          <LazyYandexMap id="map" />
         </main>
       </div>
     </div>
