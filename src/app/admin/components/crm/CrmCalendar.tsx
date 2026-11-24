@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { adminApi } from "../../_lib/api";
 import type { CrmAppointment, ServiceType } from "../../_lib/crmTypes";
 import {
   DEFAULT_CRM_LOCATION,
+  isCrmLocation,
   type CrmLocationCode,
 } from "../../_lib/crmLocations";
-import { AppointmentDialog } from "./AppointmentDialog";
 import { AppointmentBoard } from "./AppointmentBoard";
 import { CrmCalendarToolbar, type CalendarViewType } from "./CrmCalendarToolbar";
 import { CrmMiniCalendar } from "./CrmMiniCalendar";
@@ -129,12 +130,23 @@ export function CrmCalendar() {
   const [allEvents, setAllEvents] = useState<CrmAppointment[]>([]);
   const [dayLimits, setDayLimits] = useState<Record<string, number>>({});
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<CrmAppointment | null>(null);
-  const [slot, setSlot] = useState<{ start: string; end: string } | null>(null);
-  const [view, setView] = useState<CalendarViewType>("timeGridWeek");
-  const [focusDate, setFocusDate] = useState(() => new Date());
-  const [location, setLocation] = useState<CrmLocationCode>(DEFAULT_CRM_LOCATION);
+  const router = useRouter();
+  const search = useSearchParams();
+  // Вид, день и филиал берутся из адреса (`?view=&date=&location=`) и пишутся в него обратно:
+  // на календарь можно дать ссылку, а после записи страница возвращает на тот же день.
+  const [view, setView] = useState<CalendarViewType>(() => {
+    const v = search.get("view");
+    return v === "timeGridDay" || v === "timeGridWeek" || v === "dayGridMonth" ? v : "timeGridWeek";
+  });
+  const [focusDate, setFocusDate] = useState(() => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(search.get("date") ?? "");
+    const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+    return d && !Number.isNaN(d.getTime()) ? d : new Date();
+  });
+  const [location, setLocation] = useState<CrmLocationCode>(() => {
+    const l = search.get("location") ?? "";
+    return isCrmLocation(l) ? l : DEFAULT_CRM_LOCATION;
+  });
   const [layout, setLayout] = useState<"unknown" | "mobile" | "desktop">(
     "unknown",
   );
@@ -253,17 +265,24 @@ export function CrmCalendar() {
     void loadLimits(rangeRef.current.from, rangeRef.current.to, location);
   }, [location, loadLimits]);
 
-  const openAppointment = useCallback((found: CrmAppointment) => {
-    setEditing(found);
-    setSlot(null);
-    setDialogOpen(true);
-  }, []);
+  const openAppointment = useCallback(
+    (found: CrmAppointment) => router.push(`/admin/appointments/${found.id}`),
+    [router],
+  );
 
-  const openCreateForDate = useCallback((date: Date) => {
-    setEditing(null);
-    setSlot(defaultCreateSlot(date));
-    setDialogOpen(true);
-  }, []);
+  const openCreateForDate = useCallback(
+    (date: Date) => {
+      const { start, end } = defaultCreateSlot(date);
+      const q = new URLSearchParams({ start, end, location: locationRef.current });
+      router.push(`/admin/appointments/new?${q.toString()}`);
+    },
+    [router],
+  );
+
+  useEffect(() => {
+    const q = new URLSearchParams({ date: calendarDayKey(focusDate), view, location });
+    router.replace(`/admin/calendar?${q.toString()}`, { scroll: false });
+  }, [focusDate, view, location, router]);
 
   /** Перетащили карточку на другой день: время и длительность те же. */
   const handleMove = useCallback(
@@ -349,11 +368,6 @@ export function CrmCalendar() {
     () => openCreateForDate(focusDate),
     [focusDate, openCreateForDate],
   );
-
-  const handleSaved = useCallback(async () => {
-    await loadEvents(range.from, range.to);
-    await loadMeta();
-  }, [loadEvents, loadMeta, range.from, range.to]);
 
   if (layout === "unknown") {
     return (
@@ -472,15 +486,6 @@ export function CrmCalendar() {
         </SheetContent>
       </Sheet>
 
-      <AppointmentDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        appointment={editing}
-        slot={slot}
-        serviceTypes={serviceTypes}
-        defaultLocation={location}
-        onSaved={handleSaved}
-      />
     </>
   );
 }

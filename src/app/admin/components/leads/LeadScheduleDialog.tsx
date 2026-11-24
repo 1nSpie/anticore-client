@@ -63,6 +63,7 @@ import {
   phonesMatchRu,
 } from "@/lib/phoneRu";
 import { getVinValidationError } from "@/lib/vin";
+import { getVehicleYearError } from "@/lib/vehicle";
 import { toast } from "sonner";
 import { DayCapacityHint } from "../crm/DayCapacityHint";
 
@@ -186,6 +187,9 @@ export function LeadScheduleDialog({
 
   const [createLastName, setCreateLastName] = useState("");
   const [createFirstName, setCreateFirstName] = useState("");
+  const [createPatronymic, setCreatePatronymic] = useState("");
+  /** Год выпуска нового автомобиля (новый клиент или клиент без авто). */
+  const [vehicleYear, setVehicleYear] = useState("");
   const [vin, setVin] = useState("");
   const [vinError, setVinError] = useState<string | null>(null);
   const [vehicleId, setVehicleId] = useState("");
@@ -252,6 +256,8 @@ export function LeadScheduleDialog({
     setCarParsed(false);
     setVin("");
     setVinError(null);
+    setCreatePatronymic("");
+    setVehicleYear("");
     setLocation(
       (lead.location as CrmLocationCode | null) ?? DEFAULT_CRM_LOCATION,
     );
@@ -419,18 +425,17 @@ export function LeadScheduleDialog({
           isNotInCatalog: leadForm.isNotInCatalog,
           resolveId: resolveCarId,
         });
-        if (car.carId != null || car.customCar || vin.trim()) {
-          const { data: vehicle } = await adminApi.post<ClientVehicle>(
-            `/crm/clients/${selectedClient.id}/vehicles`,
-            {
-              carId: car.carId ?? null,
-              customLabel: car.customCar ?? null,
-              vin: vin.trim().toUpperCase() || null,
-              isPrimary: true,
-            },
-          );
-          nextVehicleId = vehicle.id;
-        }
+        const { data: vehicle } = await adminApi.post<ClientVehicle>(
+          `/crm/clients/${selectedClient.id}/vehicles`,
+          {
+            carId: car.carId ?? null,
+            customLabel: car.customCar ?? null,
+            year: Number(vehicleYear.trim()),
+            vin: vin.trim().toUpperCase() || null,
+            isPrimary: true,
+          },
+        );
+        nextVehicleId = vehicle.id;
       } else if (nextVehicleId && vin.trim()) {
         const current = clientVehicles.find((v) => v.id === nextVehicleId);
         const prev = current?.vin?.trim().toUpperCase() || null;
@@ -457,8 +462,10 @@ export function LeadScheduleDialog({
 
     const { data: created } = await adminApi.post<CrmClient>("/crm/clients", {
       phone,
-      ...(createLastName.trim() && { lastName: createLastName.trim() }),
-      ...(createFirstName.trim() && { firstName: createFirstName.trim() }),
+      lastName: createLastName.trim(),
+      firstName: createFirstName.trim(),
+      ...(createPatronymic.trim() && { patronymic: createPatronymic.trim() }),
+      year: Number(vehicleYear.trim()),
       ...(car.carId !== undefined && { carId: car.carId }),
       ...(car.customCar !== undefined && { customCar: car.customCar }),
       ...(vin.trim() && { vin: vin.trim().toUpperCase() }),
@@ -485,6 +492,31 @@ export function LeadScheduleDialog({
     } finally {
       setSaving(false);
     }
+  };
+
+  /** Обязательные поля новой карточки и авто (ТЗ §1) — проверяем до любых запросов. */
+  const needsNewVehicle =
+    clientMode === "create" ||
+    (clientMode === "existing" &&
+      selectedClient != null &&
+      clientVehicles.length === 0);
+
+  const validateNewClientFields = (): string | null => {
+    if (!leadForm) return null;
+    if (clientMode === "create") {
+      const missing: string[] = [];
+      if (!createLastName.trim()) missing.push("фамилию");
+      if (!createFirstName.trim()) missing.push("имя");
+      if (missing.length) return `Укажите ${missing.join(", ")}`;
+    }
+    if (needsNewVehicle) {
+      const hasCar = leadForm.isNotInCatalog
+        ? Boolean(leadForm.customCar.trim())
+        : Boolean(leadForm.brand && leadForm.model);
+      if (!hasCar) return "Укажите марку и модель автомобиля";
+      return getVehicleYearError(vehicleYear);
+    }
+    return null;
   };
 
   const saveAndBook = async () => {
@@ -515,6 +547,11 @@ export function LeadScheduleDialog({
     }
     if (end <= start) {
       toast.error("Окончание должно быть позже начала");
+      return;
+    }
+    const newFieldsError = validateNewClientFields();
+    if (newFieldsError) {
+      toast.error(newFieldsError);
       return;
     }
     if (!serviceType.trim()) {
@@ -794,12 +831,12 @@ export function LeadScheduleDialog({
             {clientMode === "create" ? (
               <div className="space-y-3">
                 <p className="text-xs text-slate-400">
-                  В базе нет — создадим карточку вместе с записью. ФИО и авто
-                  берутся из полей выше.
+                  В базе нет — создадим карточку вместе с записью. Нужны
+                  фамилия, имя, марка, модель и год выпуска.
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label>Фамилия в карточке</Label>
+                    <Label>Фамилия в карточке *</Label>
                     <Input
                       className={fieldClass}
                       value={createLastName}
@@ -807,13 +844,21 @@ export function LeadScheduleDialog({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Имя в карточке</Label>
+                    <Label>Имя в карточке *</Label>
                     <Input
                       className={fieldClass}
                       value={createFirstName}
                       onChange={(e) => setCreateFirstName(e.target.value)}
                     />
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Отчество</Label>
+                  <Input
+                    className={fieldClass}
+                    value={createPatronymic}
+                    onChange={(e) => setCreatePatronymic(e.target.value)}
+                  />
                 </div>
               </div>
             ) : null}
@@ -869,6 +914,22 @@ export function LeadScheduleDialog({
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            ) : null}
+
+            {needsNewVehicle ? (
+              <div className="space-y-2">
+                <Label>Год выпуска *</Label>
+                <Input
+                  className={fieldClass}
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="например, 2019"
+                  value={vehicleYear}
+                  onChange={(e) =>
+                    setVehicleYear(e.target.value.replace(/\D/g, ""))
+                  }
+                />
               </div>
             ) : null}
 

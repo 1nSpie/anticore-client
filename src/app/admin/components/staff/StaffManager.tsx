@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { Ban, CheckCircle, KeyRound, Loader2, Plus, UserCog } from "lucide-react";
+import { Ban, CheckCircle, KeyRound, Loader2, Plus, Trash2, UserCog } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
@@ -102,7 +102,7 @@ function CreateForm({ onCreated, onCancel }: { onCreated: () => void; onCancel: 
   );
 }
 
-function StaffRow({ member, onChanged }: { member: StaffMember; onChanged: () => void }) {
+function StaffRow({ member, onChanged, canDelete }: { member: StaffMember; onChanged: () => void; canDelete: boolean }) {
   const [editing, setEditing] = useState(false);
   const [locations, setLocations] = useState<CrmLocationCode[]>(member.locations);
   const blocked = !!member.blockedAt;
@@ -124,6 +124,11 @@ function StaffRow({ member, onChanged }: { member: StaffMember; onChanged: () =>
       // Пароль показывается один раз — в БД остаётся только хэш
       window.prompt(`Новый пароль для ${member.login} (скопируйте, повторно он не покажется):`, data.password);
     }, "Пароль сброшен");
+  };
+
+  const remove = () => {
+    if (!confirm(`Удалить сотрудника «${member.fullName}» (${member.login}) насовсем? Войти он больше не сможет, назначения на записи пропадут. Начисленная зарплата в ведомости останется. Отменить нельзя — если нужно только закрыть доступ, лучше заблокировать.`)) return;
+    void act(() => adminApi.delete(`/crm/staff/${member.id}`).then(() => undefined), "Сотрудник удалён");
   };
 
   return (
@@ -152,6 +157,11 @@ function StaffRow({ member, onChanged }: { member: StaffMember; onChanged: () =>
             <Button size="sm" variant="outline" className="text-red-400"
               onClick={() => act(() => adminApi.post(`/crm/staff/${member.id}/block`).then(() => undefined), "Заблокирован")}>
               <Ban className="h-4 w-4" />Заблокировать
+            </Button>
+          )}
+          {canDelete && (
+            <Button size="sm" variant="outline" className="text-red-400" onClick={remove}>
+              <Trash2 className="h-4 w-4" />Удалить
             </Button>
           )}
         </div>
@@ -217,6 +227,13 @@ export default function StaffManager() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  // Удалять может только администратор из env (у него в сессии нет id сотрудника); сервер проверяет то же самое
+  const [canDelete, setCanDelete] = useState(false);
+  useEffect(() => {
+    adminApi.get<{ id: number | null; role: string }>("/admin/me")
+      .then((r) => setCanDelete(r.data.role === "ADMIN" && r.data.id === null))
+      .catch(() => setCanDelete(false));
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -253,7 +270,7 @@ export default function StaffManager() {
           {loading ? (
             <Loader2 className="mx-auto h-5 w-5 animate-spin text-slate-500" />
           ) : staff.length ? (
-            <div className="space-y-3">{staff.map((m) => <StaffRow key={m.id} member={m} onChanged={load} />)}</div>
+            <div className="space-y-3">{staff.map((m) => <StaffRow key={m.id} member={m} onChanged={load} canDelete={canDelete} />)}</div>
           ) : (
             <p className="py-10 text-center text-sm text-slate-500">Сотрудников пока нет. Добавьте первого мастера.</p>
           )}

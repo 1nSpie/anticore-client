@@ -16,6 +16,16 @@ import {
   registerActFonts,
   type ActDocInput,
 } from "./actShared";
+import {
+  DAMAGE_LABEL,
+  DAMAGE_SYMBOL,
+  INTERIOR_KEYS,
+  INTERIOR_LABEL,
+  NOT_CHECKED_WORD,
+  SYSTEM_KEYS,
+  SYSTEM_LABEL,
+  SYSTEM_WORDS,
+} from "../../../_lib/inspectionTypes";
 
 registerActFonts();
 
@@ -41,13 +51,14 @@ const DIAGRAM_H = Math.round((DIAGRAM_W * 751) / 1255);
 const s = StyleSheet.create({
   page: {
     paddingTop: 20,
-    paddingBottom: 22,
+    paddingBottom: 30,
     paddingHorizontal: 28,
     fontSize: 9,
     fontFamily: "DejaVu",
     color: "#111",
-    lineHeight: 1.3,
   },
+  /** lineHeight (свой или унаследованный от Page) ломает колонтитул `render` с номерами страниц — держим его на внутреннем блоке. */
+  body: { fontSize: 9, lineHeight: 1.3 },
   topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -108,6 +119,37 @@ const s = StyleSheet.create({
     height: 10,
   },
   check: { marginBottom: 2 },
+  draft: {
+    borderWidth: 1,
+    borderColor: "#b00020",
+    padding: 5,
+    marginBottom: 6,
+    color: "#b00020",
+    fontSize: 8,
+  },
+  diagramBox: { width: DIAGRAM_W, height: DIAGRAM_H, position: "relative" },
+  markDot: {
+    position: "absolute",
+    width: 11,
+    height: 11,
+    borderRadius: 6,
+    backgroundColor: "#fff",
+    borderWidth: 0.9,
+    borderColor: "#c00000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  markText: { fontSize: 6.5, fontWeight: "bold", color: "#c00000", lineHeight: 1 },
+  note: { marginBottom: 3 },
+  pageFooter: {
+    position: "absolute",
+    bottom: 10,
+    left: 28,
+    right: 28,
+    fontSize: 7,
+    color: "#444",
+    textAlign: "right",
+  },
   footerNote: { fontSize: 7, color: "#444", marginTop: 6, textAlign: "right" },
   signs: {
     flexDirection: "row",
@@ -124,34 +166,57 @@ const s = StyleSheet.create({
   },
 });
 
-function Lines({ count = 3 }: { count?: number }) {
+function Optional({ label, value }: { label: string; value?: string | null }) {
   return (
-    <View style={s.lines}>
-      {Array.from({ length: count }).map((_, i) => (
-        <View key={i} style={s.line} />
-      ))}
-    </View>
+    <Text style={s.note}>
+      {label}: {value?.trim() ? value.trim() : "нет"}
+    </Text>
   );
+}
+
+function fmtNum(value: number | null | undefined, unit: string, width: number) {
+  return value == null ? `${"_".repeat(width)} ${unit}` : `${value} ${unit}`;
 }
 
 export function AcceptanceActPdf(props: ActDocInput) {
   const fio = formatFioForAct(props);
-  const contractDate = formatDateDots(props.startsAt);
-  const d =
-    props.startsAt instanceof Date
-      ? props.startsAt
-      : new Date(props.startsAt);
-  const dayMonth = `г. Жуковский ${d.getDate()} ${MONTHS_GEN_UPPER[d.getMonth()]}`;
+  const contractDate = props.contractDate
+    ? formatDateDots(props.contractDate)
+    : "_".repeat(12);
+  const view = props.inspection ?? null;
+  const insp = view?.inspection ?? null;
+  const marks = view?.marks ?? [];
+  const isDraft = props.draft === true;
+  const missing = props.draftMissing ?? [];
+
+  const receivedAt = insp?.receivedAt ?? props.startsAt;
+  const d = new Date(receivedAt);
+  const dayMonth = `г. ${props.issuer.city} ${d.getDate()} ${MONTHS_GEN_UPPER[d.getMonth()]}`;
   const yearLabel = `${d.getFullYear()}г.`;
   const year = props.year?.trim()
     ? props.year.trim().endsWith("г")
       ? props.year.trim()
       : `${props.year.trim()} г`
     : `${"_".repeat(8)} г`;
+  const receiver = insp?.receivedBy?.fullName ?? "_".repeat(18);
 
   return (
     <Document>
-      <Page size="A4" style={s.page}>
+      <Page size="A4" style={s.page} wrap>
+        <View style={s.body}>
+        {isDraft && (
+          <View style={s.draft}>
+            <Text style={{ fontWeight: "bold" }}>
+              ЧЕРНОВИК — документ не готов к подписанию.
+            </Text>
+            <Text>
+              {missing.length > 0
+                ? `Не заполнено: ${missing.join("; ")}.`
+                : "Предварительный просмотр: документ ещё не сформирован."}
+            </Text>
+          </View>
+        )}
+
         <View style={s.topRow}>
           <Image
             src={actAsset("/templates/acts/avancor-logo.png")}
@@ -172,7 +237,9 @@ export function AcceptanceActPdf(props: ActDocInput) {
         <View style={s.parties}>
           <View style={s.partyCol}>
             <Text style={s.partyLabel}>Исполнитель:</Text>
-            <Text>ИП Стражников А.Л. (АванКор Жуковский)</Text>
+            <Text>{props.issuer.titleInBrackets}</Text>
+            <Text>{props.issuer.branchAddress}</Text>
+            <Text>ИНН: {props.issuer.inn}</Text>
           </View>
           <View style={s.partyCol}>
             <Text style={s.partyLabel}>Заказчик:</Text>
@@ -188,7 +255,7 @@ export function AcceptanceActPdf(props: ActDocInput) {
 
         <View style={s.hr} />
         <Text style={s.sectionTitle}>1. ДАННЫЕ ТРАНСПОРТНОГО СРЕДСТВА</Text>
-        <View style={s.grid2}>
+        <View style={s.grid2} wrap={false}>
           <View style={s.col}>
             <Text style={s.row}>
               Марка, модель : {blank(props.carModel, 28)}
@@ -199,11 +266,13 @@ export function AcceptanceActPdf(props: ActDocInput) {
           </View>
           <View style={s.col}>
             <Text style={s.row}>
-              Пробег на момент приёма: {"_".repeat(8)} км
+              Пробег на момент приёма: {fmtNum(insp?.mileageKm, "км", 8)}
             </Text>
-            <Text style={s.row}>Количество переданных ключей: 1 шт.</Text>
             <Text style={s.row}>
-              Примерный уровень топлива: {"_".repeat(3)} %
+              Количество переданных ключей: {fmtNum(insp?.keysCount, "шт.", 2)}
+            </Text>
+            <Text style={s.row}>
+              Примерный уровень топлива: {fmtNum(insp?.fuelPercent, "%", 3)}
             </Text>
           </View>
         </View>
@@ -213,16 +282,26 @@ export function AcceptanceActPdf(props: ActDocInput) {
         <Text style={s.hint}>
           Схема автомобиля для фиксации повреждений ЛКП и кузовных элементов
         </Text>
-        <Text style={s.hint}>
-          (отметить дефекты, указать характер повреждения и зону)
-        </Text>
 
         <View style={s.diagramRow} wrap={false}>
           <View style={s.diagramFrame}>
-            <Image
-              src={actAsset("/templates/acts/car-diagram.png")}
-              style={s.diagram}
-            />
+            <View style={s.diagramBox}>
+              <Image
+                src={actAsset("/templates/acts/car-diagram.png")}
+                style={s.diagram}
+              />
+              {marks.map((m) => (
+                <View
+                  key={m.id}
+                  style={[
+                    s.markDot,
+                    { left: m.x * DIAGRAM_W - 5.5, top: m.y * DIAGRAM_H - 5.5 },
+                  ]}
+                >
+                  <Text style={s.markText}>{DAMAGE_SYMBOL[m.type]}</Text>
+                </View>
+              ))}
+            </View>
           </View>
           <View style={s.legend}>
             <Text style={s.legendTitle}>Обозначения:</Text>
@@ -234,45 +313,67 @@ export function AcceptanceActPdf(props: ActDocInput) {
           </View>
         </View>
 
-        <Text>Дополнительные замечания:</Text>
-        <Lines count={3} />
+        {marks.length > 0 ? (
+          <View style={{ marginBottom: 3 }}>
+            <Text style={{ fontWeight: "bold", marginBottom: 1 }}>
+              Зафиксированные повреждения:
+            </Text>
+            {marks.map((m, i) => (
+              <Text key={m.id} style={s.row}>
+                {i + 1}. {DAMAGE_SYMBOL[m.type]} — {DAMAGE_LABEL[m.type]},{" "}
+                {m.element}
+                {m.note ? `: ${m.note}` : ""}
+                {m.photos.length ? ` (фото: ${m.photos.length})` : ""}
+              </Text>
+            ))}
+          </View>
+        ) : insp?.noDefectsConfirmed ? (
+          <Text style={s.note}>
+            Повреждений ЛКП и кузовных элементов не обнаружено (подтверждено
+            сотрудником при приёмке).
+          </Text>
+        ) : (
+          <Text style={s.note}>
+            Внешнее состояние не зафиксировано: повреждения не отмечены и их
+            отсутствие не подтверждено.
+          </Text>
+        )}
+        <Optional label="Дополнительные замечания" value={insp?.exteriorNote} />
 
         <View style={s.hr} />
         <Text style={s.sectionTitle}>3. СОСТОЯНИЕ САЛОНА</Text>
-        <Text style={s.check}>{box(false)} Загрязнения салона</Text>
-        <Text style={s.check}>
-          {box(false)} Повреждения элементов интерьера
-        </Text>
-        <Text style={s.check}>{box(false)} Повреждения обивки</Text>
-        <Text style={s.check}>{box(false)} Посторонние запахи</Text>
-        <Text style={{ marginTop: 4 }}>Примечания:</Text>
-        <Lines count={1} />
-        <Text style={s.footerNote}>
-          Акт приёма-передачи транспортного средства к Договору №{" "}
-          {props.contractNumber} · Стр. 1 из 2
-        </Text>
-      </Page>
+        {INTERIOR_KEYS.map((key) => {
+          const flag = insp?.interior?.[key];
+          return (
+            <Text key={key} style={s.check}>
+              {INTERIOR_LABEL[key]}: {box(flag === "NONE")} замечаний нет{"  "}
+              {box(flag === "PRESENT")} есть замечания
+            </Text>
+          );
+        })}
+        <Optional label="Примечания" value={insp?.interiorNote} />
 
-      <Page size="A4" style={s.page}>
+        <View style={s.hr} />
         <Text style={s.sectionTitle}>
           4. ПРОВЕРКА РАБОТОСПОСОБНОСТИ ДОСТУПНЫХ СИСТЕМ
         </Text>
-        <Text style={s.row}>1. Световые приборы: исправны / неисправны</Text>
-        <Text style={s.row}>2. Поворотники: исправны / неисправны</Text>
-        <Text style={s.row}>3. Стоп-сигналы: исправны / неисправны</Text>
-        <Text style={s.row}>4. Стеклоочистители: исправны / неисправны</Text>
-        <Text style={s.row}>5. Звуковой сигнал: исправен / неисправен</Text>
-        <Text style={s.row}>
-          6. Климатическая система: исправна / неисправна
-        </Text>
-        <Text style={s.row}>
-          7. Скорости вентилятора печки: исправны / неисправны
-        </Text>
-        <Text style={s.row}>
-          8. Приборная панель (ошибки): отсутствуют / имеются
-        </Text>
-        <Text style={{ marginTop: 5 }}>Примечания:</Text>
-        <Lines count={3} />
+        {SYSTEM_KEYS.map((key, i) => {
+          const v = insp?.systems?.[key];
+          const w = SYSTEM_WORDS[key];
+          return (
+            <View key={key} wrap={false}>
+              <Text style={s.row}>
+                {i + 1}. {SYSTEM_LABEL[key]}: {box(v?.status === "OK")} {w.OK}
+                {"  "}
+                {box(v?.status === "FAULTY")} {w.FAULTY}
+                {"  "}
+                {box(v?.status === "NOT_CHECKED")} {NOT_CHECKED_WORD}
+              </Text>
+              {v?.note ? <Text style={s.hint}>Комментарий: {v.note}</Text> : null}
+            </View>
+          );
+        })}
+        <Optional label="Примечания" value={insp?.systemsNote} />
 
         <View style={s.hr} />
         <Text style={s.sectionTitle}>5. УСЛОВИЯ ПРИЁМА ТРАНСПОРТНОГО СРЕДСТВА</Text>
@@ -289,6 +390,14 @@ export function AcceptanceActPdf(props: ActDocInput) {
           Исполнитель вправе осуществлять фото- и видеофиксацию состояния
           транспортного средства.
         </Text>
+        {insp?.specialTerms?.trim() ? (
+          <Text style={s.row}>
+            Индивидуально согласованные особенности: {insp.specialTerms.trim()}
+          </Text>
+        ) : null}
+        {insp?.note?.trim() ? (
+          <Text style={s.row}>Комментарий приёмщика: {insp.note.trim()}</Text>
+        ) : null}
         <Text style={{ marginTop: 5, fontWeight: "bold" }}>
           Заказчик подтверждает, что:
         </Text>
@@ -299,34 +408,43 @@ export function AcceptanceActPdf(props: ActDocInput) {
         </Text>
 
         <View style={s.hr} />
-        <Text style={s.sectionTitle}>6. ПЕРЕДАЧА ТРАНСПОРТНОГО СРЕДСТВА</Text>
-        <Text style={s.row}>
-          Транспортное средство передано Исполнителю для выполнения работ по
-          договору.
-        </Text>
-        <Text style={{ marginTop: 6 }}>
-          Дата и время приёма: {formatDateTimeRu(props.startsAt)}
-        </Text>
+        <View wrap={false}>
+          <Text style={s.sectionTitle}>6. ПЕРЕДАЧА ТРАНСПОРТНОГО СРЕДСТВА</Text>
+          <Text style={s.row}>
+            Транспортное средство передано Исполнителю для выполнения работ по
+            договору.
+          </Text>
+          <Text style={{ marginTop: 6 }}>
+            Дата и время приёма: {formatDateTimeRu(receivedAt)}
+          </Text>
 
-        <View style={s.hr} />
-        <View style={s.signs}>
-          <View style={s.signCol}>
-            <Text style={{ fontWeight: "bold" }}>Исполнитель</Text>
-            <View style={s.signLine} />
-            <Text>/Стражников А.Л./</Text>
-            <Text style={{ marginTop: 10 }}>Мастер-приёмщик</Text>
-            <View style={s.signLine} />
-            <Text>/{"_".repeat(18)}/</Text>
-          </View>
-          <View style={s.signCol}>
-            <Text style={{ fontWeight: "bold" }}>Заказчик</Text>
-            <View style={s.signLine} />
-            <Text>/{fio}/</Text>
+          <View style={s.hr} />
+          <View style={s.signs}>
+            <View style={s.signCol}>
+              <Text style={{ fontWeight: "bold" }}>Исполнитель</Text>
+              <View style={s.signLine} />
+              <Text>/{props.issuer.signerName}/</Text>
+              <Text style={{ marginTop: 10 }}>Мастер-приёмщик</Text>
+              <View style={s.signLine} />
+              <Text>/{receiver}/</Text>
+            </View>
+            <View style={s.signCol}>
+              <Text style={{ fontWeight: "bold" }}>Заказчик</Text>
+              <View style={s.signLine} />
+              <Text>/{fio}/</Text>
+            </View>
           </View>
         </View>
-        <Text style={s.footerNote}>
-          Акт приёма-передачи к Договору № {props.contractNumber} · Стр. 2 из 2
-        </Text>
+
+        </View>
+
+        <Text
+          style={s.pageFooter}
+          fixed
+          render={({ pageNumber, totalPages }) =>
+            `Акт приёма-передачи к Договору № ${props.contractNumber} · Стр. ${pageNumber} из ${totalPages}`
+          }
+        />
       </Page>
     </Document>
   );

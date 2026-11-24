@@ -22,12 +22,19 @@ import {
   cabinetH2,
 } from "../../_lib/cabinetUi";
 import { Car as CarIcon, Pencil, Plus, Star, Trash2 } from "lucide-react";
+import {
+  getPlateError,
+  getVehicleYearError,
+  normalizePlateInput,
+} from "@/lib/vehicle";
 
 export type CabinetVehicle = {
   id: number;
   carId: number | null;
   customLabel: string | null;
   vin: string | null;
+  year?: number | null;
+  plate?: string | null;
   isPrimary: boolean;
   carBrand: string | null;
   carModelName: string | null;
@@ -44,6 +51,8 @@ type FormState = {
   model: string;
   customLabel: string;
   isNotAuto: boolean;
+  year: string;
+  plate: string;
   isPrimary: boolean;
 };
 
@@ -52,6 +61,8 @@ const emptyForm = (): FormState => ({
   model: "",
   customLabel: "",
   isNotAuto: false,
+  year: "",
+  plate: "",
   isPrimary: false,
 });
 
@@ -96,6 +107,8 @@ export function CabinetVehiclesSection({ vehicles, onChange }: Props) {
       model: hasCustom ? "" : (v.carModelName ?? ""),
       customLabel: v.customLabel ?? "",
       isNotAuto: hasCustom,
+      year: v.year != null ? String(v.year) : "",
+      plate: v.plate ?? "",
       isPrimary: v.isPrimary,
     });
     setOpen(true);
@@ -107,6 +120,17 @@ export function CabinetVehiclesSection({ vehicles, onChange }: Props) {
     try {
       let carId: number | null = null;
       let customLabel: string | null = null;
+
+      const yearError = getVehicleYearError(form.year);
+      if (yearError) {
+        toast.error(yearError);
+        return;
+      }
+      const plateError = getPlateError(form.plate);
+      if (plateError) {
+        toast.error(plateError);
+        return;
+      }
 
       if (form.isNotAuto) {
         const text = form.customLabel.trim();
@@ -131,6 +155,8 @@ export function CabinetVehiclesSection({ vehicles, onChange }: Props) {
       const payload = {
         carId,
         customLabel,
+        year: Number(form.year.trim()),
+        plate: normalizePlateInput(form.plate) || null,
         isPrimary: form.isPrimary,
       };
 
@@ -328,6 +354,34 @@ export function CabinetVehiclesSection({ vehicles, onChange }: Props) {
               ) : null}
             </div>
           )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className={`${cabinetLabel} mb-2 block`}>Год выпуска</Label>
+              <Input
+                className={cabinetInput}
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="2019"
+                value={form.year}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, year: e.target.value.replace(/\D/g, "") }))
+                }
+              />
+            </div>
+            <div>
+              <Label className={`${cabinetLabel} mb-2 block`}>Госномер</Label>
+              <Input
+                className={`${cabinetInput} uppercase`}
+                maxLength={15}
+                placeholder="А123ВС77"
+                value={form.plate}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, plate: normalizePlateInput(e.target.value) }))
+                }
+              />
+            </div>
+          </div>
 
           <div className="flex items-center gap-2">
             <Checkbox
