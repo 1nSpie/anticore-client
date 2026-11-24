@@ -1,4 +1,12 @@
 import { Font } from "@react-pdf/renderer";
+import type { DocIssuer } from "../../../_lib/docIssuer";
+import type { InspectionView } from "../../../_lib/inspectionTypes";
+import type {
+  SnapshotExecution,
+  SnapshotHandover,
+  SnapshotPricing,
+  SnapshotWork,
+} from "../../../_lib/documentTypes";
 import { rublesInWordsRu } from "../contract/rublesInWordsRu";
 
 let fontsRegistered = false;
@@ -44,6 +52,24 @@ const MONTHS_GEN_UPPER = [
 ] as const;
 
 export type ActDocInput = {
+  issuer: DocIssuer;
+  /** Данные приёмки; без них акт приёма формируется как черновик. */
+  inspection?: InspectionView | null;
+  /** Дата договора (день выдачи номера). Пока номера нет — пустое место для заполнения. */
+  contractDate?: string | Date | null;
+  /** Дата акта приёма-передачи — на неё ссылается акт выполненных работ. */
+  acceptanceDate?: string | Date | null;
+  /** Дата самого акта выполненных работ (формирования). */
+  actDate?: string | Date | null;
+  /** Согласованные работы и стоимость (из снимка); без них документ строится по услуге и цене записи. */
+  works?: SnapshotWork[];
+  pricing?: SnapshotPricing;
+  /** Фактическое выполнение и выдача (акт выполненных работ). */
+  execution?: SnapshotExecution | null;
+  handover?: SnapshotHandover | null;
+  /** Предпросмотр: на документ ставится пометка «ЧЕРНОВИК» с перечнем недостающего. */
+  draft?: boolean;
+  draftMissing?: string[];
   contractNumber: number | string;
   lastName: string | null;
   firstName: string | null;
@@ -73,14 +99,24 @@ export function formatFioForAct(input: ActDocInput): string {
   if (!hasAny) {
     const fb = input.fioFallback?.trim();
     if (fb) return fb;
-    return `${"_".repeat(14)} ${"_".repeat(12)} ${"_".repeat(14)}`;
+    return `${"_".repeat(14)} ${"_".repeat(12)}`;
   }
-  return parts.map((p) => (p?.trim() ? p.trim() : "_".repeat(12))).join(" ");
+  // Отчество необязательно: если его нет — просто не пишем, без пустого подчёркивания.
+  return [
+    input.lastName?.trim() || "_".repeat(12),
+    input.firstName?.trim() || "_".repeat(12),
+    input.patronymic?.trim(),
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
-export function formatCityDateUpper(value: string | Date): string {
+export function formatCityDateUpper(
+  value: string | Date,
+  city: string,
+): string {
   const d = value instanceof Date ? value : new Date(value);
-  return `г. Жуковский ${d.getDate()} ${MONTHS_GEN_UPPER[d.getMonth()]} ${d.getFullYear()}г.`;
+  return `г. ${city} ${d.getDate()} ${MONTHS_GEN_UPPER[d.getMonth()]} ${d.getFullYear()}г.`;
 }
 
 export function formatDateDots(value: string | Date): string {

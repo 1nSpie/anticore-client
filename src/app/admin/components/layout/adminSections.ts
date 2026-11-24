@@ -1,4 +1,4 @@
-import { CalendarDays, Car, CircleDollarSign, Inbox, MessageSquare, Users, FileText, Images, UserCog, MapPinCheck, ListChecks, BookOpenText } from "lucide-react";
+import { CalendarDays, Car, CircleDollarSign, Inbox, MessageSquare, Users, FileText, Images, UserCog, MapPinCheck, ListChecks, BookOpenText, Banknote, Wallet, Boxes } from "lucide-react";
 
 export const adminSections = [
   { label: "Работа с клиентами", items: [
@@ -12,6 +12,11 @@ export const adminSections = [
     { href: "/admin/checkins", label: "Чекины", description: "Кто отметился на смену, подтверждение и пометки «вне радиуса».", icon: MapPinCheck },
     { href: "/admin/tasks", label: "Задачи", description: "Задачи мастерам: срок, приоритет, подтверждение выполнения.", icon: ListChecks },
     { href: "/admin/regulation", label: "Регламент", description: "Разделы, статьи и PDF для мастеров; публикация с обязательным ознакомлением.", icon: BookOpenText },
+  ] },
+  { label: "Деньги и склад", items: [
+    { href: "/admin/payroll", label: "Зарплата", description: "Ставки мастеров и приёмщиков, ведомость, доп. выплаты.", icon: Banknote },
+    { href: "/admin/cash", label: "Касса", description: "Приход и расход наличных по филиалам.", icon: Wallet },
+    { href: "/admin/stock", label: "Склад", description: "Материалы и расходники: остатки, приход и расход.", icon: Boxes },
   ] },
   { label: "Контент сайта", items: [
     { href: "/admin/blog", label: "Блог", description: "Статьи, полезные советы и новости для посетителей сайта.", icon: FileText },

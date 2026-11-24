@@ -1,13 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shadcn/dialog";
 import { Button } from "@/shadcn/button";
 import { Input } from "@/shadcn/input";
 import { Label } from "@/shadcn/label";
@@ -18,6 +11,7 @@ import { useCarCatalog } from "../cars/useCarCatalog";
 import { PhoneRuInput } from "@/components/PhoneRuInput";
 import { normalizePhoneRu, formatPhoneRuInput, PHONE_RU_INPUT_PREFIX } from "@/lib/phoneRu";
 import { getVinValidationError } from "@/lib/vin";
+import { getVehicleYearError } from "@/lib/vehicle";
 import { toast } from "sonner";
 
 type Props = {
@@ -32,8 +26,10 @@ const emptyForm = {
   phone: PHONE_RU_INPUT_PREFIX,
   lastName: "",
   firstName: "",
+  patronymic: "",
   brand: "",
   model: "",
+  year: "",
   vin: "",
 };
 
@@ -71,6 +67,22 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
       toast.error("Укажите мобильный номер России: +79 и ещё 9 цифр");
       return;
     }
+    const missing: string[] = [];
+    if (!form.lastName.trim()) missing.push("фамилию");
+    if (!form.firstName.trim()) missing.push("имя");
+    if (missing.length) {
+      toast.error(`Укажите ${missing.join(", ")}`);
+      return;
+    }
+    if (!form.brand || !form.model) {
+      toast.error("Выберите марку и модель из каталога");
+      return;
+    }
+    const yearError = getVehicleYearError(form.year);
+    if (yearError) {
+      toast.error(yearError);
+      return;
+    }
     if (form.vin.trim()) {
       const err = getVinValidationError(form.vin);
       if (err) {
@@ -80,18 +92,10 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
       }
     }
 
-    let carId: number | undefined;
-    if (form.brand || form.model) {
-      if (!form.brand || !form.model) {
-        toast.error("Выберите марку и модель из каталога");
-        return;
-      }
-      const id = resolveCarId(form.model);
-      if (!id) {
-        toast.error("Модель не найдена в каталоге. Добавьте её в админке.");
-        return;
-      }
-      carId = id;
+    const carId = resolveCarId(form.model);
+    if (!carId) {
+      toast.error("Модель не найдена в каталоге. Добавьте её в админке.");
+      return;
     }
 
     setVinError(null);
@@ -99,16 +103,22 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
     try {
       const { data } = await adminApi.post<CrmClient>("/crm/clients", {
         phone,
-        ...(form.lastName.trim() && { lastName: form.lastName.trim() }),
-        ...(form.firstName.trim() && { firstName: form.firstName.trim() }),
-        ...(carId !== undefined && { carId }),
+        lastName: form.lastName.trim(),
+        firstName: form.firstName.trim(),
+        ...(form.patronymic.trim() && { patronymic: form.patronymic.trim() }),
+        carId,
+        year: Number(form.year.trim()),
         ...(form.vin.trim() && { vin: form.vin.trim() }),
       });
       toast.success("Клиент создан");
       await onCreated(data);
       onOpenChange(false);
-    } catch {
-      toast.error("Не удалось создать клиента");
+    } catch (e) {
+      const message = (e as { response?: { data?: { message?: unknown } } })
+        ?.response?.data?.message;
+      toast.error(
+        typeof message === "string" ? message : "Не удалось создать клиента",
+      );
     } finally {
       setLoading(false);
     }
@@ -116,15 +126,18 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
 
   const field = "border-white/20 bg-slate-800";
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border border-white/10 text-white sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-white">Быстрое создание клиента</DialogTitle>
-        </DialogHeader>
+    <section
+      id="client-quick-create"
+      className="space-y-3 rounded-xl border border-emerald-500/30 bg-slate-900/70 p-4 text-white"
+    >
+      <h3 className="text-base font-semibold">Быстрое создание клиента</h3>
         <p className="text-sm text-slate-400">
-          Обязателен только телефон. Остальное можно заполнить сейчас или позже в карточке.
-          При регистрации в личном кабинете клиент увидит эти данные.
+          Обязательны телефон, фамилия, имя, марка, модель и год выпуска. VIN можно внести
+          позже, но он понадобится при приёмке. При регистрации в личном кабинете
+          клиент увидит эти данные.
         </p>
         <div className="space-y-3">
           <div className="space-y-2">
@@ -138,7 +151,7 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-slate-200">Фамилия</Label>
+              <Label className="text-slate-200">Фамилия *</Label>
               <Input
                 className={field}
                 value={form.lastName}
@@ -146,13 +159,21 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Имя</Label>
+              <Label className="text-slate-200">Имя *</Label>
               <Input
                 className={field}
                 value={form.firstName}
                 onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
               />
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-slate-200">Отчество</Label>
+            <Input
+              className={field}
+              value={form.patronymic}
+              onChange={(e) => setForm((f) => ({ ...f, patronymic: e.target.value }))}
+            />
           </div>
           <CarCatalogFields
             brand={form.brand}
@@ -163,6 +184,19 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
             onModelChange={(model) => setForm((f) => ({ ...f, model }))}
             inputClassName={`${field} text-slate-100`}
           />
+          <div className="space-y-2">
+            <Label className="text-slate-200">Год выпуска *</Label>
+            <Input
+              className={field}
+              inputMode="numeric"
+              maxLength={4}
+              placeholder="например, 2019"
+              value={form.year}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, year: e.target.value.replace(/\D/g, "") }))
+              }
+            />
+          </div>
           <div className="space-y-2">
             <Label className="text-slate-200">VIN</Label>
             <Input
@@ -179,15 +213,14 @@ export function ClientQuickCreate({ open, onOpenChange, onCreated, initialPhone 
             {vinError && <p className="text-xs text-red-400">{vinError}</p>}
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" className="border-white/20" onClick={() => onOpenChange(false)}>
-            Отмена
-          </Button>
+        <div className="flex flex-wrap gap-2">
           <Button onClick={() => void save()} disabled={loading || !form.phone.trim()}>
             Создать
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button variant="outline" className="border-white/20" onClick={() => onOpenChange(false)}>
+            Отмена
+          </Button>
+        </div>
+    </section>
   );
 }

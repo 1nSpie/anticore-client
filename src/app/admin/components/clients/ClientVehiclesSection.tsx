@@ -24,6 +24,11 @@ import {
   DialogTitle,
 } from "@/shadcn/dialog";
 import { getVinValidationError } from "@/lib/vin";
+import {
+  getPlateError,
+  getVehicleYearError,
+  normalizePlateInput,
+} from "@/lib/vehicle";
 import { toast } from "sonner";
 import { Pencil, Plus, Star, Trash2 } from "lucide-react";
 
@@ -43,6 +48,8 @@ type FormState = {
   model: string;
   customLabel: string;
   isNotInCatalog: boolean;
+  year: string;
+  plate: string;
   vin: string;
   isPrimary: boolean;
 };
@@ -52,6 +59,8 @@ const emptyForm = (): FormState => ({
   model: "",
   customLabel: "",
   isNotInCatalog: false,
+  year: "",
+  plate: "",
   vin: "",
   isPrimary: false,
 });
@@ -87,6 +96,8 @@ export function ClientVehiclesSection({
       model: hasCustom ? "" : (v.carModelName ?? ""),
       customLabel: v.customLabel ?? "",
       isNotInCatalog: hasCustom,
+      year: v.year != null ? String(v.year) : "",
+      plate: v.plate ?? "",
       vin: v.vin ?? "",
       isPrimary: v.isPrimary,
     });
@@ -95,6 +106,10 @@ export function ClientVehiclesSection({
   };
 
   const buildPayload = () => {
+    const yearError = getVehicleYearError(form.year);
+    if (yearError) throw new Error(yearError);
+    const plateError = getPlateError(form.plate);
+    if (plateError) throw new Error(plateError);
     if (form.vin.trim()) {
       const err = getVinValidationError(form.vin);
       if (err) {
@@ -108,24 +123,22 @@ export function ClientVehiclesSection({
 
     if (form.isNotInCatalog) {
       const text = form.customLabel.trim();
-      if (!text && !form.vin.trim()) {
-        throw new Error("Укажите автомобиль или VIN");
-      }
-      customLabel = text || null;
-    } else if (form.brand || form.model) {
+      if (!text) throw new Error("Укажите марку и модель");
+      customLabel = text;
+    } else {
       if (!form.brand || !form.model) {
         throw new Error("Выберите марку и модель из каталога");
       }
       const id = resolveCarId(form.model);
       if (!id) throw new Error("Модель не найдена в каталоге");
       carId = id;
-    } else if (!form.vin.trim()) {
-      throw new Error("Укажите автомобиль или VIN");
     }
 
     return {
       carId,
       customLabel,
+      year: Number(form.year.trim()),
+      plate: normalizePlateInput(form.plate) || null,
       vin: form.vin.trim().toUpperCase() || null,
       isPrimary: form.isPrimary,
     };
@@ -224,6 +237,10 @@ export function ClientVehiclesSection({
                             </span>
                           ) : null}
                         </div>
+                        <p className="mt-0.5 text-xs text-slate-400">
+                          {v.year ? `${v.year} г.` : "год не указан"}
+                          {v.plate ? ` · ${v.plate}` : ""}
+                        </p>
                         {v.vin ? (
                           <p className="mt-0.5 font-mono text-xs text-slate-400">
                             VIN {v.vin}
@@ -345,6 +362,34 @@ export function ClientVehiclesSection({
                 ) : null}
               </>
             )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Год выпуска *</Label>
+                <Input
+                  className={fieldClass}
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="2019"
+                  value={form.year}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, year: e.target.value.replace(/\D/g, "") }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Госномер</Label>
+                <Input
+                  className={`${fieldClass} uppercase`}
+                  maxLength={15}
+                  placeholder="А123ВС77"
+                  value={form.plate}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, plate: normalizePlateInput(e.target.value) }))
+                  }
+                />
+              </div>
+            </div>
 
             <div className="space-y-2">
               <Label>VIN</Label>

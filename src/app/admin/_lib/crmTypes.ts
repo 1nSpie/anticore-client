@@ -4,6 +4,8 @@ export type ClientVehicle = {
   carId: number | null;
   customLabel: string | null;
   vin: string | null;
+  year: number | null;
+  plate: string | null;
   isPrimary: boolean;
   archivedAt: string | null;
   createdAt: string;
@@ -78,6 +80,8 @@ export type CrmAppointment = {
     id: number;
     label: string | null;
     vin: string | null;
+    year?: number | null;
+    plate?: string | null;
     customLabel: string | null;
     carBrand: string | null;
     carModelName: string | null;
