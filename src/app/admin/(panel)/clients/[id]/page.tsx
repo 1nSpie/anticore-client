@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { safeCalendarBack } from "../../../_lib/calendarBack";
 import { adminApi } from "../../../_lib/api";
 import type {
   ClientVehicle,
@@ -39,6 +41,7 @@ const fieldClass = "border-white/20 bg-slate-800 text-white";
 
 export default function AdminClientCardPage() {
   const params = useParams<{ id: string }>();
+  const backHref = safeCalendarBack(useSearchParams().get("back"));
   const router = useRouter();
   const isNew = params.id === "new";
   const [vinError, setVinError] = useState<string | null>(null);
@@ -203,6 +206,11 @@ export default function AdminClientCardPage() {
 
   return (
     <form onSubmit={onSubmit} className="max-w-3xl space-y-6">
+      {backHref && (
+        <Button type="button" variant="outline" size="sm" asChild className="border-white/20 text-slate-100">
+          <Link href={backHref}>← К календарю</Link>
+        </Button>
+      )}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h2 className="text-lg font-semibold text-white">
           {isNew ? "Новый клиент" : "Карточка клиента"}
@@ -424,6 +432,7 @@ export default function AdminClientCardPage() {
 
       {!isNew && (
         <ClientVisitsSection
+          calendarHref={backHref ?? "/admin/calendar"}
           clientId={Number(params.id)}
           visits={visits}
           vehicles={vehicles}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Menu, X, ShieldCheck } from "lucide-react";
+import { Menu, X, ShieldCheck, LogOut } from "lucide-react";
 import { AdminHeader } from "./AdminHeader";
 import { AdminNav } from "./AdminNav";
 
@@ -25,7 +25,10 @@ export function AdminShell({ children, onLogout, onRefresh, loading = false }: P
     <a href="#admin-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-emerald-400 focus:p-3 focus:text-slate-950">Перейти к содержимому</a>
     <aside className="admin-sidebar fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-y-auto overscroll-contain border-r border-white/[0.06] bg-[#101722] px-4 py-7 lg:flex">
       <Brand /><AdminNav />
-      <div className="mt-auto px-3 pt-8 text-xs leading-relaxed text-slate-500">АванКор · Панель управления</div>
+      <div className="mt-auto space-y-3 pt-8">
+        <button type="button" onClick={() => void logout()} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100"><LogOut className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />Выйти</button>
+        <div className="px-3 text-xs leading-relaxed text-slate-500">АванКор · Панель управления</div>
+      </div>
     </aside>
     <div className="flex items-center justify-between border-b border-white/[0.06] bg-[#101722] px-4 py-3 lg:hidden">
       <Link href="/admin/calendar" className="font-semibold text-slate-50">АванКор <span className="ml-2 text-xs font-normal text-slate-500">Админка</span></Link>
@@ -36,6 +39,7 @@ export function AdminShell({ children, onLogout, onRefresh, loading = false }: P
             <Dialog.Title className="sr-only">Разделы админки</Dialog.Title>
             <Dialog.Close aria-label="Закрыть меню" className="absolute right-3 top-3 rounded-lg p-3 text-slate-400 hover:bg-white/5"><X className="h-5 w-5" /></Dialog.Close>
             <Brand /><AdminNav onNavigate={() => setMenuOpen(false)} />
+            <div className="mt-8 border-t border-white/10 pt-4"><button type="button" onClick={() => void logout()} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100"><LogOut className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />Выйти</button></div>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

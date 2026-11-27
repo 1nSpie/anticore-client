@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/shadcn/button";
 import { RefreshCw, LogOut, ArrowUpRight } from "lucide-react";
 import { adminSection } from "./adminSections";
+import { AdminNotificationsBell } from "./AdminNotificationsBell";
 
 interface AdminHeaderProps {
   onRefresh: () => void;
@@ -21,6 +22,7 @@ export function AdminHeader({ onRefresh, onLogout, loading, showRefresh = true }
       <p className="mb-0 max-w-xl text-sm leading-relaxed text-slate-400">{section?.description ?? "Всё для ежедневной работы сервиса в одном месте."}</p>
     </div>
     <div className="flex flex-wrap items-center gap-2">
+      <AdminNotificationsBell />
       <Button variant="outline" asChild className="border-white/10 bg-transparent text-slate-300"><a href="/" target="_blank" rel="noopener noreferrer">Открыть сайт<ArrowUpRight className="h-4 w-4" /></a></Button>
       {showRefresh && <Button variant="outline" onClick={onRefresh} disabled={loading}><RefreshCw className={loading ? "animate-spin" : ""} />Обновить</Button>}
       <Button variant="ghost" onClick={onLogout} className="text-slate-400 hover:text-slate-50"><LogOut className="h-4 w-4" />Выйти</Button>

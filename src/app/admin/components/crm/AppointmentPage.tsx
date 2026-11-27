@@ -1,5 +1,6 @@
 "use client";
 
+import { safeCalendarBack, withBack } from "../../_lib/calendarBack";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -104,6 +105,7 @@ export function AppointmentPage({ appointmentId }: { appointmentId: number | nul
   const defaultLocation: CrmLocationCode = isCrmLocation(queryLocation)
     ? queryLocation
     : DEFAULT_CRM_LOCATION;
+  const backHref = safeCalendarBack(params.get("back"));
   const slotStart = params.get("start");
   const slotEnd = params.get("end");
   const quickCreateOpen = params.get("newClient") === "1";
@@ -346,7 +348,7 @@ export function AppointmentPage({ appointmentId }: { appointmentId: number | nul
         if (data.smsError) {
           toast.error(data.smsError);
         }
-        router.replace(`/admin/appointments/${data.id}`);
+        router.replace(withBack(`/admin/appointments/${data.id}`, backHref));
         return;
       }
 
@@ -366,7 +368,7 @@ export function AppointmentPage({ appointmentId }: { appointmentId: number | nul
   };
 
   /** Назад в календарь — на день и филиал этой записи. */
-  const calendarHref = (() => {
+  const calendarHref = backHref ?? (() => {
     const q = new URLSearchParams();
     const iso = appointment?.startsAt ?? slotStart;
     if (iso && !Number.isNaN(Date.parse(iso))) q.set("date", toLocalInput(iso).slice(0, 10));
@@ -544,7 +546,7 @@ export function AppointmentPage({ appointmentId }: { appointmentId: number | nul
             </div>
             {selectedClient && (
               <Link
-                href={`/admin/clients/${selectedClient.id}`}
+                href={withBack(`/admin/clients/${selectedClient.id}`, calendarHref)}
                 className="text-xs text-emerald-300 hover:underline"
               >
                 Заполнить или изменить карточку клиента
@@ -559,7 +561,7 @@ export function AppointmentPage({ appointmentId }: { appointmentId: number | nul
                 <p className="text-sm text-slate-400">
                   У клиента нет автомобилей —{" "}
                   <Link
-                    href={`/admin/clients/${selectedClient.id}`}
+                    href={withBack(`/admin/clients/${selectedClient.id}`, calendarHref)}
                     className="text-emerald-300 hover:underline"
                   >
                     добавить в карточке

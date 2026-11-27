@@ -38,6 +38,8 @@ import {
 import { toast } from "sonner";
 
 type Props = {
+  /** Куда ведёт кнопка «Календарь»: день, откуда пришли, а не сегодняшний. */
+  calendarHref?: string;
   clientId: number;
   visits: CrmClientVisit[];
   vehicles?: ClientVehicle[];
@@ -83,6 +85,7 @@ function visitToForm(v: CrmClientVisit) {
 }
 
 export function ClientVisitsSection({
+  calendarHref = "/admin/calendar",
   clientId,
   visits,
   vehicles = [],
@@ -182,7 +185,7 @@ export function ClientVisitsSection({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base text-white">Визиты</CardTitle>
           <Button type="button" variant="outline" size="sm" className="border-white/20" asChild>
-            <Link href="/admin/calendar">Календарь</Link>
+            <Link href={calendarHref}>Календарь</Link>
           </Button>
         </CardHeader>
         <CardContent>

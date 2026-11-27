@@ -33,6 +33,7 @@ import {
   moveToDay,
   startOfWeekMonday,
 } from "../../_lib/calendarRange";
+import { withBack } from "../../_lib/calendarBack";
 import {
   bookedByDateMap,
   dayCapacity,
@@ -265,18 +266,22 @@ export function CrmCalendar() {
     void loadLimits(rangeRef.current.from, rangeRef.current.to, location);
   }, [location, loadLimits]);
 
+  /** Где мы сейчас: по этому адресу вернёмся из записи и карточки клиента. */
+  const currentCalendarHref = `/admin/calendar?${new URLSearchParams({ date: calendarDayKey(focusDate), view, location }).toString()}`;
+
   const openAppointment = useCallback(
-    (found: CrmAppointment) => router.push(`/admin/appointments/${found.id}`),
-    [router],
+    (found: CrmAppointment) =>
+      router.push(withBack(`/admin/appointments/${found.id}`, currentCalendarHref)),
+    [router, currentCalendarHref],
   );
 
   const openCreateForDate = useCallback(
     (date: Date) => {
       const { start, end } = defaultCreateSlot(date);
       const q = new URLSearchParams({ start, end, location: locationRef.current });
-      router.push(`/admin/appointments/new?${q.toString()}`);
+      router.push(withBack(`/admin/appointments/new?${q.toString()}`, currentCalendarHref));
     },
-    [router],
+    [router, currentCalendarHref],
   );
 
   useEffect(() => {
