@@ -6,6 +6,7 @@ import { Bell, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/button";
 import { cn } from "src/lib/utils";
+import { PushToggle } from "../../_lib/PushToggle";
 import { staffApi } from "../../_lib/staffSession";
 import { useStaffNotificationEvents, useStaffRealtime } from "../../_lib/StaffRealtime";
 import { fmtNotificationTime, safeStaffLink, type NotificationList, type StaffNotification } from "../../_lib/notificationTypes";
@@ -54,6 +55,8 @@ export default function StaffNotificationsPage() {
           <Button variant="ghost" size="sm" onClick={readAll} className="h-10">Прочитать все</Button>
         )}
       </div>
+
+      <PushToggle />
 
       {!data ? (
         <Loader2 className="mx-auto h-5 w-5 animate-spin text-slate-500" />
